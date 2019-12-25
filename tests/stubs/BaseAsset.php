@@ -30,7 +30,7 @@ use Yiisoft\Assets\AssetBundle;
  */
 final class BaseAsset extends AssetBundle
 {
-    public ?string $basePath = '@public/basePath';
+    public ?string $basePath = '@public/basepath';
 
     public ?string $baseUrl = '/baseUrl';
 
