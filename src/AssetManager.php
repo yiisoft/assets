@@ -214,7 +214,7 @@ final class AssetManager
         return $this->assetMap;
     }
 
-    public function getAppendtimestamp(): bool
+    public function getAppendTimestamp(): bool
     {
         return $this->appendTimestamp;
     }

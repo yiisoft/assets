@@ -237,7 +237,7 @@ final class AssetPublisher
     private function checkBaseUrl(?string $baseUrl): void
     {
         if (empty($baseUrl) && empty($this->assetManager->getBaseUrl())) {
-            throw new InvalidconfigException(
+            throw new InvalidConfigException(
                 'baseUrl must be set in AssetManager->setBaseUrl($path) or ' .
                 'AssetBundle property public ?string $baseUrl = $path'
             );
