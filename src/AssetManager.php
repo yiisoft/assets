@@ -6,8 +6,6 @@ namespace Yiisoft\Assets;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
-use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Html\Html;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
@@ -497,7 +495,7 @@ final class AssetManager
      *
      * @return void
      */
-    public function registerJsFile(string $url, array $options = [], string $key = null)
+    public function registerJsFile(string $url, array $options = [], string $key = null): void
     {
         $key = $key ?: $url;
 
@@ -521,12 +519,12 @@ final class AssetManager
      *
      * {@see registerJsFile()} for more details on javascript position.
      *
-     * @return object the registered asset bundle instance
+     * @return AssetBundle the registered asset bundle instance
      * @throws InvalidConfigException
      *
      * @throws \RuntimeException if the asset bundle does not exist or a circular dependency is detected
      */
-    private function registerAssetBundle(string $name, ?int $position = null): object
+    private function registerAssetBundle(string $name, ?int $position = null): AssetBundle
     {
         if (!isset($this->assetBundles[$name])) {
             $bundle = $this->getBundle($name);

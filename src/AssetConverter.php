@@ -118,7 +118,7 @@ final class AssetConverter implements AssetConverterInterface
         return $asset;
     }
 
-    public function setCommand(string $key, array $value)
+    public function setCommand(string $key, array $value): void
     {
         $this->commands[$key] = $value;
     }
@@ -175,7 +175,7 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @return bool true on success, false on failure. Failures will be logged.
      */
-    protected function runCommand(string $command, string $basePath, string $asset, string $result): bool
+    private function runCommand(string $command, string $basePath, string $asset, string $result): bool
     {
         $command = $this->aliases->get($command);
 

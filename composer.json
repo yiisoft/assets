@@ -22,7 +22,6 @@
         "php": "^7.4",
         "ext-mbstring": "*",
         "psr/log": "^1.1",
-        "yiisoft/arrays": "^3.0@dev",
         "yiisoft/files": "^3.0@dev"
     },
     "require-dev": {
