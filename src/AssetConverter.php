@@ -31,7 +31,7 @@ class AssetConverter implements AssetConverterInterface
      * ]
      * ```
      */
-    public array $commands = [
+    private array $commands = [
         'less'   => ['css', 'lessc {from} {to} --no-color --source-map'],
         'scss'   => ['css', 'sass {from} {to} --sourcemap'],
         'sass'   => ['css', 'sass {from} {to} --sourcemap'],
@@ -116,6 +116,11 @@ class AssetConverter implements AssetConverterInterface
         }
 
         return $asset;
+    }
+
+    public function setCommand(string $key, array $value)
+    {
+        $this->commands[$key] = $value;
     }
 
     public function setForceConvert(bool $value): void
