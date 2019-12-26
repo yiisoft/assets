@@ -29,11 +29,6 @@ class AssetPublisher
      */
     private array $published = [];
 
-    /**
-     * AssetPublish constructor.
-     *
-     * @param AssetManager $assetManager
-     */
     public function __construct(AssetManager $assetManager)
     {
         $this->assetManager = $assetManager;
@@ -50,6 +45,7 @@ class AssetPublisher
      * {@see AssetBundle::$css}.
      *
      * @return string the actual URL for the specified asset.
+     * @throws InvalidConfigException
      */
     public function getAssetUrl(AssetBundle $bundle, string $pathAsset): string
     {
@@ -64,15 +60,15 @@ class AssetPublisher
             return $pathAsset;
         }
 
-        if (!is_file("$basePath" . '/' . "$pathAsset")) {
+        if (!is_file("$basePath/$pathAsset")) {
             throw new InvalidConfigException("Asset files not found: '$basePath/$pathAsset.'");
         }
 
         if ($this->assetManager->getAppendTimestamp()  && ($timestamp = @filemtime("$basePath/$pathAsset")) > 0) {
-            return "$baseUrl" . '/' . "$pathAsset?v=$timestamp";
+            return "$baseUrl/$pathAsset?v=$timestamp";
         }
 
-        return "$baseUrl" . '/' . "$pathAsset";
+        return "$baseUrl/$pathAsset";
     }
 
     /**
@@ -179,7 +175,7 @@ class AssetPublisher
      * @param string $sourcePath directory or file path being published
      *
      * @return string|null string the published URL for the file or directory. Null if the file or directory does not
-     *                     exist.
+     * exist.
      */
     public function getPublishedUrl(string $sourcePath): ?string
     {
@@ -197,7 +193,7 @@ class AssetPublisher
      *
      * @return void
      */
-    public function registerAssetFiles(AssetBundle $bundle)
+    public function registerAssetFiles(AssetBundle $bundle): void
     {
         foreach ($bundle->js as $js) {
             if (is_array($js)) {
