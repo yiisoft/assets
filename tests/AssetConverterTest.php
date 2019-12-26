@@ -120,15 +120,17 @@ EOF
         $converter->convert('test.php', $this->tmpPath);
         $initialConvertTime = file_get_contents($this->tmpPath . '/test.txt');
 
-        $converter->isOutdatedCallback = function () {
+        $converter->setIsOutdatedCallback(function () {
             return false;
-        };
+        });
+
         $converter->convert('test.php', $this->tmpPath);
         $this->assertStringEqualsFile($this->tmpPath . '/test.txt', $initialConvertTime);
 
-        $converter->isOutdatedCallback = function () {
+        $converter->setIsOutdatedCallback(function () {
             return true;
-        };
+        });
+
         $converter->convert('test.php', $this->tmpPath);
         $this->assertNotEquals($initialConvertTime, file_get_contents($this->tmpPath . '/test.txt'));
     }

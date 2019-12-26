@@ -81,7 +81,7 @@ class AssetConverter implements AssetConverterInterface
      * }
      * ```
      */
-    public $isOutdatedCallback;
+    private $isOutdatedCallback;
 
     private LoggerInterface $logger;
 
@@ -116,6 +116,11 @@ class AssetConverter implements AssetConverterInterface
         }
 
         return $asset;
+    }
+
+    public function setIsOutdatedCallback(callable $value): void
+    {
+        $this->isOutdatedCallback = $value;
     }
 
     /**
