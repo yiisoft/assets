@@ -14,11 +14,9 @@ use Yiisoft\Aliases\Aliases;
 class AssetConverter implements AssetConverterInterface
 {
     /**
-     * Aliases component.
-     *
-     * @var Aliases $aliase
+     * Aliases component
      */
-    private $aliases;
+    private Aliases $aliases;
 
     /**
      * @var array the commands that are used to perform the asset conversion.
@@ -33,7 +31,7 @@ class AssetConverter implements AssetConverterInterface
      * ]
      * ```
      */
-    public $commands = [
+    public array $commands = [
         'less'   => ['css', 'lessc {from} {to} --no-color --source-map'],
         'scss'   => ['css', 'sass {from} {to} --sourcemap'],
         'sass'   => ['css', 'sass {from} {to} --sourcemap'],
@@ -48,7 +46,7 @@ class AssetConverter implements AssetConverterInterface
      * assets are always up-to-date. Do not set this to true on production servers as it will
      * significantly degrade the performance.
      */
-    public $forceConvert = false;
+    public bool $forceConvert = false;
 
     /**
      * @var callable a PHP callback, which should be invoked to check whether asset conversion result is outdated.
@@ -85,16 +83,8 @@ class AssetConverter implements AssetConverterInterface
      */
     public $isOutdatedCallback;
 
-    /**
-     * @var LoggerInterface $logger
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * AssetConverter constructor.
-     *
-     * @param Aliases $aliases
-     */
     public function __construct(Aliases $aliases, LoggerInterface $logger)
     {
         $this->aliases = $aliases;
