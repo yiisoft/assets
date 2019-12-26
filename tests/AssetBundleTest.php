@@ -237,7 +237,7 @@ EOF;
 <script src="/baseUrl/HashCallback/js/stub.js"></script>4
 EOF;
 
-        $this->assertEquals(
+        $this->assertEqualsWithoutLE(
             $expected,
             $this->webView->renderFile($this->aliases->get('@view/rawlayout.php'))
         );
