@@ -7,7 +7,7 @@ namespace Yiisoft\Assets;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
 
-class AssetPublisher
+final class AssetPublisher
 {
     /**
      * @var AssetManager $assetManager

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-class AssetUtil
+final class AssetUtil
 {
     /**
      * Returns a value indicating whether a URL is relative.

@@ -11,7 +11,7 @@ use Yiisoft\Aliases\Aliases;
  *
  * It is used by [[AssetManager]] to convert files after they have been published.
  */
-class AssetConverter implements AssetConverterInterface
+final class AssetConverter implements AssetConverterInterface
 {
     /**
      * Aliases component
