@@ -140,7 +140,10 @@ final class AssetAppendTimeStampTest extends TestCase
 
         $method = 'register' . ucfirst($type) . 'File';
 
-        $this->assetManager->$method($path, [], null, $this->webView);
+        $this->assetManager->$method($path, [], null);
+
+        $this->webView->setCssFiles($this->assetManager->getCssFiles());
+        $this->webView->setJsFiles($this->assetManager->getJsFiles());
 
         $this->assertEquals(
             $expected,

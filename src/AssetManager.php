@@ -442,14 +442,6 @@ final class AssetManager
         foreach ($names as $name) {
             $this->registerFiles($name);
         }
-
-        /*if (!empty($this->cssFiles)) {
-            $webView->setCssFiles($this->cssFiles);
-        }
-
-        if (!empty($this->jsFiles)) {
-            $webView->setJsFiles($this->jsFiles);
-        }*/
     }
 
     /**
@@ -471,13 +463,10 @@ final class AssetManager
      *
      * @return void
      */
-    public function registerCssFile(string $url, array $options = [], string $key = null, ?object $webView = null): void
+    public function registerCssFile(string $url, array $options = [], string $key = null): void
     {
         $key = $key ?: $url;
         $this->cssFiles[$key] = Html::cssFile($url, $options);
-        if (!empty($webView)) {
-            $webView->setCssFiles($this->cssFiles);
-        }
     }
 
     /**
@@ -506,14 +495,11 @@ final class AssetManager
      *
      * @return void
      */
-    public function registerJsFile(string $url, array $options = [], string $key = null, ?object $webView = null)
+    public function registerJsFile(string $url, array $options = [], string $key = null)
     {
         $key = $key ?: $url;
         $position = ArrayHelper::remove($options, 'position', 3);
         $this->jsFiles[$position][$key] = Html::jsFile($url, $options);
-        if (!empty($webView)) {
-            $webView->setJsFiles($this->jsFiles);
-        }
     }
 
     /**
