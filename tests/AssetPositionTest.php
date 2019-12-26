@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Yiisoft\Assets\Tests;
 
 use Yiisoft\Assets\AssetBundle;
-use Yiisoft\Assets\Tests\TestCase;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;

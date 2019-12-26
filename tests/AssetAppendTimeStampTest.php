@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
-use Yiisoft\Assets\AssetBundle;
-use Yiisoft\Assets\Tests\TestCase;
-
 /**
  * AssetAppendTimeStamp.
  */

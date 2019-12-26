@@ -3,7 +3,6 @@
 namespace Yiisoft\Assets\Tests;
 
 use Yiisoft\Assets\AssetConverter;
-use Yiisoft\Assets\Tests\TestCase;
 
 /**
  * AssetConverterTest.

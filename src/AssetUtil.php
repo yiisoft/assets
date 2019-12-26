@@ -19,6 +19,7 @@ class AssetUtil
     /**
      * @param AssetBundle $bundle
      * @param string $pathAsset
+     * @param array $assetMap
      *
      * @return string|null
      */

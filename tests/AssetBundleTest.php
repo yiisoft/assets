@@ -5,7 +5,6 @@ namespace Yiisoft\Assets\Tests;
 
 use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\Exception\InvalidConfigException;
-use Yiisoft\Assets\Tests\TestCase;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\BaseWrongAsset;
 use Yiisoft\Assets\Tests\stubs\CircleAsset;
