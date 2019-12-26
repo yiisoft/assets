@@ -146,7 +146,7 @@ final class AssetManager
      * development stage to make sure the published directory is always up-to-date. Do not set this to true
      * on production servers as it will significantly degrade the performance.
      */
-    private $forceCopy = false;
+    private bool $forceCopy = false;
 
     /**
      * @var callable a callback that will be called to produce hash for asset directory generation. The signature of the
@@ -188,7 +188,7 @@ final class AssetManager
      * Options FollowSymLinks
      * ```
      */
-    private $linkAssets = false;
+    private bool $linkAssets = false;
 
     /**
      * @var array the registered JS files.
@@ -197,17 +197,8 @@ final class AssetManager
      */
     public array $jsFiles = [];
 
-    /**
-     * @var LoggerInterface $logger
-     */
     private LoggerInterface $logger;
 
-    /**
-     * AssetManager constructor.
-     *
-     * @param Filesystem $fileSystem
-     * @param LoggerInterface $logger
-     */
     public function __construct(Aliases $aliases, LoggerInterface $logger)
     {
         $this->aliases = $aliases;
@@ -269,6 +260,7 @@ final class AssetManager
      * @return AssetBundle the asset bundle instance
      *
      * @throws \InvalidArgumentException
+     * @throws InvalidConfigException
      */
     public function getBundle(string $name): AssetBundle
     {
@@ -441,7 +433,7 @@ final class AssetManager
         $this->hashCallback = $value;
     }
 
-    public function register(array $names, ?int $position = null)
+    public function register(array $names, ?int $position = null): void
     {
         foreach ($names as $name) {
             $this->registerAssetBundle($name, $position);
@@ -536,9 +528,10 @@ final class AssetManager
      *
      * {@see registerJsFile()} for more details on javascript position.
      *
-     * @throws \RuntimeException if the asset bundle does not exist or a circular dependency is detected
-     *
      * @return object the registered asset bundle instance
+     * @throws InvalidConfigException
+     *
+     * @throws \RuntimeException if the asset bundle does not exist or a circular dependency is detected
      */
     private function registerAssetBundle(string $name, ?int $position = null): object
     {
@@ -580,6 +573,7 @@ final class AssetManager
      * @param string $name AssetBunle name class.
      *
      * @return AssetBundle
+     * @throws InvalidConfigException
      */
     private function loadDummyBundle(string $name): AssetBundle
     {
