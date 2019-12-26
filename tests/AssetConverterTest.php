@@ -94,10 +94,12 @@ EOF
 
         usleep(1);
         $converter->convert('test.php', $this->tmpPath);
+
         $this->assertStringEqualsFile($this->tmpPath . '/test.txt', $initialConvertTime);
 
-        $converter->forceConvert = true;
+        $converter->setForceConvert(true);
         $converter->convert('test.php', $this->tmpPath);
+
         $this->assertNotEquals($initialConvertTime, file_get_contents($this->tmpPath . '/test.txt'));
     }
 

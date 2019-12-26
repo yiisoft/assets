@@ -46,7 +46,7 @@ class AssetConverter implements AssetConverterInterface
      * assets are always up-to-date. Do not set this to true on production servers as it will
      * significantly degrade the performance.
      */
-    public bool $forceConvert = false;
+    private bool $forceConvert = false;
 
     /**
      * @var callable a PHP callback, which should be invoked to check whether asset conversion result is outdated.
@@ -116,6 +116,11 @@ class AssetConverter implements AssetConverterInterface
         }
 
         return $asset;
+    }
+
+    public function setForceConvert(bool $value): void
+    {
+        $this->forceConvert = $value;
     }
 
     public function setIsOutdatedCallback(callable $value): void
