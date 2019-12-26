@@ -268,7 +268,7 @@ final class AssetManager
         if ($this->bundles[$name] instanceof AssetBundle) {
             return $this->bundles[$name];
         }
-        if (is_array($this->bundles[$name])) {
+        if (\is_array($this->bundles[$name])) {
             return $this->bundles[$name] = $this->publish->loadBundle($name, $this->bundles[$name]);
         }
         if ($this->bundles[$name] === false) {
@@ -499,7 +499,7 @@ final class AssetManager
     {
         $key = $key ?: $url;
 
-        if (!array_key_exists('position', $options)) {
+        if (!\array_key_exists('position', $options)) {
             $options = array_merge(['position' => 3], $options);
         }
 

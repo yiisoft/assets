@@ -144,7 +144,7 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @return bool whether asset is outdated or not.
      */
-    protected function isOutdated(string $basePath, string $sourceFile, string $targetFile, string $sourceExtension, string $targetExtension): bool
+    private function isOutdated(string $basePath, string $sourceFile, string $targetFile, string $sourceExtension, string $targetExtension): bool
     {
         $resultModificationTime = @filemtime("$basePath/$targetFile");
         if ($resultModificationTime === false || $resultModificationTime === null) {
@@ -159,7 +159,7 @@ final class AssetConverter implements AssetConverterInterface
             return false;
         }
 
-        return call_user_func($this->isOutdatedCallback, $basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension);
+        return \call_user_func($this->isOutdatedCallback, $basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension);
     }
 
     /**
