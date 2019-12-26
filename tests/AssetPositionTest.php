@@ -7,7 +7,6 @@ use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
-use Yiisoft\View\WebView;
 
 /**
  * AssetPositionTest.
@@ -20,12 +19,12 @@ final class AssetPositionTest extends TestCase
     public function positionProvider(): array
     {
         return [
-            [WebView::POSITION_HEAD, true],
-            [WebView::POSITION_HEAD, false],
-            [WebView::POSITION_BEGIN, true],
-            [WebView::POSITION_BEGIN, false],
-            [WebView::POSITION_END, true],
-            [WebView::POSITION_END, false],
+            [1, true],
+            [1, false],
+            [2, true],
+            [2, false],
+            [3, true],
+            [3, false],
         ];
     }
 
@@ -52,9 +51,6 @@ final class AssetPositionTest extends TestCase
         } else {
             $this->assetManager->register([PositionAsset::class]);
         }
-
-        $this->webView->setCssFiles($this->assetManager->getCssFiles());
-        $this->webView->setJsFiles($this->assetManager->getJsFiles());
 
         $this->assertCount(3, $this->assetManager->getAssetBundles());
         $this->assertArrayHasKey(PositionAsset::class, $this->assetManager->getAssetBundles());
@@ -100,31 +96,19 @@ final class AssetPositionTest extends TestCase
             $this->assetManager->getAssetBundles()[Level3Asset::class]->jsOptions['position']
         );
 
-        switch ($pos) {
-            case WebView::POSITION_HEAD:
-                $expected = <<<'EOF'
-1<link href="/files/cssFile.css" rel="stylesheet">
-<script src="/js/jquery.js"></script>
-<script src="/files/jsFile.js"></script>234
-EOF;
-                break;
-            case WebView::POSITION_BEGIN:
-                $expected = <<<'EOF'
-1<link href="/files/cssFile.css" rel="stylesheet">2<script src="/js/jquery.js"></script>
-<script src="/files/jsFile.js"></script>34
-EOF;
-                break;
-            case WebView::POSITION_END:
-                $expected = <<<'EOF'
-1<link href="/files/cssFile.css" rel="stylesheet">23<script src="/js/jquery.js"></script>
-<script src="/files/jsFile.js"></script>4
-EOF;
-                break;
-        }
-        $this->assertEqualsWithoutLE(
-            $expected,
-            $this->webView->renderFile($this->aliases->get('@view/rawlayout.php'))
+        $this->assertEquals(
+            [
+                'position' => $pos
+            ],
+            $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
         );
+        $this->assertEquals(
+            [
+                'position' => $pos
+            ],
+            $this->assetManager->getJsFiles()['/files/jsFile.js']['attributes']
+        );
+
     }
 
     /**
@@ -133,10 +117,10 @@ EOF;
     public function positionProvider2(): array
     {
         return [
-            [WebView::POSITION_BEGIN, true],
-            [WebView::POSITION_BEGIN, false],
-            [WebView::POSITION_END, true],
-            [WebView::POSITION_END, false],
+            [1, true],
+            [1, false],
+            [2, true],
+            [2, false],
         ];
     }
 

@@ -31,23 +31,39 @@ final class AssetBundleTest extends TestCase
         $bundle = new BaseAsset();
 
         $timestampCss = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
+        $urlCss = "/baseUrl/css/basePath.css?v=$timestampCss";
+
         $timestampJs = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
+        $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
 
         $this->assetManager->setAppendTimestamp(true);
         $this->assetManager->register([BaseAsset::class]);
 
-        $this->webView->setCssFiles($this->assetManager->getCssFiles());
-        $this->webView->setJsFiles($this->assetManager->getJsFiles());
-
-        $expected = <<<EOT
-1<link href="/baseUrl/css/basePath.css?v=$timestampCss" rel="stylesheet" integrity="integrity-hash" crossorigin="anonymous">23<script src="/baseUrl/js/basePath.js?v=$timestampJs" integrity="integrity-hash" crossorigin="anonymous"></script>4
-EOT;
-
+        $this->assertStringContainsString(
+            $urlCss,
+            $this->assetManager->getCssFiles()[$urlCss]['url']
+        );
         $this->assertEquals(
-            $expected,
-            $this->webView->renderFile($this->aliases->get('@view/rawlayout.php'))
+            [
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous'
+            ],
+            $this->assetManager->getCssFiles()[$urlCss]['attributes']
+        );
+
+        $this->assertStringContainsString(
+            $urlJs,
+            $this->assetManager->getJsFiles()[$urlJs]['url']
+        );
+        $this->assertEquals(
+            [
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+                'position' => 3
+            ],
+            $this->assetManager->getJsFiles()[$urlJs]['attributes']
         );
     }
 
@@ -57,16 +73,32 @@ EOT;
 
         $this->assetManager->register([BaseAsset::class]);
 
-        $expected = <<<'EOF'
-1<link href="/baseUrl/css/basePath.css" rel="stylesheet" integrity="integrity-hash" crossorigin="anonymous">23<script src="/baseUrl/js/basePath.js" integrity="integrity-hash" crossorigin="anonymous"></script>4
-EOF;
+        $urlCss = '/baseUrl/css/basePath.css';
+        $urlJs = '/baseUrl/js/basePath.js';
 
-        $this->webView->setCssFiles($this->assetManager->getCssFiles());
-        $this->webView->setJsFiles($this->assetManager->getJsFiles());
-
+        $this->assertStringContainsString(
+            $urlCss,
+            $this->assetManager->getCssFiles()[$urlCss]['url']
+        );
         $this->assertEquals(
-            $expected,
-            $this->webView->renderFile($this->aliases->get('@view/rawlayout.php'))
+            [
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous'
+            ],
+            $this->assetManager->getCssFiles()[$urlCss]['attributes']
+        );
+
+        $this->assertStringContainsString(
+            $urlJs,
+            $this->assetManager->getJsFiles()[$urlJs]['url']
+        );
+        $this->assertEquals(
+            [
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+                'position' => 3
+            ],
+            $this->assetManager->getJsFiles()[$urlJs]['attributes']
         );
     }
 
@@ -163,7 +195,6 @@ EOF;
 
         $message = "A circular dependency is detected for bundle '$depends[0]'.";
 
-
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage($message);
 
@@ -176,9 +207,6 @@ EOF;
 
         $this->assetManager->register([JqueryAsset::class, SimpleAsset::class]);
 
-        $this->webView->setCssFiles($this->assetManager->getCssFiles());
-        $this->webView->setJsFiles($this->assetManager->getJsFiles());
-
         $this->assertCount(3, $this->assetManager->getAssetBundles());
         $this->assertArrayHasKey(SimpleAsset::class, $this->assetManager->getAssetBundles());
         $this->assertInstanceOf(
@@ -186,12 +214,17 @@ EOF;
             $this->assetManager->getAssetBundles()[SimpleAsset::class]
         );
 
-        $expected = <<<'EOF'
-123<script src="/js/jquery.js"></script>4
-EOF;
+        $urlJs = '/js/jquery.js';
+
+        $this->assertStringContainsString(
+            '/js/jquery.js',
+            $this->assetManager->getJsFiles()['/js/jquery.js']['url']
+        );
         $this->assertEquals(
-            $expected,
-            $this->webView->renderFile($this->aliases->get('@view/rawlayout.php'))
+            [
+                'position' => 3
+            ],
+            $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
         );
     }
 
@@ -201,19 +234,69 @@ EOF;
 
         $this->assetManager->register([FileOptionsAsset::class]);
 
-        $this->webView->setCssFiles($this->assetManager->getCssFiles());
-        $this->webView->setJsFiles($this->assetManager->getJsFiles());
-
         $expected = <<<'EOF'
-1<link href="/baseUrl/css/default_options.css" rel="stylesheet" media="screen" hreflang="en">
-<link href="/baseUrl/css/tv.css" rel="stylesheet" media="tv" hreflang="en">
-<link href="/baseUrl/css/screen_and_print.css" rel="stylesheet" media="screen, print" hreflang="en">23<script src="/baseUrl/js/normal.js" charset="utf-8"></script>
-<script src="/baseUrl/js/defered.js" charset="utf-8" defer></script>4
+<script src="" charset="utf-8" defer></script>4
 EOF;
 
-        $this->assertEqualsWithoutLE(
-            $expected,
-            $this->webView->renderFile($this->aliases->get('@view/rawlayout.php'))
+        $this->assertStringContainsString(
+            '/baseUrl/css/default_options.css',
+            $this->assetManager->getCssFiles()['/baseUrl/css/default_options.css']['url']
+        );
+        $this->assertEquals(
+            [
+                'media' => 'screen',
+                'hreflang' => 'en'
+            ],
+            $this->assetManager->getCssFiles()['/baseUrl/css/default_options.css']['attributes']
+        );
+
+        $this->assertStringContainsString(
+            '/baseUrl/css/tv.css',
+            $this->assetManager->getCssFiles()['/baseUrl/css/tv.css']['url']
+        );
+        $this->assertEquals(
+            [
+                'media' => 'tv',
+                'hreflang' => 'en'
+            ],
+            $this->assetManager->getCssFiles()['/baseUrl/css/tv.css']['attributes']
+        );
+
+        $this->assertStringContainsString(
+            '/baseUrl/css/screen_and_print.css',
+            $this->assetManager->getCssFiles()['/baseUrl/css/screen_and_print.css']['url']
+        );
+        $this->assertEquals(
+            [
+                'media' => 'screen, print',
+                'hreflang' => 'en'
+            ],
+            $this->assetManager->getCssFiles()['/baseUrl/css/screen_and_print.css']['attributes']
+        );
+
+        $this->assertStringContainsString(
+            '/baseUrl/js/normal.js',
+            $this->assetManager->getJsFiles()['/baseUrl/js/normal.js']['url']
+        );
+        $this->assertEquals(
+            [
+                'charset' => 'utf-8',
+                'position' => 3
+            ],
+            $this->assetManager->getJsFiles()['/baseUrl/js/normal.js']['attributes']
+        );
+
+        $this->assertStringContainsString(
+            '/baseUrl/js/defered.js',
+            $this->assetManager->getJsFiles()['/baseUrl/js/defered.js']['url']
+        );
+        $this->assertEquals(
+            [
+                'charset' => 'utf-8',
+                'defer' => true,
+                'position' => 3
+            ],
+            $this->assetManager->getJsFiles()['/baseUrl/js/defered.js']['attributes']
         );
     }
 
@@ -228,17 +311,35 @@ EOF;
 
         $this->assetManager->register([SourceAsset::class]);
 
-        $this->webView->setCssFiles($this->assetManager->getCssFiles());
-        $this->webView->setJsFiles($this->assetManager->getJsFiles());
+        $this->assertStringContainsString(
+            '/baseUrl/HashCallback/css/stub.css',
+            $this->assetManager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['url']
+        );
+        $this->assertEquals(
+            [],
+            $this->assetManager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['attributes']
+        );
 
-        $expected = <<<'EOF'
-1<link href="/baseUrl/HashCallback/css/stub.css" rel="stylesheet">23<script src="/js/jquery.js"></script>
-<script src="/baseUrl/HashCallback/js/stub.js"></script>4
-EOF;
+        $this->assertStringContainsString(
+            '/js/jquery.js',
+            $this->assetManager->getJsFiles()['/js/jquery.js']['url']
+        );
+        $this->assertEquals(
+            [
+                'position' => 3
+            ],
+            $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
+        );
 
-        $this->assertEqualsWithoutLE(
-            $expected,
-            $this->webView->renderFile($this->aliases->get('@view/rawlayout.php'))
+        $this->assertStringContainsString(
+            '/baseUrl/HashCallback/js/stub.js',
+            $this->assetManager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['url']
+        );
+        $this->assertEquals(
+            [
+                'position' => 3
+            ],
+            $this->assetManager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['attributes']
         );
     }
 

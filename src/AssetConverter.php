@@ -183,12 +183,12 @@ final class AssetConverter implements AssetConverterInterface
             '{from}' => escapeshellarg("$basePath/$asset"),
             '{to}'   => escapeshellarg("$basePath/$result"),
         ]);
-        $descriptor = [
+        $descriptors = [
             1 => ['pipe', 'w'],
             2 => ['pipe', 'w'],
         ];
         $pipes = [];
-        $proc = proc_open($command, $descriptor, $pipes, $basePath);
+        $proc = proc_open($command, $descriptors, $pipes, $basePath);
         $stdout = stream_get_contents($pipes[1]);
         $stderr = stream_get_contents($pipes[2]);
 
@@ -200,8 +200,6 @@ final class AssetConverter implements AssetConverterInterface
 
         if ($status === 0) {
             $this->logger->debug("Converted $asset into $result:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr", [__METHOD__]);
-        } elseif (YII_DEBUG) {
-            throw new \RuntimeException("AssetConverter command '$command' failed with exit code $status:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr");
         } else {
             $this->logger->error("AssetConverter command '$command' failed with exit code $status:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr", [__METHOD__]);
         }

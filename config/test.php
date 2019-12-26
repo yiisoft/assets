@@ -1,18 +1,12 @@
 <?php
 
 use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Assets\AssetManager;
-use Yiisoft\EventDispatcher\Dispatcher;
-use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Factory\Definitions\Reference;
 use Yiisoft\Log\Logger;
-use Yiisoft\View\Theme;
-use Yiisoft\View\WebView;
 
 $tempDir = sys_get_temp_dir();
 
@@ -51,34 +45,10 @@ return [
         'setBaseUrl'  => ['@baseUrl'],
     ],
 
-    ListenerProviderInterface::class => [
-        '__class' => Provider::class,
-    ],
-
-    EventDispatcherInterface::class => [
-        '__class' => Dispatcher::class,
-        '__construct()' => [
-           'listenerProvider' => Reference::to(ListenerProviderInterface::class)
-        ],
-    ],
-
     LoggerInterface::class => [
         '__class' => Logger::class,
         '__construct()' => [
             'targets' => [],
         ],
     ],
-
-    Theme::class => [
-        '__class' => Theme::class,
-    ],
-
-    WebView::class => function (ContainerInterface $container) {
-        $aliases = $container->get(Aliases::class);
-        $eventDispatcher = $container->get(EventDispatcherInterface::class);
-        $theme = $container->get(Theme::class);
-        $logger = $container->get(LoggerInterface::class);
-
-        return new WebView($aliases->get('@view'), $theme, $eventDispatcher, $logger);
-    },
 ];

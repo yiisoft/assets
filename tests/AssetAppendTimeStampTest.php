@@ -17,94 +17,94 @@ final class AssetAppendTimeStampTest extends TestCase
             // Custom alias repeats in the asset URL
             [
                 'css', '@web/assetSources/repeat/css/stub.css', false,
-                '1<link href="/repeat/assetSources/repeat/css/stub.css" rel="stylesheet">234',
+                '/repeat/assetSources/repeat/css/stub.css',
                 '/repeat',
             ],
             [
                 'js', '@web/assetSources/repeat/js/jquery.js', false,
-                '123<script src="/repeat/assetSources/repeat/js/jquery.js"></script>4',
+                '/repeat/assetSources/repeat/js/jquery.js',
                 '/repeat',
             ],
             // JS files registration
             [
                 'js', '@web/assetSources/js/missing-file.js', true,
-                '123<script src="/baseUrl/assetSources/js/missing-file.js"></script>4'
+                '/baseUrl/assetSources/js/missing-file.js'
             ],
             [
                 'js', '@web/assetSources/js/jquery.js', false,
-                '123<script src="/baseUrl/assetSources/js/jquery.js"></script>4',
+                '/baseUrl/assetSources/js/jquery.js',
             ],
             [
                 'js', 'http://example.com/assetSources/js/jquery.js', false,
-                '123<script src="http://example.com/assetSources/js/jquery.js"></script>4',
+                'http://example.com/assetSources/js/jquery.js',
             ],
             [
                 'js', '//example.com/assetSources/js/jquery.js', false,
-                '123<script src="//example.com/assetSources/js/jquery.js"></script>4',
+                '//example.com/assetSources/js/jquery.js',
             ],
             [
                 'js', 'assetSources/js/jquery.js', false,
-                '123<script src="assetSources/js/jquery.js"></script>4',
+                'assetSources/js/jquery.js',
             ],
             [
                 'js', '/assetSources/js/jquery.js', false,
-                '123<script src="/assetSources/js/jquery.js"></script>4',
+                '/assetSources/js/jquery.js',
             ],
             // CSS file registration
             [
                 'css', '@web/assetSources/css/missing-file.css', true,
-                '1<link href="/baseUrl/assetSources/css/missing-file.css" rel="stylesheet">234',
+                '/baseUrl/assetSources/css/missing-file.css',
             ],
             [
                 'css', '@web/assetSources/css/stub.css', false,
-                '1<link href="/baseUrl/assetSources/css/stub.css" rel="stylesheet">234',
+                '/baseUrl/assetSources/css/stub.css',
             ],
             [
                 'css', 'http://example.com/assetSources/css/stub.css', false,
-                '1<link href="http://example.com/assetSources/css/stub.css" rel="stylesheet">234',
+                'http://example.com/assetSources/css/stub.css',
             ],
             [
                 'css', '//example.com/assetSources/css/stub.css', false,
-                '1<link href="//example.com/assetSources/css/stub.css" rel="stylesheet">234',
+                '//example.com/assetSources/css/stub.css',
             ],
             [
                 'css', 'assetSources/css/stub.css', false,
-                '1<link href="assetSources/css/stub.css" rel="stylesheet">234',
+                'assetSources/css/stub.css',
             ],
             [
                 'css', '/assetSources/css/stub.css', false,
-                '1<link href="/assetSources/css/stub.css" rel="stylesheet">234',
+                '/assetSources/css/stub.css',
             ],
             // Custom `@web` aliases
             [
                 'js', '@web/assetSources/js/missing-file1.js', true,
-                '123<script src="/backend/assetSources/js/missing-file1.js"></script>4',
+                '/backend/assetSources/js/missing-file1.js',
                 '/backend',
             ],
             [
                 'js', 'http://full-url.example.com/backend/assetSources/js/missing-file.js', true,
-                '123<script src="http://full-url.example.com/backend/assetSources/js/missing-file.js"></script>4',
+                'http://full-url.example.com/backend/assetSources/js/missing-file.js',
                 '/backend',
             ],
             [
                 'css', '//backend/backend/assetSources/js/missing-file.js', true,
-                '1<link href="//backend/backend/assetSources/js/missing-file.js" rel="stylesheet">234',
+                '//backend/backend/assetSources/js/missing-file.js',
                 '/backend',
             ],
             [
                 'css', '@web/assetSources/css/stub.css', false,
-                '1<link href="/en/blog/backend/assetSources/css/stub.css" rel="stylesheet">234',
+                '/en/blog/backend/assetSources/css/stub.css',
                 '/en/blog/backend',
             ],
             // UTF-8 chars
             [
                 'css', '@web/assetSources/css/stub.css', false,
-                '1<link href="/рус/сайт/assetSources/css/stub.css" rel="stylesheet">234',
+                '/рус/сайт/assetSources/css/stub.css',
                 '/рус/сайт',
             ],
             [
                 'js', '@web/assetSources/js/jquery.js', false,
-                '123<script src="/汉语/漢語/assetSources/js/jquery.js"></script>4',
+                '/汉语/漢語/assetSources/js/jquery.js',
                 '/汉语/漢語',
             ],
         ];
@@ -142,12 +142,10 @@ final class AssetAppendTimeStampTest extends TestCase
 
         $this->assetManager->$method($path, [], null);
 
-        $this->webView->setCssFiles($this->assetManager->getCssFiles());
-        $this->webView->setJsFiles($this->assetManager->getJsFiles());
-
-        $this->assertEquals(
+        $this->assertStringContainsString(
             $expected,
-            $this->webView->renderFile($this->aliases->get('@view/rawlayout.php'))
+            $type === 'css' ? $this->assetManager->getCssFiles()[$expected]['url']
+                : $this->assetManager->getJsFiles()[$expected]['url']
         );
     }
 }

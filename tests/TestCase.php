@@ -36,29 +36,9 @@ abstract class TestCase extends BaseTestCase
     private $container;
 
     /**
-     * @var EventDispatcherInterface $eventDispatcher
-     */
-    protected $eventDispatcher;
-
-    /**
      * @var LoggerInterface $logger
      */
     protected $logger;
-
-    /**
-     * @var ListenerProviderInterface
-     */
-    protected $listenerProvider;
-
-    /**
-     * @var Theme $theme
-     */
-    protected $theme;
-
-    /**
-     * @var WebView $webView
-     */
-    protected $webView;
 
     /**
      * @var Widget $widget
@@ -80,11 +60,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->aliases = $this->container->get(Aliases::class);
         $this->assetManager = $this->container->get(AssetManager::class);
-        $this->eventDispatcher = $this->container->get(EventDispatcherInterface::class);
-        $this->listenerProvider = $this->container->get(ListenerProviderInterface::class);
         $this->logger = $this->container->get(LoggerInterface::class);
-        $this->theme = $this->container->get(Theme::class);
-        $this->webView = $this->container->get(WebView::class);
 
         $this->removeAssets('@basePath');
     }
@@ -114,41 +90,6 @@ abstract class TestCase extends BaseTestCase
         $actual = str_replace("\r\n", "\n", $actual);
 
         $this->assertEquals($expected, $actual, $message);
-    }
-
-    /**
-     * Asserting same ignoring slash.
-     *
-     * @param string $expected
-     * @param string $actual
-     *
-     * @return void
-     */
-    protected function assertSameIgnoringSlash(string $expected, string $actual): void
-    {
-        $expected = str_replace(['/', '\\'], '/', $expected);
-        $actual = str_replace(['/', '\\'], '/', $actual);
-        $this->assertSame($expected, $actual);
-    }
-
-    /**
-     * Create view tests.
-     *
-     * @param string $basePath
-     * @param Theme  $theme
-     *
-     * @return View
-     */
-    protected function createView($basePath, Theme $theme = null): View
-    {
-        return new View($basePath, $theme ?: new Theme(), $this->eventDispatcher, $this->logger);
-    }
-
-    public function touch(string $path): void
-    {
-        FileHelper::createDirectory(dirname($path));
-
-        touch($path);
     }
 
     protected function removeAssets(string $basePath): void

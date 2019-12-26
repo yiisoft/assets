@@ -7,6 +7,9 @@ namespace Yiisoft\Assets;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
 
+/**
+ * AssetPublisher is responsible for executing the publication of the assets from {@see sourcePath} to {@see basePath}.
+ */
 final class AssetPublisher
 {
     /**

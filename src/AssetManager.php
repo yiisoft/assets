@@ -119,7 +119,7 @@ final class AssetManager
      *
      * {@see registerCssFile()}
      */
-    public array $cssFiles = [];
+    private array $cssFiles = [];
 
     /**
      * @var int the permission to be set for newly generated asset directories. This value will be used by PHP chmod()
@@ -195,7 +195,7 @@ final class AssetManager
      *
      * {@see registerJsFile()}
      */
-    public array $jsFiles = [];
+    private array $jsFiles = [];
 
     private LoggerInterface $logger;
 
@@ -466,7 +466,9 @@ final class AssetManager
     public function registerCssFile(string $url, array $options = [], string $key = null): void
     {
         $key = $key ?: $url;
-        $this->cssFiles[$key] = Html::cssFile($url, $options);
+
+        $this->cssFiles[$key]['url'] = $url;
+        $this->cssFiles[$key]['attributes'] = $options;
     }
 
     /**
@@ -498,8 +500,13 @@ final class AssetManager
     public function registerJsFile(string $url, array $options = [], string $key = null)
     {
         $key = $key ?: $url;
-        $position = ArrayHelper::remove($options, 'position', 3);
-        $this->jsFiles[$position][$key] = Html::jsFile($url, $options);
+
+        if (!array_key_exists('position', $options)) {
+            $options = array_merge(['position' => 3], $options);
+        }
+
+        $this->jsFiles[$key]['url'] = $url;
+        $this->jsFiles[$key]['attributes'] = $options;
     }
 
     /**
