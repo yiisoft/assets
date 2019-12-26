@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Yiisoft\Arrays\ArrayHelper;
-
 /**
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
  *
