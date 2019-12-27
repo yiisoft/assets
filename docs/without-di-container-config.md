@@ -12,6 +12,5 @@ $publisher = new AssetPublisher();
  * \Yisoft\Aliases\Aliases, \Psr\Log\LoggerInterface
  */
 $assetManager = new AssetManager($aliases, $logger);
-
 $assetManager->setPublisher($publisher);
 ```
