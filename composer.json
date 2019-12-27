@@ -1,39 +1,54 @@
 {
-    "name": "yiisoft/_____",
+    "name": "yiisoft/assets",
     "type": "library",
-    "description": "_____",
+    "description": "Library Assets",
     "keywords": [
-        "_____"
+        "yii",
+        "library",
+        "assets"
     ],
     "homepage": "https://www.yiiframework.com/",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/yiisoft/_____/issues?state=open",
+        "issues": "https://github.com/yiisoft/assets/issues?state=open",
         "forum": "https://www.yiiframework.com/forum/",
         "wiki": "https://www.yiiframework.com/wiki/",
         "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/_____"
+        "source": "https://github.com/yiisoft/assets"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "php": "^7.4"
+        "php": "^7.4",
+        "ext-mbstring": "*",
+        "psr/log": "^1.1",
+        "yiisoft/files": "^3.0@dev"
     },
     "require-dev": {
+        "hiqdev/composer-config-plugin": "^1.0@dev",
         "phpunit/phpunit": "^8.4",
-        "phan/phan": "^2.4"
+        "phan/phan": "^2.4",
+        "yiisoft/aliases": "^3.0@dev",
+        "yiisoft/di": "^3.0@dev",
+        "yiisoft/log": "^3.0@dev"
     },
     "autoload": {
         "psr-4": {
-            "Yiisoft\\_____\\": "src"
+            "Yiisoft\\Assets\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Yiisoft\\_____\\Tests\\": "tests"
+            "Yiisoft\\Assets\\Tests\\": "tests"
         }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0.x-dev"
+            "dev-master": "1.0.x-dev"
+        },
+        "config-plugin": {
+            "common": "config/common.php",
+            "tests": "config/test.php"
         }
     },
     "scripts": {
