@@ -73,24 +73,21 @@ final class AssetBundleTest extends TestCase
 
         $this->assetManager->register([BaseAsset::class]);
 
-        $urlCss = '/baseUrl/css/basePath.css';
-        $urlJs = '/baseUrl/js/basePath.js';
-
         $this->assertStringContainsString(
-            $urlCss,
-            $this->assetManager->getCssFiles()[$urlCss]['url']
+            '/baseUrl/css/basePath.css',
+            $this->assetManager->getCssFiles()['/baseUrl/css/basePath.css']['url']
         );
         $this->assertEquals(
             [
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous'
             ],
-            $this->assetManager->getCssFiles()[$urlCss]['attributes']
+            $this->assetManager->getCssFiles()['/baseUrl/css/basePath.css']['attributes']
         );
 
         $this->assertStringContainsString(
-            $urlJs,
-            $this->assetManager->getJsFiles()[$urlJs]['url']
+            '/baseUrl/js/basePath.js',
+            $this->assetManager->getJsFiles()['/baseUrl/js/basePath.js']['url']
         );
         $this->assertEquals(
             [
@@ -98,7 +95,7 @@ final class AssetBundleTest extends TestCase
                 'crossorigin' => 'anonymous',
                 'position' => 3
             ],
-            $this->assetManager->getJsFiles()[$urlJs]['attributes']
+            $this->assetManager->getJsFiles()['/baseUrl/js/basePath.js']['attributes']
         );
     }
 
@@ -156,7 +153,7 @@ final class AssetBundleTest extends TestCase
         $this->assetManager->setBasePath('@basePath');
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
-        $this->assertIsObject($this->assetManager->getBundle(BaseAsset::class, $config, false));
+        $this->assertIsObject($this->assetManager->getBundle(BaseAsset::class));
     }
 
     public function testBasePathEmptyBaseUrlEmptyWithAssetManagerSetBasePathSetBaseUrl(): void
@@ -171,7 +168,7 @@ final class AssetBundleTest extends TestCase
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
 
-        $this->assertIsObject($this->assetManager->getBundle(BaseAsset::class, $config, false));
+        $this->assertIsObject($this->assetManager->getBundle(BaseAsset::class));
     }
 
     public function testBasePathWrongException(): void
@@ -214,8 +211,6 @@ final class AssetBundleTest extends TestCase
             $this->assetManager->getAssetBundles()[SimpleAsset::class]
         );
 
-        $urlJs = '/js/jquery.js';
-
         $this->assertStringContainsString(
             '/js/jquery.js',
             $this->assetManager->getJsFiles()['/js/jquery.js']['url']
@@ -233,10 +228,6 @@ final class AssetBundleTest extends TestCase
         $this->assertEmpty($this->assetManager->getAssetBundles());
 
         $this->assetManager->register([FileOptionsAsset::class]);
-
-        $expected = <<<'EOF'
-<script src="" charset="utf-8" defer></script>4
-EOF;
 
         $this->assertStringContainsString(
             '/baseUrl/css/default_options.css',
