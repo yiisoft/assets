@@ -36,11 +36,6 @@ abstract class TestCase extends BaseTestCase
     protected $logger;
 
     /**
-     * @var Widget $widget
-     */
-    protected $widget;
-
-    /**
      * setUp
      *
      * @return void

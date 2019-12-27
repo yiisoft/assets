@@ -55,7 +55,9 @@ final class AssetPublisher
         $basePath = $this->assetManager->getAliases()->get($bundle->basePath);
         $baseUrl = $this->assetManager->getAliases()->get($bundle->baseUrl);
 
-        if ($asset = AssetUtil::resolveAsset($bundle, $pathAsset, $this->assetManager->getAssetMap())) {
+        $asset = AssetUtil::resolveAsset($bundle, $pathAsset, $this->assetManager->getAssetMap());
+
+        if (!empty($asset)) {
             $pathAsset = $asset;
         }
 
@@ -227,6 +229,7 @@ final class AssetPublisher
                 'AssetBundle property public ?string $basePath = $path'
             );
         }
+
         if (empty($basePath)) {
             $this->basePath = $this->assetManager->getBasePath();
         } else {
@@ -242,6 +245,7 @@ final class AssetPublisher
                 'AssetBundle property public ?string $baseUrl = $path'
             );
         }
+
         if (empty($baseUrl)) {
             $this->baseUrl = $this->assetManager->getBaseUrl();
         } else {

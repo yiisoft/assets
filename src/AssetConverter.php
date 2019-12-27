@@ -105,6 +105,7 @@ final class AssetConverter implements AssetConverterInterface
         $pos = strrpos($asset, '.');
         if ($pos !== false) {
             $srcExt = substr($asset, $pos + 1);
+
             if (isset($this->commands[$srcExt])) {
                 [$ext, $command] = $this->commands[$srcExt];
                 $result = substr($asset, 0, $pos + 1).$ext;
@@ -148,6 +149,7 @@ final class AssetConverter implements AssetConverterInterface
     private function isOutdated(string $basePath, string $sourceFile, string $targetFile, string $sourceExtension, string $targetExtension): bool
     {
         $resultModificationTime = @filemtime("$basePath/$targetFile");
+
         if ($resultModificationTime === false || $resultModificationTime === null) {
             return true;
         }
@@ -179,7 +181,6 @@ final class AssetConverter implements AssetConverterInterface
     private function runCommand(string $command, string $basePath, string $asset, string $result): bool
     {
         $command = $this->aliases->get($command);
-
         $command = strtr($command, [
             '{from}' => escapeshellarg("$basePath/$asset"),
             '{to}'   => escapeshellarg("$basePath/$result"),

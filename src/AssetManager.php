@@ -335,6 +335,7 @@ final class AssetManager
         if (empty($this->publish)) {
             $this->publish = new AssetPublisher($this);
         }
+
         return $this->publish;
     }
 
