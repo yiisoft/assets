@@ -1,7 +1,7 @@
 {
     "name": "yiisoft/assets",
     "type": "library",
-    "description": "Library Assets",
+    "description": "Asset bundles and asset manager",
     "keywords": [
         "yii",
         "library",
