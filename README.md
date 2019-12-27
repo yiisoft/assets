@@ -41,12 +41,12 @@ Or add to composer.json:
 
 ### HOW TO CONFIG ASSETMANAGER: ###
 
-- [Di-Container](docs\di-container-config.md)
-- [Without Di-Container](docs\without-di-container-config.md)
+- [Di-Container](docs/di-container-config.md)
+- [Without Di-Container](docs/without-di-container-config.md)
 
 ### API: ###
 
-- [Api AssetManager](docs\api-assetmanager.md)
+- [Api AssetManager](docs/api-assetmanager.md)
 
 ### RUN TESTS PHPUNIT:
 
