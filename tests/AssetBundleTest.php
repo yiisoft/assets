@@ -344,7 +344,10 @@ final class AssetBundleTest extends TestCase
             ],
         ];
 
-        [$bundle->basePath, $bundle->baseUrl] = $this->assetManager->getPublish()->publish($bundle);
+        [$bundle->basePath, $bundle->baseUrl] = $this->assetManager->getPublish()->publish(
+            $this->assetManager,
+            $bundle
+        );
 
         $notNeededFilesDir = dirname($bundle->basePath . DIRECTORY_SEPARATOR . $bundle->css[0]);
 
@@ -371,6 +374,6 @@ final class AssetBundleTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
 
-        $this->assetManager->getPublish()->publish($bundle);
+        $this->assetManager->getPublish()->publish($this->assetManager, $bundle);
     }
 }

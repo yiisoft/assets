@@ -34,6 +34,9 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
  */
 final class AssetManager
 {
+    /**
+     * @var Aliases
+     */
     private Aliases $aliases;
 
     /**
@@ -79,7 +82,7 @@ final class AssetManager
     /**
      * @var AssetPublisher published assets
      */
-    private AssetPublisher $publish;
+    private AssetPublisher $publisher;
 
     /**
      * @var string|null the root directory storing the published asset files.
@@ -201,7 +204,6 @@ final class AssetManager
     {
         $this->aliases = $aliases;
         $this->logger = $logger;
-        $this->publish = $this->getPublish();
     }
 
     public function getAliases(): Aliases
@@ -263,7 +265,7 @@ final class AssetManager
     public function getBundle(string $name): AssetBundle
     {
         if (!isset($this->bundles[$name])) {
-            return $this->bundles[$name] = $this->publish->loadBundle($name, []);
+            return $this->bundles[$name] = $this->publisher->loadBundle($this, $name, []);
         }
 
         if ($this->bundles[$name] instanceof AssetBundle) {
@@ -271,7 +273,7 @@ final class AssetManager
         }
 
         if (\is_array($this->bundles[$name])) {
-            return $this->bundles[$name] = $this->publish->loadBundle($name, $this->bundles[$name]);
+            return $this->bundles[$name] = $this->publisher->loadBundle($this, $name, $this->bundles[$name]);
         }
 
         if ($this->bundles[$name] === false) {
@@ -328,21 +330,17 @@ final class AssetManager
 
     public function getPublish(): AssetPublisher
     {
-        if (empty($this->publish)) {
-            $this->publish = new AssetPublisher($this);
-        }
-
-        return $this->publish;
+        return $this->publisher;
     }
 
     public function getPublishedPath(?string $sourcePath): ?string
     {
-        return $this->publish->getPublishedPath($sourcePath);
+        return $this->publisher->getPublishedPath($sourcePath);
     }
 
     public function getPublishedUrl(?string $sourcePath): ?string
     {
-        return $this->publish->getPublishedUrl($sourcePath);
+        return $this->publisher->getPublishedUrl($sourcePath);
     }
 
     /**
@@ -440,6 +438,20 @@ final class AssetManager
     public function setHashCallback(callable $value): void
     {
         $this->hashCallback = $value;
+    }
+
+    /**
+     * Set publisher.
+     *
+     * @param AssetPublisher $value
+     *
+     * @return void
+     *
+     * {@see publisher}
+     */
+    public function setPublisher(AssetPublisher $value): void
+    {
+        $this->publisher = $value;
     }
 
     public function register(array $names, ?int $position = null): void
@@ -584,7 +596,7 @@ final class AssetManager
     private function loadDummyBundle(string $name): AssetBundle
     {
         if (!isset($this->dummyBundles[$name])) {
-            $this->dummyBundles[$name] = $this->publish->loadBundle($name, [
+            $this->dummyBundles[$name] = $this->publisher->loadBundle($this, $name, [
                 'sourcePath' => null,
                 'js' => [],
                 'css' => [],
@@ -607,6 +619,6 @@ final class AssetManager
             $this->registerFiles($dep);
         }
 
-        $this->publish->registerAssetFiles($bundle);
+        $this->publisher->registerAssetFiles($this, $bundle);
     }
 }
