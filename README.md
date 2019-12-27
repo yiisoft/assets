@@ -44,6 +44,10 @@ Or add to composer.json:
 - [Di-Container](docs/di-container-config.md)
 - [Without Di-Container](docs/without-di-container-config.md)
 
+### HOW TO USAGES: ###
+
+- [Defined AssetBundles](docs/assetbundles.md)
+
 ### API: ###
 
 - [Api AssetManager](docs/api-assetmanager.md)
