@@ -50,7 +50,8 @@ final class AssetConverter implements AssetConverterInterface
 
     /**
      * @var callable a PHP callback, which should be invoked to check whether asset conversion result is outdated.
-     * It will be invoked only if conversion target file exists and its modification time is older then the one of source file.
+     * It will be invoked only if conversion target file exists and its modification time is older then the one of
+     * source file.
      * Callback should match following signature:
      *
      * ```php
@@ -58,8 +59,8 @@ final class AssetConverter implements AssetConverterInterface
      * ```
      *
      * where $basePath is the asset source directory; $sourceFile is the asset source file path, relative to $basePath;
-     * $targetFile is the asset target file path, relative to $basePath; $sourceExtension is the source asset file extension
-     * and $targetExtension is the target asset file extension, respectively.
+     * $targetFile is the asset target file path, relative to $basePath; $sourceExtension is the source asset file
+     * extension and $targetExtension is the target asset file extension, respectively.
      *
      * It should return `true` is case asset should be reconverted.
      * For example:

@@ -15,13 +15,6 @@ final class AssetManagerTest extends TestCase
             AssetConverterInterface::class,
             $this->assetManager->getConverter()
         );
-
-        $this->assetManager->setConverter(null);
-
-        $this->assertInstanceOf(
-            AssetConverterInterface::class,
-            $this->assetManager->getConverter()
-        );
     }
 
     public function testGetPublishedPath(): void

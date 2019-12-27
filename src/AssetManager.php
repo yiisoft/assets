@@ -110,7 +110,7 @@ final class AssetManager
      *
      * @var AssetConverterInterface $converter
      */
-    private ?AssetConverterInterface $converter;
+    private AssetConverterInterface $converter;
 
     /**
      * @var array the registered CSS files.
@@ -265,15 +265,19 @@ final class AssetManager
         if (!isset($this->bundles[$name])) {
             return $this->bundles[$name] = $this->publish->loadBundle($name, []);
         }
+
         if ($this->bundles[$name] instanceof AssetBundle) {
             return $this->bundles[$name];
         }
+
         if (\is_array($this->bundles[$name])) {
             return $this->bundles[$name] = $this->publish->loadBundle($name, $this->bundles[$name]);
         }
+
         if ($this->bundles[$name] === false) {
             return $this->loadDummyBundle($name);
         }
+
         throw new \InvalidArgumentException("Invalid asset bundle configuration: $name");
     }
 
@@ -334,12 +338,12 @@ final class AssetManager
         return $this->publish;
     }
 
-    public function getPublishedPath($sourcePath): ?string
+    public function getPublishedPath(?string $sourcePath): ?string
     {
         return $this->publish->getPublishedPath($sourcePath);
     }
 
-    public function getPublishedUrl($sourcePath): ?string
+    public function getPublishedUrl(?string $sourcePath): ?string
     {
         return $this->publish->getPublishedUrl($sourcePath);
     }
@@ -353,7 +357,7 @@ final class AssetManager
      *
      * {@see appendTimestamp}
      */
-    public function setAppendTimestamp($value): void
+    public function setAppendTimestamp(bool $value): void
     {
         $this->appendTimestamp = $value;
     }
@@ -367,7 +371,7 @@ final class AssetManager
      *
      * {@see assetMap}
      */
-    public function setAssetMap($value): void
+    public function setAssetMap(array $value): void
     {
         $this->assetMap = $value;
     }
@@ -381,7 +385,7 @@ final class AssetManager
      *
      * {@see basePath}
      */
-    public function setBasePath($value): void
+    public function setBasePath(?string $value): void
     {
         $this->basePath = $value;
     }
@@ -395,12 +399,22 @@ final class AssetManager
      *
      * {@see baseUrl}
      */
-    public function setBaseUrl($value): void
+    public function setBaseUrl(?string $value): void
     {
         $this->baseUrl = $value;
     }
 
-    public function setBundles($value): void
+
+    /**
+     * Set bundles.
+     *
+     * @param array $value
+     *
+     * @return void
+     *
+     * {@see bundles}
+     */
+    public function setBundles(array $value): void
     {
         $this->bundles = $value;
     }
@@ -412,7 +426,7 @@ final class AssetManager
      * {@see AssetConverterInterface}, or a configuration array that can be used
      * to create the asset converter object.
      */
-    public function setConverter($value): void
+    public function setConverter(AssetConverterInterface $value): void
     {
         $this->converter = $value;
     }
@@ -435,9 +449,6 @@ final class AssetManager
     {
         foreach ($names as $name) {
             $this->registerAssetBundle($name, $position);
-        }
-
-        foreach ($names as $name) {
             $this->registerFiles($name);
         }
     }
@@ -528,20 +539,26 @@ final class AssetManager
     {
         if (!isset($this->assetBundles[$name])) {
             $bundle = $this->getBundle($name);
+
             $this->assetBundles[$name] = false;
+
             // register dependencies
             $pos = $bundle->jsOptions['position'] ?? null;
+
             foreach ($bundle->depends as $dep) {
                 $this->registerAssetBundle($dep, $pos);
             }
+
             $this->assetBundles[$name] = $bundle;
         } elseif ($this->assetBundles[$name] === false) {
             throw new \RuntimeException("A circular dependency is detected for bundle '$name'.");
         } else {
             $bundle = $this->assetBundles[$name];
         }
+
         if ($position !== null) {
             $pos = $bundle->jsOptions['position'] ?? null;
+
             if ($pos === null) {
                 $bundle->jsOptions['position'] = $pos = $position;
             } elseif ($pos > $position) {
@@ -550,6 +567,7 @@ final class AssetManager
                     "position configured than '$name'."
                 );
             }
+
             // update position for all dependencies
             foreach ($bundle->depends as $dep) {
                 $this->registerAssetBundle($dep, $pos);

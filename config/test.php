@@ -35,6 +35,8 @@ return [
         ]
     ],
 
+    AssetConverterInterface::class => AssetConverter::class,
+
     AssetManager::class => [
         '__class' => AssetManager::class,
         '__construct()' => [
@@ -43,6 +45,7 @@ return [
         ],
         'setBasePath' => ['@basePath'],
         'setBaseUrl'  => ['@baseUrl'],
+        'setConverter' => Reference::to(AssetConverterInterface::class)
     ],
 
     LoggerInterface::class => [
