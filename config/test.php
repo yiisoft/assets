@@ -6,6 +6,7 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
+
 use Yiisoft\Factory\Definitions\Reference;
 use Yiisoft\Log\Logger;
 
@@ -38,16 +39,17 @@ return [
 
     AssetConverterInterface::class => AssetConverter::class,
 
-    AssetManager::class => [
-        '__class' => AssetManager::class,
-        '__construct()' => [
-            Reference::to(Aliases::class),
-            Reference::to(LoggerInterface::class)
-        ],
-        'setBasePath' => ['@basePath'],
-        'setBaseUrl'  => ['@baseUrl'],
-        'setConverter' => Reference::to(AssetConverterInterface::class)
-    ],
+    AssetManager::class => function (ContainerInterface $container) {
+        $assetConverterInterface = $container->get(AssetConverterInterface::class);
+        $aliases = $container->get(Aliases::class);
+        $logger = $container->get(LoggerInterface::class);
+        $publisher = $container->get(AssetPublisher::class);
+        $assetManager = new AssetManager($aliases, $logger);
+        $assetManager->setConverter($assetConverterInterface);
+        $assetManager->setPublisher($publisher);
+
+        return $assetManager;
+    },
 
     LoggerInterface::class => [
         '__class' => Logger::class,

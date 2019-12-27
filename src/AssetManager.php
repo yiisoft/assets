@@ -288,10 +288,6 @@ final class AssetManager
      */
     public function getConverter(): AssetConverterInterface
     {
-        if (empty($this->converter)) {
-            $this->converter = new AssetConverter($this->aliases, $this->logger);
-        }
-
         return $this->converter;
     }
 
