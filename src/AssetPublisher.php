@@ -13,11 +13,6 @@ use Yiisoft\Files\FileHelper;
 final class AssetPublisher
 {
     /**
-     * @var AssetManager $assetManager
-     */
-    private AssetManager $assetManager;
-
-    /**
      * @var string|null the root directory storing the published asset files.
      */
     private ?string $basePath;
@@ -32,11 +27,6 @@ final class AssetPublisher
      */
     private array $published = [];
 
-    public function __construct(AssetManager $assetManager)
-    {
-        $this->assetManager = $assetManager;
-    }
-
     /**
      * Returns the actual URL for the specified asset.
      *
@@ -50,12 +40,12 @@ final class AssetPublisher
      * @return string the actual URL for the specified asset.
      * @throws InvalidConfigException
      */
-    public function getAssetUrl(AssetBundle $bundle, string $pathAsset): string
+    public function getAssetUrl(AssetManager $am, AssetBundle $bundle, string $pathAsset): string
     {
-        $basePath = $this->assetManager->getAliases()->get($bundle->basePath);
-        $baseUrl = $this->assetManager->getAliases()->get($bundle->baseUrl);
+        $basePath = $am->getAliases()->get($bundle->basePath);
+        $baseUrl = $am->getAliases()->get($bundle->baseUrl);
 
-        $asset = AssetUtil::resolveAsset($bundle, $pathAsset, $this->assetManager->getAssetMap());
+        $asset = AssetUtil::resolveAsset($bundle, $pathAsset, $am->getAssetMap());
 
         if (!empty($asset)) {
             $pathAsset = $asset;
@@ -69,7 +59,7 @@ final class AssetPublisher
             throw new InvalidConfigException("Asset files not found: '$basePath/$pathAsset.'");
         }
 
-        if ($this->assetManager->getAppendTimestamp()  && ($timestamp = @filemtime("$basePath/$pathAsset")) > 0) {
+        if ($am->getAppendTimestamp()  && ($timestamp = @filemtime("$basePath/$pathAsset")) > 0) {
             return "$baseUrl/$pathAsset?v=$timestamp";
         }
 
@@ -86,7 +76,7 @@ final class AssetPublisher
      *
      * @throws InvalidConfigException
      */
-    public function loadBundle(string $name, array $config = []): AssetBundle
+    public function loadBundle(AssetManager $am, string $name, array $config = []): AssetBundle
     {
         /** @var AssetBundle $bundle */
         $bundle = new $name();
@@ -95,11 +85,11 @@ final class AssetPublisher
             $bundle->$property = $value;
         }
 
-        $this->checkBasePath($bundle->basePath);
-        $this->checkBaseUrl($bundle->baseUrl);
+        $this->checkBasePath($am, $bundle->basePath);
+        $this->checkBaseUrl($am, $bundle->baseUrl);
 
         if (!empty($bundle->sourcePath)) {
-            [$bundle->basePath, $bundle->baseUrl] = ($this->publish($bundle));
+            [$bundle->basePath, $bundle->baseUrl] = ($this->publish($am, $bundle));
         }
 
         return $bundle;
@@ -133,20 +123,21 @@ final class AssetPublisher
      * @throws InvalidConfigException if the asset to be published does not exist.
      *
      */
-    public function publish(AssetBundle $bundle): array
+    public function publish(AssetManager $am, AssetBundle $bundle): array
     {
-        $this->checkBasePath($bundle->basePath);
-        $this->checkBaseUrl($bundle->baseUrl);
+        $this->checkBasePath($am, $bundle->basePath);
+        $this->checkBaseUrl($am, $bundle->baseUrl);
 
         if (isset($this->published[$bundle->sourcePath])) {
             return $this->published[$bundle->sourcePath];
         }
 
-        if (!file_exists($this->assetManager->getAliases()->get($bundle->sourcePath))) {
+        if (!file_exists($am->getAliases()->get($bundle->sourcePath))) {
             throw new InvalidConfigException("The sourcePath to be published does not exist: $bundle->sourcePath");
         }
 
         return $this->published[$bundle->sourcePath] = $this->publishDirectory(
+            $am,
             $bundle->sourcePath,
             $bundle->publishOptions
         );
@@ -198,15 +189,15 @@ final class AssetPublisher
      *
      * @return void
      */
-    public function registerAssetFiles(AssetBundle $bundle): void
+    public function registerAssetFiles(AssetManager $am, AssetBundle $bundle): void
     {
         foreach ($bundle->js as $js) {
             if (\is_array($js)) {
                 $file = array_shift($js);
                 $options = array_merge($bundle->jsOptions, $js);
-                $this->assetManager->registerJsFile($this->getAssetUrl($bundle, $file), $options);
+                $am->registerJsFile($this->getAssetUrl($am, $bundle, $file), $options);
             } elseif ($js !== null) {
-                $this->assetManager->registerJsFile($this->getAssetUrl($bundle, $js), $bundle->jsOptions);
+                $am->registerJsFile($this->getAssetUrl($am, $bundle, $js), $bundle->jsOptions);
             }
         }
 
@@ -214,16 +205,16 @@ final class AssetPublisher
             if (\is_array($css)) {
                 $file = array_shift($css);
                 $options = array_merge($bundle->cssOptions, $css);
-                $this->assetManager->registerCssFile($this->getAssetUrl($bundle, $file), $options);
+                $am->registerCssFile($this->getAssetUrl($am, $bundle, $file), $options);
             } elseif ($css !== null) {
-                $this->assetManager->registerCssFile($this->getAssetUrl($bundle, $css), $bundle->cssOptions);
+                $am->registerCssFile($this->getAssetUrl($am, $bundle, $css), $bundle->cssOptions);
             }
         }
     }
 
-    private function checkBasePath(?string $basePath): void
+    private function checkBasePath(AssetManager $am, ?string $basePath): void
     {
-        if (empty($basePath) && empty($this->assetManager->getBasePath())) {
+        if (empty($basePath) && empty($am->getBasePath())) {
             throw new InvalidConfigException(
                 'basePath must be set in AssetManager->setBasePath($path) or ' .
                 'AssetBundle property public ?string $basePath = $path'
@@ -231,15 +222,15 @@ final class AssetPublisher
         }
 
         if (empty($basePath)) {
-            $this->basePath = $this->assetManager->getBasePath();
+            $this->basePath = $am->getBasePath();
         } else {
-            $this->basePath = $this->assetManager->getAliases()->get($basePath);
+            $this->basePath = $am->getAliases()->get($basePath);
         }
     }
 
-    private function checkBaseUrl(?string $baseUrl): void
+    private function checkBaseUrl(AssetManager $am, ?string $baseUrl): void
     {
-        if (empty($baseUrl) && empty($this->assetManager->getBaseUrl())) {
+        if (empty($baseUrl) && empty($am->getBaseUrl())) {
             throw new InvalidConfigException(
                 'baseUrl must be set in AssetManager->setBaseUrl($path) or ' .
                 'AssetBundle property public ?string $baseUrl = $path'
@@ -247,9 +238,9 @@ final class AssetPublisher
         }
 
         if (empty($baseUrl)) {
-            $this->baseUrl = $this->assetManager->getBaseUrl();
+            $this->baseUrl = $am->getBaseUrl();
         } else {
-            $this->baseUrl = $this->assetManager->getAliases()->get($baseUrl);
+            $this->baseUrl = $am->getAliases()->get($baseUrl);
         }
     }
 
@@ -261,15 +252,15 @@ final class AssetPublisher
      *
      * @return string hashed string.
      */
-    private function hash(string $path): string
+    private function hash(AssetManager $am, string $path): string
     {
-        if (\is_callable($this->assetManager->getHashCallback())) {
-            return \call_user_func($this->assetManager->getHashCallback(), $path);
+        if (\is_callable($am->getHashCallback())) {
+            return \call_user_func($am->getHashCallback(), $path);
         }
 
         $path = (is_file($path) ? \dirname($path) : $path) . @filemtime($path);
 
-        return sprintf('%x', crc32($path . '|' . $this->assetManager->getLinkAssets()));
+        return sprintf('%x', crc32($path . '|' . $am->getLinkAssets()));
     }
 
     /**
@@ -285,15 +276,15 @@ final class AssetPublisher
      *
      * @throws \Exception if the asset to be published does not exist.
      */
-    private function publishDirectory(string $src, array $options): array
+    private function publishDirectory(AssetManager $am, string $src, array $options): array
     {
-        $src = $this->assetManager->getAliases()->get($src);
-        $dir = $this->hash($src);
+        $src = $am->getAliases()->get($src);
+        $dir = $this->hash($am, $src);
         $dstDir = $this->basePath . '/' . $dir;
 
-        if ($this->assetManager->getLinkAssets()) {
+        if ($am->getLinkAssets()) {
             if (!is_dir($dstDir)) {
-                FileHelper::createDirectory(\dirname($dstDir), $this->assetManager->getDirMode());
+                FileHelper::createDirectory(\dirname($dstDir), $am->getDirMode());
                 try { // fix #6226 symlinking multi threaded
                     symlink($src, $dstDir);
                 } catch (\Exception $e) {
@@ -303,12 +294,12 @@ final class AssetPublisher
                 }
             }
         } elseif (!empty($options['forceCopy']) ||
-            ($this->assetManager->getForceCopy() && !isset($options['forceCopy'])) || !is_dir($dstDir)) {
+            ($am->getForceCopy() && !isset($options['forceCopy'])) || !is_dir($dstDir)) {
             $opts = array_merge(
                 $options,
                 [
-                    'dirMode' => $this->assetManager->getDirMode(),
-                    'fileMode' => $this->assetManager->getFileMode(),
+                    'dirMode' => $am->getDirMode(),
+                    'fileMode' => $am->getFileMode(),
                     'copyEmptyDirectories' => false,
                 ]
             );
