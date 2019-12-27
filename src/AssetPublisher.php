@@ -199,7 +199,7 @@ final class AssetPublisher
     public function registerAssetFiles(AssetBundle $bundle): void
     {
         foreach ($bundle->js as $js) {
-            if (is_array($js)) {
+            if (\is_array($js)) {
                 $file = array_shift($js);
                 $options = array_merge($bundle->jsOptions, $js);
                 $this->assetManager->registerJsFile($this->getAssetUrl($bundle, $file), $options);
@@ -209,7 +209,7 @@ final class AssetPublisher
         }
 
         foreach ($bundle->css as $css) {
-            if (is_array($css)) {
+            if (\is_array($css)) {
                 $file = array_shift($css);
                 $options = array_merge($bundle->cssOptions, $css);
                 $this->assetManager->registerCssFile($this->getAssetUrl($bundle, $file), $options);
@@ -237,7 +237,7 @@ final class AssetPublisher
     private function checkBaseUrl(?string $baseUrl): void
     {
         if (empty($baseUrl) && empty($this->assetManager->getBaseUrl())) {
-            throw new InvalidconfigException(
+            throw new InvalidConfigException(
                 'baseUrl must be set in AssetManager->setBaseUrl($path) or ' .
                 'AssetBundle property public ?string $baseUrl = $path'
             );
@@ -259,11 +259,11 @@ final class AssetPublisher
      */
     private function hash(string $path): string
     {
-        if (is_callable($this->assetManager->getHashCallback())) {
-            return call_user_func($this->assetManager->getHashCallback(), $path);
+        if (\is_callable($this->assetManager->getHashCallback())) {
+            return \call_user_func($this->assetManager->getHashCallback(), $path);
         }
 
-        $path = (is_file($path) ? dirname($path) : $path) . @filemtime($path);
+        $path = (is_file($path) ? \dirname($path) : $path) . @filemtime($path);
 
         return sprintf('%x', crc32($path . '|' . $this->assetManager->getLinkAssets()));
     }
@@ -289,7 +289,7 @@ final class AssetPublisher
 
         if ($this->assetManager->getLinkAssets()) {
             if (!is_dir($dstDir)) {
-                FileHelper::createDirectory(dirname($dstDir), $this->assetManager->getDirMode());
+                FileHelper::createDirectory(\dirname($dstDir), $this->assetManager->getDirMode());
                 try { // fix #6226 symlinking multi threaded
                     symlink($src, $dstDir);
                 } catch (\Exception $e) {

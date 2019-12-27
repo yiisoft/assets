@@ -6,17 +6,12 @@ namespace Yiisoft\Assets\Tests;
 use hiqdev\composer\config\Builder;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Psr\Container\ContainerInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Di\Container;
-use Yiisoft\View\Theme;
-use Yiisoft\View\View;
-use Yiisoft\View\WebView;
 
 abstract class TestCase extends BaseTestCase
 {

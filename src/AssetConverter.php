@@ -118,7 +118,7 @@ final class AssetConverter implements AssetConverterInterface
         return $asset;
     }
 
-    public function setCommand(string $key, array $value)
+    public function setCommand(string $key, array $value): void
     {
         $this->commands[$key] = $value;
     }
@@ -144,7 +144,7 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @return bool whether asset is outdated or not.
      */
-    protected function isOutdated(string $basePath, string $sourceFile, string $targetFile, string $sourceExtension, string $targetExtension): bool
+    private function isOutdated(string $basePath, string $sourceFile, string $targetFile, string $sourceExtension, string $targetExtension): bool
     {
         $resultModificationTime = @filemtime("$basePath/$targetFile");
         if ($resultModificationTime === false || $resultModificationTime === null) {
@@ -159,7 +159,7 @@ final class AssetConverter implements AssetConverterInterface
             return false;
         }
 
-        return call_user_func($this->isOutdatedCallback, $basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension);
+        return \call_user_func($this->isOutdatedCallback, $basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension);
     }
 
     /**
@@ -175,7 +175,7 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @return bool true on success, false on failure. Failures will be logged.
      */
-    protected function runCommand(string $command, string $basePath, string $asset, string $result): bool
+    private function runCommand(string $command, string $basePath, string $asset, string $result): bool
     {
         $command = $this->aliases->get($command);
 

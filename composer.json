@@ -22,7 +22,6 @@
         "php": "^7.4",
         "ext-mbstring": "*",
         "psr/log": "^1.1",
-        "yiisoft/arrays": "^3.0@dev",
         "yiisoft/files": "^3.0@dev"
     },
     "require-dev": {
@@ -31,7 +30,6 @@
         "phan/phan": "^2.4",
         "yiisoft/aliases": "^3.0@dev",
         "yiisoft/di": "^3.0@dev",
-        "yiisoft/event-dispatcher": "^3.0@dev",
         "yiisoft/log": "^3.0@dev"
     },
     "autoload": {

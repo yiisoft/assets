@@ -6,8 +6,6 @@ namespace Yiisoft\Assets;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
-use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Html\Html;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
@@ -216,7 +214,7 @@ final class AssetManager
         return $this->assetMap;
     }
 
-    public function getAppendtimestamp(): bool
+    public function getAppendTimestamp(): bool
     {
         return $this->appendTimestamp;
     }
@@ -270,7 +268,7 @@ final class AssetManager
         if ($this->bundles[$name] instanceof AssetBundle) {
             return $this->bundles[$name];
         }
-        if (is_array($this->bundles[$name])) {
+        if (\is_array($this->bundles[$name])) {
             return $this->bundles[$name] = $this->publish->loadBundle($name, $this->bundles[$name]);
         }
         if ($this->bundles[$name] === false) {
@@ -497,11 +495,11 @@ final class AssetManager
      *
      * @return void
      */
-    public function registerJsFile(string $url, array $options = [], string $key = null)
+    public function registerJsFile(string $url, array $options = [], string $key = null): void
     {
         $key = $key ?: $url;
 
-        if (!array_key_exists('position', $options)) {
+        if (!\array_key_exists('position', $options)) {
             $options = array_merge(['position' => 3], $options);
         }
 
@@ -521,12 +519,12 @@ final class AssetManager
      *
      * {@see registerJsFile()} for more details on javascript position.
      *
-     * @return object the registered asset bundle instance
+     * @return AssetBundle the registered asset bundle instance
      * @throws InvalidConfigException
      *
      * @throws \RuntimeException if the asset bundle does not exist or a circular dependency is detected
      */
-    private function registerAssetBundle(string $name, ?int $position = null): object
+    private function registerAssetBundle(string $name, ?int $position = null): AssetBundle
     {
         if (!isset($this->assetBundles[$name])) {
             $bundle = $this->getBundle($name);
