@@ -69,7 +69,7 @@ return [
          * 
          *  In view/layout command example:
          * 
-         *  $assetManager->getPublisher->setForceCopy(true);
+         *  $assetManager->getPublisher()->setForceCopy(true);
          */ 
         $assetManager->setPublisher($container->get(AssetPublisherInterface::class));
 
