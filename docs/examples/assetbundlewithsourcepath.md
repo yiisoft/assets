@@ -152,7 +152,7 @@ class PopperAsset extends AssetBundle
 
 Now we must configure the assetManager to have it available in all views, one of them is setting `setDefaultParameters()` in the view with di-container:
 
-- [AssetManager config \Yiisoft\View\WebView::setdefaultParameters()](../config/webview-setdefaultparameters.md)
+- [AssetManager config \Yiisoft\View\WebView::setDefaultParameters()](../config/webview-setdefaultparameters.md)
 
 
 If we want bootstrap4 in all our views, we simply define it in our layout with the assetManager and pass it on view and automatically we will have them available globally.

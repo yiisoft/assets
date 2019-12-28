@@ -15,12 +15,12 @@ AssetManager manages asset bundle configuration and loading.
 |[register](api/assetmanager/register.md)|Generate the array configuration of the AssetBundles|
 |[registerCssFile](api/assetmanager/registercssfile.md)|Registers a CSS file.|
 |[registerJsFile](api/assetmanager/registerjsfile.md)|Registers a JS file.|
-|[setBundles](api/assetmanager/setbundles.md)|This property is provided to customize asset bundles.|
-|[setConverter](api/assetmanager/setconverter.md)|AssetConverter component.|
-|[setPublisher](api/assetmanager/setpublisher.md)|AssetPublisher component.|
+|[setBundles](api/assetmanager/setbundles.md)|This property is provided to customize AssetBundles.|
+|[setConverter](api/assetmanager/setconverter.md)|Set AssetConverter component.|
+|[setPublisher](api/assetmanager/setpublisher.md)|Set AssetPublisher component.|
 
 ## 2.- Configuration:
 
 - [AssetManager with di-container](config/di-container-config.md)
 - [AssetManager without di-container](config/without-di-container-config.md)
-- [AssetManager config \Yiisoft\View\WebView::setdefaultParameters()](config/webview-setdefaultparameters.md)
+- [AssetManager config \Yiisoft\View\WebView::setDefaultParameters()](config/webview-setdefaultparameters.md)

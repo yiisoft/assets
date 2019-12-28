@@ -1,4 +1,4 @@
-### Config \Yiisoft\View\WebView::setdefaultParameters():
+### Config \Yiisoft\View\WebView::setDefaultParameters():
 
 ViewFactory.php:
 ```php
