@@ -1,9 +1,8 @@
 
-<p align="center">
-    <h1 align="center">Defined Asset Bundles</h1>
-</p>
+# Defined Asset Bundles
 
-AssetBundle represents a collection of asset files, such as css, js, images.
+
+AssetBundle represents a collection of asset files, such as CSS, JavaScript, images.
 
 Each asset bundle has a unique name that globally identifies it among all asset bundles used in an application. The name is the [fully qualified class name](http://php.net/manual/en/language.namespaces.rules.php) of the class representing it.
 
