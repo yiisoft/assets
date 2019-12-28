@@ -37,14 +37,10 @@ Or add to composer.json:
 "yiisoft/assets": "^1.0@dev"
 ~~~
 
-### How to config AssetManager:
-
-- [Di-Container](docs/di-container-config.md)
-- [Without Di-Container](docs/without-di-container-config.md)
-
 ### How to usages:
 
-- [Defined AssetBundles](docs/assetbundles.md)
+- [AssetManager](docs/assetmanager.md)
+- [AssetBundles](docs/assetbundles.md)
 
 ### Run tests PHPUNIT:
 

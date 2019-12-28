@@ -27,7 +27,7 @@ return [
         return $assetConverter;
     },
 
-    // defined AssetPubliherInterface class.
+    // defined AssetPublisherInterface class.
     AssetPublisherInterface::class => function (ContainerInterface $container) {
         $publisher = $container->get(AssetPublisher::class);
 
