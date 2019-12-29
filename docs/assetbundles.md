@@ -16,6 +16,7 @@ We can basically find 3 types of AssetBundles, when the asset folder is not acce
 |:----:|:----:|:-----------:|:-------------:|
 |`$basePath`|`string/null`| The web public directory that contains the asset files in this bundle| `null`|
 |`$baseUrl`|`string/null`| The base URL for the relative asset files listed in $js and $css.| `null`|
+|`$cdn`|`bool`| Indicate if we are going to use cdn exclusively.| `false`|
 |`$css`|`array`| List of css files that this bundle contains.| `[]`|
 |`$cssOptions`|`array`| The options that will be passed to \Yiisoft\View\WebView::setCssFiles().| `[]`|
 |`$depends`|`array`| List of bundle class names that this bundle depends on.| `[]`|
