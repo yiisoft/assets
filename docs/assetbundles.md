@@ -8,7 +8,13 @@ Each asset bundle has a unique name that globally identifies it among all asset 
 
 An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent asset bundles will be automatically registered.
 
-We can basically find 3 types of AssetBundles, when the asset folder is not accessible from the `'@web'` then we use the `$sourcePath` option, when we have the public directory accessible folder we use the `$basePath` option, or when we only want to use cdn we simply activate the option in our AssetBundle `public bool $cdn = true`, we can also make combinations of them, AssetManager is very flexible when it comes to managing assets.
+We can basically find 3 types of AssetBundles:
+
+- When the asset folder is not accessible from the `'@web'` we use the `$sourcePath` option
+- When we have the public directory accessible folder we use the `$basePath` option
+- When we only want to use CDN we set `$cdn` option of our AssetBundle to `true`.
+
+We can use combinations of these three types. AssetManager is flexible when it comes to managing assets.
 
 ## 1.- Public Property:
 
@@ -30,5 +36,4 @@ We can basically find 3 types of AssetBundles, when the asset folder is not acce
 
 - [AssetBundle with sourcePath](/docs/examples/assetbundlewithsourcepath.md)
 - [AssetBundle with basePath and depedencies using cdn](/docs/examples/assetbundlewithbasepath.md)
-
 
