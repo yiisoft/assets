@@ -16,7 +16,7 @@ We can basically find 3 types of AssetBundles:
 
 We can use combinations of these three types. AssetManager is flexible when it comes to managing assets.
 
-## 1.- Public Property:
+## Defining asset
 
 | Name | Type | Description | Value Default |
 |:----:|:----:|:-----------:|:-------------:|
@@ -36,4 +36,3 @@ We can use combinations of these three types. AssetManager is flexible when it c
 
 - [AssetBundle with sourcePath](/docs/examples/assetbundlewithsourcepath.md)
 - [AssetBundle with basePath and depedencies using cdn](/docs/examples/assetbundlewithbasepath.md)
-
