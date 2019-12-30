@@ -34,7 +34,7 @@ In order to define your own asset, create a class extended from `Asset` and defi
 |`$sourcePath`|`string/null`| The directory that contains the source asset files for this asset bundle.| `null`|
 
 
-## 2.- Examples:
+## Examples:
 
 - [AssetBundle with sourcePath](/docs/examples/assetbundlewithsourcepath.md)
 - [AssetBundle with basePath and depedencies using cdn](/docs/examples/assetbundlewithbasepath.md)

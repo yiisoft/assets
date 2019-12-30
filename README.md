@@ -15,15 +15,7 @@ The package impements clientside asset management such as CSS and JavaScript.
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/assets/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/assets/?branch=master)
 
 
-### Requirements:
-
-- The minimum requirement by this project template that your Web server supports:
-    - PHP 7.4 or higher.
-    - [Composer Config Plugin](https://github.com/hiqdev/composer-config-plugin)
-
 ### How to install:
-
-If you do not have <a href="http://getcomposer.org/" title="Composer" target="_blank">Composer</a>, you may install it by following the instructions at <a href="http://getcomposer.org/doc/00-intro.md#installation-nix" title="getcomposer.org" target="_blank">getcomposer.org</a>.
 
 composer:
 

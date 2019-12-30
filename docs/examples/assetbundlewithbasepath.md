@@ -1,4 +1,4 @@
-# Example AssetBundle with basePath and dependencies using cdn:
+# AssetBundle with basePath and dependencies using cdn:
 
 Another case that we can find when using the AssetManager, is that we have our own CSS and JavaScript, and we use CDN, to make references to their dependencies, without being installed in our application this could be a valid case for when we work in cloud environment and we want to avoid any kind of error.
 

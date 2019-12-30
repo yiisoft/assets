@@ -1,4 +1,4 @@
-# Example AssetBundle with sourcePath:
+# AssetBundle with sourcePath:
 
 We will create an AssetBundle with sourcePath in this case for Bootstrap4.
 
