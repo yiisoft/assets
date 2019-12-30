@@ -29,7 +29,7 @@ In order to define your own asset, create a class extended from `Asset` and defi
 |`$cssOptions`|`array`| The options that will be passed to `\Yiisoft\View\WebView::setCssFiles()`.| `[]`|
 |`$depends`|`array`| List of bundle class names that this bundle depends on.| `[]`|
 |`$js`|`array`| List of JavaScript files that this bundle contains.| `[]`|
-|`$jsOptions`|`array`| The options that will be passed to \Yiisoft\View\WebView::setJsFiles().| `[]`|
+|`$jsOptions`|`array`| The options that will be passed to `\Yiisoft\View\WebView::setJsFiles()`.| `[]`|
 |`$publishOptions`|`array`| The options to be passed to \Yiisoft\Assets\AssetPublisher::publish() when the asset bundle is being published.|`[]`|
 |`$sourcePath`|`string/null`| The directory that contains the source asset files for this assetBundle.| `null`|
 
