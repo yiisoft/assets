@@ -18,6 +18,8 @@ We can use combinations of these three types. AssetManager is flexible when it c
 
 ## Defining asset
 
+In order to define your own asset, create a class extended from `Asset` and define any of the options below.
+
 | Name | Type | Description | Value Default |
 |:----:|:----:|:-----------:|:-------------:|
 |`$basePath`|`string/null`| The web public directory that contains the asset files in this bundle| `null`|
