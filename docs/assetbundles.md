@@ -26,7 +26,7 @@ In order to define your own asset, create a class extended from `Asset` and defi
 |`$baseUrl`|`string/null`| The base URL for the relative asset files listed in $js and $css.| `null`|
 |`$cdn`|`bool`| Indicates if we are going to use CDN exclusively.| `false`|
 |`$css`|`array`| List of CSS files that this bundle contains.| `[]`|
-|`$cssOptions`|`array`| The options that will be passed to \Yiisoft\View\WebView::setCssFiles().| `[]`|
+|`$cssOptions`|`array`| The options that will be passed to `\Yiisoft\View\WebView::setCssFiles()`.| `[]`|
 |`$depends`|`array`| List of bundle class names that this bundle depends on.| `[]`|
 |`$js`|`array`| List of JavaScript files that this bundle contains.| `[]`|
 |`$jsOptions`|`array`| The options that will be passed to \Yiisoft\View\WebView::setJsFiles().| `[]`|
