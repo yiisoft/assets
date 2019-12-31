@@ -128,7 +128,7 @@ final class AssetConverter implements AssetConverterInterface
     }
 
     /**
-     * Allows you to add a command that are used to perform the asset conversion.
+     * Allows you to set a command that is used to perform the asset conversion.
      *
      * @param string $key file extension
      * @param array $value
