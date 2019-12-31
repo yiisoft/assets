@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
@@ -9,7 +9,7 @@ use Yiisoft\Aliases\Aliases;
 /**
  * AssetConverter supports conversion of several popular script formats into JS or CSS scripts.
  *
- * It is used by [[AssetManager]] to convert files after they have been published.
+ * It is used by {@see AssetManager} to convert files after they have been published.
  */
 final class AssetConverter implements AssetConverterInterface
 {
@@ -32,9 +32,10 @@ final class AssetConverter implements AssetConverterInterface
      * ```
      */
     private array $commands = [
+        'css'    => ['css', 'sass {options} {from} {to}'],
         'less'   => ['css', 'lessc {from} {to} --no-color --source-map'],
-        'scss'   => ['css', 'sass {from} {to} --sourcemap'],
-        'sass'   => ['css', 'sass {from} {to} --sourcemap'],
+        'scss'   => ['css', 'sass {options} {from} {to}'],
+        'sass'   => ['css', 'sass {options} {from} {to}'],
         'styl'   => ['css', 'stylus < {from} > {to}'],
         'coffee' => ['js', 'coffee -p {from} > {to}'],
         'ts'     => ['js', 'tsc --out {to} {from}'],
@@ -84,6 +85,9 @@ final class AssetConverter implements AssetConverterInterface
      */
     private $isOutdatedCallback;
 
+    /**
+     * @var LoggerInterface $logger
+     */
     private LoggerInterface $logger;
 
     public function __construct(Aliases $aliases, LoggerInterface $logger)
@@ -97,20 +101,26 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @param string $asset the asset file path, relative to $basePath
      * @param string $basePath the directory the $asset is relative to.
+     * @param array $optionsConverter options line commands from converter,
      *
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert(string $asset, string $basePath): string
+    public function convert(string $asset, string $basePath, array $optionsConverter = []): string
     {
+        $options = null;
         $pos = strrpos($asset, '.');
         if ($pos !== false) {
             $srcExt = substr($asset, $pos + 1);
+
+            if (isset($optionsConverter[$srcExt])) {
+                $options = $optionsConverter[$srcExt];
+            }
 
             if (isset($this->commands[$srcExt])) {
                 [$ext, $command] = $this->commands[$srcExt];
                 $result = substr($asset, 0, $pos + 1).$ext;
                 if ($this->forceConvert || $this->isOutdated($basePath, $asset, $result, $srcExt, $ext)) {
-                    $this->runCommand($command, $basePath, $asset, $result);
+                    $this->runCommand($command, $basePath, $asset, $result, $options);
                 }
 
                 return $result;
@@ -120,16 +130,37 @@ final class AssetConverter implements AssetConverterInterface
         return $asset;
     }
 
+    /**
+     * Allows you to add a command that are used to perform the asset conversion.
+     *
+     * @param string $key
+     * @param array $value
+     *
+     * @return void
+     */
     public function setCommand(string $key, array $value): void
     {
         $this->commands[$key] = $value;
     }
 
+    /**
+     * Make the conversion regardless of whether the asset already exists.
+     *
+     * @param boolean $value
+     * @return void
+     */
     public function setForceConvert(bool $value): void
     {
         $this->forceConvert = $value;
     }
 
+    /**
+     * PHP callback, which should be invoked to check whether asset conversion result is outdated.
+     *
+     * @param callable $value
+     *
+     * @return void
+     */
     public function setIsOutdatedCallback(callable $value): void
     {
         $this->isOutdatedCallback = $value;
@@ -178,20 +209,29 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @return bool true on success, false on failure. Failures will be logged.
      */
-    private function runCommand(string $command, string $basePath, string $asset, string $result): bool
+    private function runCommand(string $command, string $basePath, string $asset, string $result, ?string $options = null): bool
     {
+        $basePath = $this->aliases->get($basePath);
+
         $command = $this->aliases->get($command);
+
         $command = strtr($command, [
+            '{options}' => escapeshellarg("$options"),
             '{from}' => escapeshellarg("$basePath/$asset"),
             '{to}'   => escapeshellarg("$basePath/$result"),
         ]);
+
         $descriptors = [
             1 => ['pipe', 'w'],
             2 => ['pipe', 'w'],
         ];
+
         $pipes = [];
+
         $proc = proc_open($command, $descriptors, $pipes, $basePath);
+
         $stdout = stream_get_contents($pipes[1]);
+
         $stderr = stream_get_contents($pipes[2]);
 
         foreach ($pipes as $pipe) {

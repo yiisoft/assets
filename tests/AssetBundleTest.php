@@ -12,7 +12,6 @@ use Yiisoft\Assets\Tests\stubs\CircleDependsAsset;
 use Yiisoft\Assets\Tests\stubs\FileOptionsAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\SimpleAsset;
-use Yiisoft\Assets\Tests\stubs\SourceAsset;
 
 /**
  * AssetBundleTest.
@@ -24,47 +23,6 @@ final class AssetBundleTest extends TestCase
         parent::tearDown();
 
         $this->removeAssets('@basePath');
-    }
-
-    public function testBaseAppendtimestamp(): void
-    {
-        $bundle = new BaseAsset();
-
-        $timestampCss = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
-        $urlCss = "/baseUrl/css/basePath.css?v=$timestampCss";
-
-        $timestampJs = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
-        $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
-
-        $this->assertEmpty($this->assetManager->getAssetBundles());
-
-        $this->assetManager->setAppendTimestamp(true);
-        $this->assetManager->register([BaseAsset::class]);
-
-        $this->assertStringContainsString(
-            $urlCss,
-            $this->assetManager->getCssFiles()[$urlCss]['url']
-        );
-        $this->assertEquals(
-            [
-                'integrity' => 'integrity-hash',
-                'crossorigin' => 'anonymous'
-            ],
-            $this->assetManager->getCssFiles()[$urlCss]['attributes']
-        );
-
-        $this->assertStringContainsString(
-            $urlJs,
-            $this->assetManager->getJsFiles()[$urlJs]['url']
-        );
-        $this->assertEquals(
-            [
-                'integrity' => 'integrity-hash',
-                'crossorigin' => 'anonymous',
-                'position' => 3
-            ],
-            $this->assetManager->getJsFiles()[$urlJs]['attributes']
-        );
     }
 
     public function testBasePath(): void
@@ -111,7 +69,7 @@ final class AssetBundleTest extends TestCase
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
 
-        $message = 'basePath must be set in AssetManager->setBasePath($path) or ' .
+        $message = 'basePath must be set in AssetPublisher->setBasePath($path) or ' .
             'AssetBundle property public ?string $basePath = $path';
 
         $this->expectException(InvalidConfigException::class);
@@ -131,11 +89,11 @@ final class AssetBundleTest extends TestCase
             ]
         );
 
-        $this->assetManager->setBasePath('@basePath');
+        $this->assetManager->getPublisher()->setBasePath('@basePath');
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
 
-        $message = 'baseUrl must be set in AssetManager->setBaseUrl($path) or ' .
+        $message = 'baseUrl must be set in AssetPublisher->setBaseUrl($path) or ' .
             'AssetBundle property public ?string $baseUrl = $path';
 
         $this->expectException(InvalidConfigException::class);
@@ -150,7 +108,7 @@ final class AssetBundleTest extends TestCase
             'basePath' => null,
         ];
 
-        $this->assetManager->setBasePath('@basePath');
+        $this->assetManager->getPublisher()->setBasePath('@basePath');
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
         $this->assertIsObject($this->assetManager->getBundle(BaseAsset::class));
@@ -163,8 +121,8 @@ final class AssetBundleTest extends TestCase
             'baseUrl' => null,
         ];
 
-        $this->assetManager->setBasePath('@basePath');
-        $this->assetManager->setBaseUrl('@baseUrl');
+        $this->assetManager->getPublisher()->setBasePath('@basePath');
+        $this->assetManager->getPublisher()->setBaseUrl('@baseUrl');
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
 
@@ -289,91 +247,5 @@ final class AssetBundleTest extends TestCase
             ],
             $this->assetManager->getJsFiles()['/baseUrl/js/defered.js']['attributes']
         );
-    }
-
-
-    public function testSourceSetHashCallback(): void
-    {
-        $this->assetManager->setHashCallback(function () {
-            return 'HashCallback';
-        });
-
-        $this->assertEmpty($this->assetManager->getAssetBundles());
-
-        $this->assetManager->register([SourceAsset::class]);
-
-        $this->assertStringContainsString(
-            '/baseUrl/HashCallback/css/stub.css',
-            $this->assetManager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['url']
-        );
-        $this->assertEquals(
-            [],
-            $this->assetManager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['attributes']
-        );
-
-        $this->assertStringContainsString(
-            '/js/jquery.js',
-            $this->assetManager->getJsFiles()['/js/jquery.js']['url']
-        );
-        $this->assertEquals(
-            [
-                'position' => 3
-            ],
-            $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
-        );
-
-        $this->assertStringContainsString(
-            '/baseUrl/HashCallback/js/stub.js',
-            $this->assetManager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['url']
-        );
-        $this->assertEquals(
-            [
-                'position' => 3
-            ],
-            $this->assetManager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['attributes']
-        );
-    }
-
-    public function testSourcesPublishOptionsOnlyRegex(): void
-    {
-        $bundle = new SourceAsset();
-
-        $bundle->publishOptions = [
-            'only' => [
-                'js/*'
-            ],
-        ];
-
-        [$bundle->basePath, $bundle->baseUrl] = $this->assetManager->getPublish()->publish(
-            $this->assetManager,
-            $bundle
-        );
-
-        $notNeededFilesDir = dirname($bundle->basePath . DIRECTORY_SEPARATOR . $bundle->css[0]);
-
-        $this->assertFileNotExists($notNeededFilesDir);
-
-        foreach ($bundle->js as $filename) {
-            $publishedFile = $bundle->basePath . DIRECTORY_SEPARATOR . $filename;
-
-            $this->assertFileExists($publishedFile);
-        }
-
-        $this->assertDirectoryExists(dirname($bundle->basePath . DIRECTORY_SEPARATOR . $bundle->js[0]));
-        $this->assertDirectoryExists($bundle->basePath);
-    }
-
-    public function testSourcesPathException(): void
-    {
-        $bundle = new SourceAsset();
-
-        $bundle->sourcePath = '/wrong';
-
-        $message = "The sourcePath to be published does not exist: $bundle->sourcePath";
-
-        $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage($message);
-
-        $this->assetManager->getPublish()->publish($this->assetManager, $bundle);
     }
 }

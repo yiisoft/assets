@@ -5,13 +5,47 @@ declare(strict_types=1);
 namespace Yiisoft\Assets;
 
 use Yiisoft\Assets\Exception\InvalidConfigException;
+use Yiisoft\Assets\AssetBundle;
+use Yiisoft\Aliases\Aliases;
 use Yiisoft\Files\FileHelper;
 
 /**
  * AssetPublisher is responsible for executing the publication of the assets from {@see sourcePath} to {@see basePath}.
  */
-final class AssetPublisher
+final class AssetPublisher implements AssetPublisherInterface
 {
+    /**
+     * @var bool whether to append a timestamp to the URL of every published asset. When this is true, the URL of a
+     * published asset may look like `/path/to/asset?v=timestamp`, where `timestamp` is the last modification time of
+     * the published asset file. You normally would want to set this property to true when you have enabled HTTP caching
+     * for assets, because it allows you to bust caching when the assets are updated.
+     */
+    private bool $appendTimestamp = false;
+
+    /**
+     * @var array mapping from source asset files (keys) to target asset files (values).
+     *
+     * This property is provided to support fixing incorrect asset file paths in some asset bundles. When an asset
+     * bundle is registered with a view, each relative asset file in its {@see AssetBundle::css|css} and
+     * {@see AssetBundle::js|js} arrays will be examined against this map. If any of the keys is found to be the last
+     * part of an asset file (which is prefixed with {@see AssetBundle::sourcePath} if available), the corresponding
+     * value will replace the asset and be registered with the view. For example, an asset file `my/path/to/jquery.js`
+     * matches a key `jquery.js`.
+     *
+     * Note that the target asset files should be absolute URLs, domain relative URLs (starting from '/') or paths
+     * relative to {@see baseUrl} and {@see basePath}.
+     *
+     * In the following example, any assets ending with `jquery.min.js` will be replaced with `jquery/dist/jquery.js`
+     * which is relative to {@see baseUrl} and {@see basePath}.
+     *
+     * ```php
+     * [
+     *     'jquery.min.js' => 'jquery/dist/jquery.js',
+     * ]
+     * ```
+     */
+    private array $assetMap = [];
+
     /**
      * @var string|null the root directory storing the published asset files.
      */
@@ -23,9 +57,78 @@ final class AssetPublisher
     private ?string $baseUrl;
 
     /**
-     * @var array published assets
+     * @var int the permission to be set for newly generated asset directories. This value will be used by PHP chmod()
+     * function. No umask will be applied. Defaults to 0775, meaning the directory is read-writable by owner
+     * and group, but read-only for other users.
+     */
+    private int $dirMode = 0775;
+
+    /**
+     * @var int the permission to be set for newly published asset files. This value will be used by PHP chmod()
+     * function. No umask will be applied. If not set, the permission will be determined by the current
+     * environment.
+     */
+    private int $fileMode = 0755;
+
+    /**
+     * @var bool whether the directory being published should be copied even if it is found in the target directory.
+     * This option is used only when publishing a directory. You may want to set this to be `true` during the
+     * development stage to make sure the published directory is always up-to-date. Do not set this to true
+     * on production servers as it will significantly degrade the performance.
+     */
+    private bool $forceCopy = false;
+
+    /**
+     * @var callable a callback that will be called to produce hash for asset directory generation. The signature of the
+     * callback should be as follows:
+     *
+     * ```
+     * function ($path)
+     * ```
+     *
+     * where `$path` is the asset path. Note that the `$path` can be either directory where the asset files reside or a
+     * single file. For a CSS file that uses relative path in `url()`, the hash implementation should use the directory
+     * path of the file instead of the file path to include the relative asset files in the copying.
+     *
+     * If this is not set, the asset manager will use the default CRC32 and filemtime in the `hash` method.
+     *
+     * Example of an implementation using MD4 hash:
+     *
+     * ```php
+     * function ($path) {
+     *     return hash('md4', $path);
+     * }
+     * ```
+     */
+    private $hashCallback;
+
+    /**
+     * @var bool whether to use symbolic link to publish asset files. Defaults to false, meaning asset files are copied
+     * to {@see basePath}. Using symbolic links has the benefit that the published assets will always be
+     * consistent with the source assets and there is no copy operation required. This is especially useful
+     * during development.
+     *
+     * However, there are special requirements for hosting environments in order to use symbolic links. In particular,
+     * symbolic links are supported only on Linux/Unix, and Windows Vista/2008 or greater.
+     *
+     * Moreover, some Web servers need to be properly configured so that the linked assets are accessible to Web users.
+     * For example, for Apache Web server, the following configuration directive should be added for the Web folder:
+     *
+     * ```apache
+     * Options FollowSymLinks
+     * ```
+     */
+    private bool $linkAssets = false;
+
+    /**
+     * @var array Contain published AssetsBundle.
      */
     private array $published = [];
+
+    public function __construct(Aliases $aliases)
+    {
+        $this->aliases = $aliases;
+    }
 
     /**
      * Returns the actual URL for the specified asset.
@@ -40,15 +143,17 @@ final class AssetPublisher
      * @return string the actual URL for the specified asset.
      * @throws InvalidConfigException
      */
-    public function getAssetUrl(AssetManager $am, AssetBundle $bundle, string $pathAsset): string
+    public function getAssetUrl(AssetBundle $bundle, string $pathAsset): string
     {
-        $basePath = $am->getAliases()->get($bundle->basePath);
-        $baseUrl = $am->getAliases()->get($bundle->baseUrl);
-
-        $asset = AssetUtil::resolveAsset($bundle, $pathAsset, $am->getAssetMap());
+        $asset = AssetUtil::resolveAsset($bundle, $pathAsset, $this->assetMap);
 
         if (!empty($asset)) {
             $pathAsset = $asset;
+        }
+
+        if (!$bundle->cdn) {
+            $basePath = $this->aliases->get($bundle->basePath);
+            $baseUrl = $this->aliases->get($bundle->baseUrl);
         }
 
         if (!AssetUtil::isRelative($pathAsset) || strncmp($pathAsset, '/', 1) === 0) {
@@ -59,11 +164,31 @@ final class AssetPublisher
             throw new InvalidConfigException("Asset files not found: '$basePath/$pathAsset.'");
         }
 
-        if ($am->getAppendTimestamp()  && ($timestamp = @filemtime("$basePath/$pathAsset")) > 0) {
+        if ($this->appendTimestamp  && ($timestamp = @filemtime("$basePath/$pathAsset")) > 0) {
             return "$baseUrl/$pathAsset?v=$timestamp";
         }
 
         return "$baseUrl/$pathAsset";
+    }
+
+    /**
+     * Returns the AssetConverterInterface
+     *
+     * @return AssetConverterInterface the asset converter.
+     */
+    public function getConverter(): AssetConverterInterface
+    {
+        return $this->converter;
+    }
+
+    /**
+     * Return config linkAssets.
+     *
+     * @return boolean
+     */
+    public function getLinkAssets(): bool
+    {
+        return $this->linkAssets;
     }
 
     /**
@@ -76,7 +201,7 @@ final class AssetPublisher
      *
      * @throws InvalidConfigException
      */
-    public function loadBundle(AssetManager $am, string $name, array $config = []): AssetBundle
+    public function loadBundle(string $name, array $config = []): AssetBundle
     {
         /** @var AssetBundle $bundle */
         $bundle = new $name();
@@ -85,15 +210,18 @@ final class AssetPublisher
             $bundle->$property = $value;
         }
 
-        $this->checkBasePath($am, $bundle->basePath);
-        $this->checkBaseUrl($am, $bundle->baseUrl);
+        if (!$bundle->cdn) {
+            $this->checkBasePath($bundle->basePath);
+            $this->checkBaseUrl($bundle->baseUrl);
+        }
 
         if (!empty($bundle->sourcePath)) {
-            [$bundle->basePath, $bundle->baseUrl] = ($this->publish($am, $bundle));
+            [$bundle->basePath, $bundle->baseUrl] = ($this->publish($bundle));
         }
 
         return $bundle;
     }
+
     /**
      * Publishes a file or a directory.
      *
@@ -123,21 +251,20 @@ final class AssetPublisher
      * @throws InvalidConfigException if the asset to be published does not exist.
      *
      */
-    public function publish(AssetManager $am, AssetBundle $bundle): array
+    public function publish(AssetBundle $bundle): array
     {
-        $this->checkBasePath($am, $bundle->basePath);
-        $this->checkBaseUrl($am, $bundle->baseUrl);
-
         if (isset($this->published[$bundle->sourcePath])) {
             return $this->published[$bundle->sourcePath];
         }
 
-        if (!file_exists($am->getAliases()->get($bundle->sourcePath))) {
+        if (!file_exists($this->aliases->get($bundle->sourcePath))) {
             throw new InvalidConfigException("The sourcePath to be published does not exist: $bundle->sourcePath");
         }
 
+        $this->checkBasePath($bundle->basePath);
+        $this->checkBaseUrl($bundle->baseUrl);
+
         return $this->published[$bundle->sourcePath] = $this->publishDirectory(
-            $am,
             $bundle->sourcePath,
             $bundle->publishOptions
         );
@@ -183,64 +310,170 @@ final class AssetPublisher
     }
 
     /**
-     * Registers the CSS and JS files with the given view.
+     * Append a timestamp to the URL of every published asset.
      *
-     * @param AssetBundle $bundle the asset files are to be registered in the view.
+     * @param bool $value
+     *
+     * @return void
+     *
+     * {@see appendTimestamp}
+     */
+    public function setAppendTimestamp(bool $value): void
+    {
+        $this->appendTimestamp = $value;
+    }
+
+    /**
+     * Mapping from source asset files (keys) to target asset files (values).
+     *
+     * @param array $value
+     *
+     * @return void
+     *
+     * {@see assetMap}
+     */
+    public function setAssetMap(array $value): void
+    {
+        $this->assetMap = $value;
+    }
+
+    /**
+     * The root directory storing the published asset files.
+     *
+     * @param string|null $value
+     *
+     * @return void
+     *
+     * {@see basePath}
+     */
+    public function setBasePath(?string $value): void
+    {
+        $this->basePath = $value;
+    }
+
+    /**
+     * The base URL through which the published asset files can be accessed.
+     *
+     * @param string|null $value
+     *
+     * @return void
+     *
+     * {@see baseUrl}
+     */
+    public function setBaseUrl(?string $value): void
+    {
+        $this->baseUrl = $value;
+    }
+
+    /**
+     * The permission to be set for newly generated asset directories.
+     *
+     * @param integer $value
+     *
+     * @return void
+     *
+     * {@see dirMode}
+     */
+    public function setDirMode(int $value): void
+    {
+        $this->dirMode = $value;
+    }
+
+    /**
+     * The permission to be set for newly published asset files.
+     *
+     * @param integer $value
+     *
+     * @return void
+     *
+     * {@see fileMode}
+     */
+    public function setFileMode(int $value): void
+    {
+        $this->fileMode = $value;
+    }
+
+    /**
+     * Whether the directory being published should be copied even if it is found in the target directory.
+     *
+     * @param boolean $value
+     *
+     * @return void
+     *
+     * {@see forceCopy}
+     */
+    public function setForceCopy(bool $value): void
+    {
+        $this->forceCopy = $value;
+    }
+
+    /**
+     * A callback that will be called to produce hash for asset directory generation.
+     *
+     * @param callable $value
+     *
+     * @return void
+     *
+     * {@see hashCallback}
+     */
+    public function setHashCallback(callable $value): void
+    {
+        $this->hashCallback = $value;
+    }
+
+    /**
+     * Whether to use symbolic link to publish asset files.
+     *
+     * @param boolean $value
+     *
+     * @return void
+     *
+     * {@see linkAssets}
+     */
+    public function setLinkAssets(bool $value): void
+    {
+        $this->linkAssets = $value;
+    }
+
+    /**
+     * Verify the {@see basePath} of AssetPublisher and AssetBundle is valid.
+     *
+     * @param string|null $basePath
      *
      * @return void
      */
-    public function registerAssetFiles(AssetManager $am, AssetBundle $bundle): void
+    private function checkBasePath(?string $basePath): void
     {
-        foreach ($bundle->js as $js) {
-            if (\is_array($js)) {
-                $file = array_shift($js);
-                $options = array_merge($bundle->jsOptions, $js);
-                $am->registerJsFile($this->getAssetUrl($am, $bundle, $file), $options);
-            } elseif ($js !== null) {
-                $am->registerJsFile($this->getAssetUrl($am, $bundle, $js), $bundle->jsOptions);
-            }
-        }
-
-        foreach ($bundle->css as $css) {
-            if (\is_array($css)) {
-                $file = array_shift($css);
-                $options = array_merge($bundle->cssOptions, $css);
-                $am->registerCssFile($this->getAssetUrl($am, $bundle, $file), $options);
-            } elseif ($css !== null) {
-                $am->registerCssFile($this->getAssetUrl($am, $bundle, $css), $bundle->cssOptions);
-            }
-        }
-    }
-
-    private function checkBasePath(AssetManager $am, ?string $basePath): void
-    {
-        if (empty($basePath) && empty($am->getBasePath())) {
+        if (empty($this->basePath) && empty($basePath)) {
             throw new InvalidConfigException(
-                'basePath must be set in AssetManager->setBasePath($path) or ' .
+                'basePath must be set in AssetPublisher->setBasePath($path) or ' .
                 'AssetBundle property public ?string $basePath = $path'
             );
         }
 
-        if (empty($basePath)) {
-            $this->basePath = $am->getBasePath();
-        } else {
-            $this->basePath = $am->getAliases()->get($basePath);
+        if (!empty($basePath)) {
+            $this->basePath = $this->aliases->get($basePath);
         }
     }
 
-    private function checkBaseUrl(AssetManager $am, ?string $baseUrl): void
+    /**
+     * Verify the {@see baseUrl} of AssetPublisher and AssetBundle is valid.
+     *
+     * @param string|null $baseUrl
+     *
+     * @return void
+     */
+    private function checkBaseUrl(?string $baseUrl): void
     {
-        if (empty($baseUrl) && empty($am->getBaseUrl())) {
+        if (empty($this->baseUrl) && empty($baseUrl)) {
             throw new InvalidConfigException(
-                'baseUrl must be set in AssetManager->setBaseUrl($path) or ' .
+                'baseUrl must be set in AssetPublisher->setBaseUrl($path) or ' .
                 'AssetBundle property public ?string $baseUrl = $path'
             );
         }
 
-        if (empty($baseUrl)) {
-            $this->baseUrl = $am->getBaseUrl();
-        } else {
-            $this->baseUrl = $am->getAliases()->get($baseUrl);
+        if (!empty($baseUrl)) {
+            $this->baseUrl = $this->aliases->get($baseUrl);
         }
     }
 
@@ -252,15 +485,15 @@ final class AssetPublisher
      *
      * @return string hashed string.
      */
-    private function hash(AssetManager $am, string $path): string
+    private function hash(string $path): string
     {
-        if (\is_callable($am->getHashCallback())) {
-            return \call_user_func($am->getHashCallback(), $path);
+        if (\is_callable($this->hashCallback)) {
+            return \call_user_func($this->hashCallback, $path);
         }
 
         $path = (is_file($path) ? \dirname($path) : $path) . @filemtime($path);
 
-        return sprintf('%x', crc32($path . '|' . $am->getLinkAssets()));
+        return sprintf('%x', crc32($path . '|' . $this->linkAssets));
     }
 
     /**
@@ -276,15 +509,15 @@ final class AssetPublisher
      *
      * @throws \Exception if the asset to be published does not exist.
      */
-    private function publishDirectory(AssetManager $am, string $src, array $options): array
+    private function publishDirectory(string $src, array $options): array
     {
-        $src = $am->getAliases()->get($src);
-        $dir = $this->hash($am, $src);
+        $src = $this->aliases->get($src);
+        $dir = $this->hash($src);
         $dstDir = $this->basePath . '/' . $dir;
 
-        if ($am->getLinkAssets()) {
+        if ($this->linkAssets) {
             if (!is_dir($dstDir)) {
-                FileHelper::createDirectory(\dirname($dstDir), $am->getDirMode());
+                FileHelper::createDirectory(\dirname($dstDir), $this->dirMode);
                 try { // fix #6226 symlinking multi threaded
                     symlink($src, $dstDir);
                 } catch (\Exception $e) {
@@ -294,12 +527,12 @@ final class AssetPublisher
                 }
             }
         } elseif (!empty($options['forceCopy']) ||
-            ($am->getForceCopy() && !isset($options['forceCopy'])) || !is_dir($dstDir)) {
+            ($this->forceCopy && !isset($options['forceCopy'])) || !is_dir($dstDir)) {
             $opts = array_merge(
                 $options,
                 [
-                    'dirMode' => $am->getDirMode(),
-                    'fileMode' => $am->getFileMode(),
+                    'dirMode' => $this->dirMode,
+                    'fileMode' => $this->fileMode,
                     'copyEmptyDirectories' => false,
                 ]
             );

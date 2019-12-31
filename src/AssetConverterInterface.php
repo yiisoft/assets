@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
@@ -13,8 +13,9 @@ interface AssetConverterInterface
      *
      * @param string $asset the asset file path, relative to $basePath
      * @param string $basePath the directory the $asset is relative to.
+     * @param array $optionsConverter options line commands from converter,
      *
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert(string $asset, string $basePath): string;
+    public function convert(string $asset, string $basePath, array $optionsConverter = []): string;
 }

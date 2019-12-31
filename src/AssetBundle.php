@@ -36,6 +36,11 @@ class AssetBundle
     public ?string $baseUrl = null;
 
     /**
+     * @var bool Indicates whether the AssetBundle uses CDN exclusively.
+     */
+    public bool $cdn = false;
+
+    /**
      * @var array list of CSS files that this bundle contains. Each CSS file can be specified in one of the three
      * formats as explained in {@see js}.
      *
@@ -48,6 +53,24 @@ class AssetBundle
      * this bundle.
      */
     public array $cssOptions = [];
+
+    /**
+     * @var array the options line command from converter.
+     *
+     * Example: Dart SASS minify css.
+     *
+     * public array $converterOptions = [
+     *     'css'   => '--style = compressed',
+     * ];
+     */
+    public array $converterOptions = [
+        'less'   => null,
+        'scss'   => null,
+        'sass'   => null,
+        'styl'   => null,
+        'coffee' => null,
+        'ts'     => null,
+    ];
 
     /**
      * @var array list of bundle class names that this bundle depends on.
