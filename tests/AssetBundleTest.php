@@ -104,10 +104,6 @@ final class AssetBundleTest extends TestCase
 
     public function testBasePathEmptyWithAssetManagerSetBasePath(): void
     {
-        $config = [
-            'basePath' => null,
-        ];
-
         $this->assetManager->getPublisher()->setBasePath('@basePath');
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
@@ -116,11 +112,6 @@ final class AssetBundleTest extends TestCase
 
     public function testBasePathEmptyBaseUrlEmptyWithAssetManagerSetBasePathSetBaseUrl(): void
     {
-        $config = [
-            'basePath' => null,
-            'baseUrl' => null,
-        ];
-
         $this->assetManager->getPublisher()->setBasePath('@basePath');
         $this->assetManager->getPublisher()->setBaseUrl('@baseUrl');
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Assets;
 
 use Yiisoft\Assets\Exception\InvalidConfigException;
-use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Files\FileHelper;
 
@@ -14,6 +13,8 @@ use Yiisoft\Files\FileHelper;
  */
 final class AssetPublisher implements AssetPublisherInterface
 {
+    private Aliases $aliases;
+
     /**
      * @var bool whether to append a timestamp to the URL of every published asset. When this is true, the URL of a
      * published asset may look like `/path/to/asset?v=timestamp`, where `timestamp` is the last modification time of

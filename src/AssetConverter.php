@@ -7,7 +7,7 @@ use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 
 /**
- * AssetConverter supports conversion of several popular script formats into JS or CSS scripts.
+ * AssetConverter supports conversion of several popular script formats into JavaScript or CSS.
  *
  * It is used by {@see AssetManager} to convert files after they have been published.
  */
@@ -85,9 +85,6 @@ final class AssetConverter implements AssetConverterInterface
      */
     private $isOutdatedCallback;
 
-    /**
-     * @var LoggerInterface $logger
-     */
     private LoggerInterface $logger;
 
     public function __construct(Aliases $aliases, LoggerInterface $logger)

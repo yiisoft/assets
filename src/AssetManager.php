@@ -35,16 +35,7 @@ final class AssetManager
      */
     private array $assetBundles = [];
 
-    /**
-     * AssetConverter component.
-     *
-     * @var AssetConverterInterface $converter
-     */
     private AssetConverterInterface $converter;
-
-    /**
-     * @var AssetPublisher published assets
-     */
     private AssetPublisher $publisher;
 
     /**
@@ -133,11 +124,6 @@ final class AssetManager
         throw new InvalidConfigException("Invalid asset bundle configuration: $name");
     }
 
-    /**
-     * Returns the AssetConverterInterface
-     *
-     * @return AssetConverterInterface the asset converter.
-     */
     public function getConverter(): AssetConverterInterface
     {
         return $this->converter;
@@ -163,11 +149,6 @@ final class AssetManager
         return $this->jsFiles;
     }
 
-    /**
-     * Return the AssetPublisherInterface
-     *
-     * @return AssetPublisherInterface
-     */
     public function getPublisher(): AssetPublisherInterface
     {
         return $this->publisher;
@@ -279,13 +260,13 @@ final class AssetManager
     }
 
     /**
-     * Converter files SASS, SCSS, Stylus to CSS.
+     * Converter SASS, SCSS, Stylus and other formats to CSS.
      *
      * @param AssetBundle $bundle
      *
      * @return AssetBundle
      */
-    private function converterCss(AssetBundle $bundle): AssetBundle
+    private function convertCss(AssetBundle $bundle): AssetBundle
     {
         foreach ($bundle->css as $i => $css) {
             if (\is_array($css)) {
@@ -314,13 +295,13 @@ final class AssetManager
     }
 
     /**
-     * Converter files CoffeScript, TypeScript to JavaScript.
+     * Convert files CoffeScript, TypeScript and other formats to JavaScript.
      *
      * @param AssetBundle $bundle
      *
      * @return AssetBundle
      */
-    private function converterJs(AssetBundle $bundle): AssetBundle
+    private function convertJs(AssetBundle $bundle): AssetBundle
     {
         foreach ($bundle->js as $i => $js) {
             if (\is_array($js)) {
@@ -409,14 +390,15 @@ final class AssetManager
     /**
      * Loads dummy bundle by name.
      *
-     * @param string $name AssetBunle name class.
+     * @param string $bundleName AssetBunle name
      *
      * @return AssetBundle
+     * @throws InvalidConfigException
      */
-    private function loadDummyBundle(string $name): AssetBundle
+    private function loadDummyBundle(string $bundleName): AssetBundle
     {
-        if (!isset($this->dummyBundles[$name])) {
-            $this->dummyBundles[$name] = $this->publisher->loadBundle($name, [
+        if (!isset($this->dummyBundles[$bundleName])) {
+            $this->dummyBundles[$bundleName] = $this->publisher->loadBundle($bundleName, [
                 'sourcePath' => null,
                 'js' => [],
                 'css' => [],
@@ -424,23 +406,23 @@ final class AssetManager
             ]);
         }
 
-        return $this->dummyBundles[$name];
+        return $this->dummyBundles[$bundleName];
     }
 
     /**
-     * Process CSS, JS files.
+     * Register assets from a named bundle and its dependencies
      *
-     * @param string $name
+     * @param string $bundleName
      *
      * @return void
      */
-    private function registerFiles(string $name): void
+    private function registerFiles(string $bundleName): void
     {
-        if (!isset($this->assetBundles[$name])) {
+        if (!isset($this->assetBundles[$bundleName])) {
             return;
         }
 
-        $bundle = $this->assetBundles[$name];
+        $bundle = $this->assetBundles[$bundleName];
 
         foreach ($bundle->depends as $dep) {
             $this->registerFiles($dep);
@@ -450,17 +432,13 @@ final class AssetManager
     }
 
     /**
-     * Registers the CSS and JS files with the given view.
-     *
-     * @param AssetBundle $bundle the asset files are to be registered in the view.
-     *
-     * @return void
+     * Registers asset files from a bundle considering dependencies
      */
     private function registerAssetFiles(AssetBundle $bundle): void
     {
         if (isset($bundle->basePath, $bundle->baseUrl) && !empty($this->converter)) {
-            $this->converterCss($bundle);
-            $this->converterJs($bundle);
+            $this->convertCss($bundle);
+            $this->convertJs($bundle);
         }
 
         foreach ($bundle->js as $js) {
