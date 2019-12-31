@@ -33,7 +33,7 @@ class AssetBundle
      *
      * You can use either a URL or an alias of the URL.
      */
-    public ?string $baseUrl= null;
+    public ?string $baseUrl = null;
 
     /**
      * @var array list of CSS files that this bundle contains. Each CSS file can be specified in one of the three
