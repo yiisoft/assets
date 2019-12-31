@@ -1,17 +1,14 @@
-# AssetManager
+# Asset manager
 
-AssetManager manages asset bundle configuration and loading.
+AssetManager resolves asset bundles registered in it and provides a list of files to include into HTML.
+For general usage see "[asset bundles](asset-bundles.md)". Here we'll focus on configuring it.
 
-## Configuration:
+Configuration could be done in two ways:
 
-- [AssetManager with di-container](#With-di-container)
-- [AssetManager without di-container](#Without-di-container)
-- [AssetManager config \Yiisoft\View\WebView::setDefaultParameters()](config/webview-setdefaultparameters.md)
+- Using DI container such as [yiisoft/di](https://github.com/yiisoft/di)
+- Creating a class manually 
 
-
-### With-di-container:
-
-To configure our container, we must define our interfaces and classes, which we can then call from the container using `$container->get()`.
+## Registering within yiisoft/di
 
 ```php
 use Psr\Container\ContainerInterface;
@@ -20,26 +17,13 @@ use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
-use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Log\Logger;
 
 return [
-    // defined injection dependencies AssetManager class.
-    LoggerInterface::class => function (ContainerInterface $container) {
-        $logger = $container->get(Logger::class);
-
-        return $logger;
-    },
-
-    // defined AssetConverterInterface class.
-    AssetConverterInterface::class => function (ContainerInterface $container) {
-        $assetConverter = $container->get(AssetConverter::class);
-
-        return $assetConverter;
-    },
-
-    // defined AssetPublisherInterface class.
-    AssetPublisherInterface::class => function (ContainerInterface $container) {
+    LoggerInterface::class => Logger::class,
+    AssetConverterInterface::class => AssetConverter::class, 
+    
+    AssetPublisher::class => function (ContainerInterface $container) {
         $publisher = $container->get(AssetPublisher::class);
 
         /**
@@ -107,9 +91,7 @@ return [
 ];
 ```
 
-### Without-di-container:
-
-You can configure AssetManager without di-container not recommended, keep in mind that you must inject the dependencies in the constructors of each class.
+### Creating a class manually
 
 ```php
 use Yiisoft\Assets\AssetConverter;

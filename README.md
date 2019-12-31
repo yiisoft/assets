@@ -6,7 +6,8 @@
     <br>
 </p>
 
-The package impements clientside asset management such as CSS and JavaScript.
+The package impements clietside asset (such as CSS and JavaScript) management for PHP.
+It helps resolving dependencies and getting lists of files ready for generating HTML `<script` and `<link` tags.
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/assets/v/stable.png)](https://packagist.org/packages/yiisoft/assets)
 [![Total Downloads](https://poser.pugx.org/yiisoft/assets/downloads.png)](https://packagist.org/packages/yiisoft/assets)
@@ -15,34 +16,27 @@ The package impements clientside asset management such as CSS and JavaScript.
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/assets/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/assets/?branch=master)
 
 
-### How to install:
+## Intallation
 
-composer:
+The package could be installed via composer:
 
-~~~
+```
 composer require yiisoft/assets
-~~~
+```
 
-Or add to composer.json:
+## Usage
 
-~~~
-"yiisoft/assets": "^1.0@dev"
-~~~
+There are three main steps using the package:
 
-### How to usages:
+1. [Define asset bundles](docs/asset-bundles.md). These are config classes defining where your assets
+   are and how they should be used.
+2. [Register bundles to asset manager](docs/asset-manager.md) and obtain list of files to include.
+3. Use your favorite method to include files into HTML (out of scope of this package). 
 
-- [AssetManager](docs/assetmanager.md)
-- [AssetBundles](docs/assetbundles.md)
+## Tests
 
-### Run tests PHPUNIT:
+The package is tested with PHPUnit. Tests could be run with
 
-
-Download all composer dependencies root project:
-~~~
-$ composer update --prefer-dist -vvv
-~~~
-
-Run phpunit:
-~~~
-$ vendor/bin/phpunit
-~~~
+```
+./vendor/bin/phpunit
+```
