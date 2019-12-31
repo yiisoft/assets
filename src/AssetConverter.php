@@ -98,7 +98,7 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @param string $asset the asset file path, relative to $basePath
      * @param string $basePath the directory the $asset is relative to.
-     * @param array $optionsConverter options line commands from converter,
+     * @param array $optionsConverter it allows you to {@see AssetConverter::runCommand} options by AssetBundle.
      *
      * @return string the converted asset file path, relative to $basePath.
      */
@@ -130,8 +130,12 @@ final class AssetConverter implements AssetConverterInterface
     /**
      * Allows you to add a command that are used to perform the asset conversion.
      *
-     * @param string $key
+     * @param string $key file extension
      * @param array $value
+     *
+     * Example:
+     *
+     * $converter->setCommand('php', ['txt', 'php {from} > {to}']);
      *
      * @return void
      */

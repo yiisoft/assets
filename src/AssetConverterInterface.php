@@ -13,7 +13,7 @@ interface AssetConverterInterface
      *
      * @param string $asset the asset file path, relative to $basePath
      * @param string $basePath the directory the $asset is relative to.
-     * @param array $optionsConverter options line commands from converter,
+     * @param array $optionsConverter it allows you to {@see AssetConverter::runCommand} options by AssetBundle.
      *
      * @return string the converted asset file path, relative to $basePath.
      */

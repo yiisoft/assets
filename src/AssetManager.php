@@ -8,22 +8,6 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
- *
- * Configured in config/common.php. You can access that instance via $container->get(AssetManager::class).
- *
- * You can modify its configuration by adding an array to your application config under `components` as shown in the
- * following example:
- *
- * ```php
- * AssetManager::class => function (ContainerInterface $container) {
- *     $assetManager = new AssetManager($container->get(LoggerInterface::class));
- *
- *     $assetManager->setConverter($container->get(AssetConverterInterface::class));
- *     $assetManager->setPublisher($container->get(AssetPublisherInterface::class));
-
- *     return $assetManager;
- * },
- * ```
  */
 final class AssetManager
 {
@@ -444,7 +428,6 @@ final class AssetManager
         foreach ($bundle->js as $js) {
             if (\is_array($js)) {
                 $file = array_shift($js);
-                $ext = pathinfo($file);
                 $options = array_merge($bundle->jsOptions, $js);
                 $this->registerJsFile($this->publisher->getAssetUrl($bundle, $file), $options);
             } elseif ($js !== null) {
