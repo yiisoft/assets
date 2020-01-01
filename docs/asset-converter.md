@@ -69,9 +69,9 @@ class BootstrapAsset extends AssetBundle
 
 As we can see the options defined in `$converterOptions`, they are applied to the asset manager when it processes the asset bundle. As we can see the definition of the asset bundle, we are running sass with the option to minify the `$css`.
 
-`$assetManager->getConverter()->setCommand(['css', '@npm/.bin/sass {options} {from} {to}']);`
-
 ```php
+$assetManager->getConverter()->setCommand(['css', '@npm/.bin/sass {options} {from} {to}']);
+
 $assetManager->register([
     \App\Assets\BootstrapAsset::class
 ]);
