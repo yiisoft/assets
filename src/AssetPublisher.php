@@ -173,16 +173,6 @@ final class AssetPublisher implements AssetPublisherInterface
     }
 
     /**
-     * Returns the AssetConverterInterface
-     *
-     * @return AssetConverterInterface the asset converter.
-     */
-    public function getConverter(): AssetConverterInterface
-    {
-        return $this->converter;
-    }
-
-    /**
      * Return config linkAssets.
      *
      * @return boolean
