@@ -274,12 +274,6 @@ final class AssetPublisherTest extends TestCase
     {
         $bundle = new BaseAsset();
 
-        $timestampCss = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
-        $urlCss = "/baseUrl/css/basePath.css?v=$timestampCss";
-
-        $timestampJs = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
-        $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
-
         $this->publisher->setHashCallback(function () {
             return 'HashCallback';
         });
