@@ -272,8 +272,6 @@ final class AssetPublisherTest extends TestCase
 
     public function testSourceSetHashCallback(): void
     {
-        $bundle = new BaseAsset();
-
         $this->publisher->setHashCallback(function () {
             return 'HashCallback';
         });

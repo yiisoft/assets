@@ -371,11 +371,29 @@ final class AssetPublisher implements AssetPublisherInterface
         $this->baseUrl = $value;
     }
 
+    /**
+     * The global $css default options for all assets bundle.
+     *
+     * @param array $value
+     *
+     * @return void
+     *
+     * {@see $cssDefaultOptions}
+     */
     public function setCssDefaultOptions(array $value): void
     {
         $this->cssDefaultOptions = $value;
     }
 
+    /**
+     * The global $js default options for all assets bundle.
+     *
+     * @param array $value
+     *
+     * @return void
+     *
+     * {@see $jsDefaultOptions}
+     */
     public function setJsDefaultOptions(array $value): void
     {
         $this->jsDefaultOptions = $value;
