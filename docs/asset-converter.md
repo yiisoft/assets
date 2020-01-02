@@ -1,29 +1,31 @@
 # Asset converter
 
-AssetConverter supports conversion of several popular script formats into JavaScript or CSS.
+Asset converter purpose is to convert assets from one format to another. Out of the box it supports conversion of
+several popular formats into JavaScript and CSS.
 
-# Defining asset converter for SASS
+## Configuring asset conversion
 
-We'll use [foxy](https://github.com/fxpio/foxy). In calls npm so we'll need [NodeJS](https://nodejs.org/en/) installed. After it is done, create `package.json`:
+In order to use asset conversion we have to configure it first. Let's see how it's done. As example
+let's convert [SCSS](https://sass-lang.com/) into CSS.  
+
+
+We'll use [foxy](https://github.com/fxpio/foxy). Since it calls npm we'll need [NodeJS](https://nodejs.org/en/) installed.
+After it is done, create `package.json`:
 
 ```json
 {
     "license": "BSD-3-Clause",
     "dependencies": {
-        "sass": "^1.24.0",
+        "sass": "^1.24.0"
     }
 }
 ```
 
-npm installs three packages into `node_modules` directory of our application.
+`npm install` brings three packages into `node_modules` directory of our application.
 
-# Using asset converter from asset bundle
-
-For example convert scss to css: Bootstrap.php.
+Below we're using bootstrap bundle from "[Asset bundles](asset-bundles.md)" guide:
 
 ```php
-declare(strict_types = 1);
-
 namespace App\Assets;
 
 use Yiisoft\Assets\AssetBundle;
@@ -46,7 +48,7 @@ class BootstrapAsset extends AssetBundle
     ];
 
     public array $converterOptions = [
-        'scss'   => '--style = compressed',
+        'scss' => '--style = compressed',
     ];
 
     public array $depends = [
@@ -65,13 +67,31 @@ class BootstrapAsset extends AssetBundle
 }
 ```
 
-# Using in view:
-
-As we can see the options defined in `$converterOptions`, they are applied to the asset manager when it processes the asset bundle. As we can see the definition of the asset bundle, we are running sass with the option to minify the `$css`.
+Since in `$css` we are pointing to `.scss`, asset manager asks asset converter to check if such file could be converted
+to CSS. By default asset converter has command definitions for less, scss, sass, styl, coffee and ts but since all these
+are meant to be installed globally and we have it as local depdendency, we need to redefine a command:
 
 ```php
-$assetManager->getConverter()->setCommand(['css', '@npm/.bin/sass {options} {from} {to}']);
+$assetManager->getConverter()->setCommand('scss', ['css', '@npm/.bin/sass {options} {from} {to}']);
+```  
 
+or, if done via yiisoft/di container:
+
+```php
+AssetConverterInterface::class => static function (\Psr\Container\ContainerInterface $container) {
+    $aliases = $container->get(\Yiisoft\Aliases\Aliases::class);
+    $logger = $container->get(\Psr\Log\LoggerInterface::class);
+    $converter = new \Yiisoft\Assets\AssetConverter($aliases, $logger);
+    $converter->setCommand('scss', ['css', '@npm/.bin/sass {options} {from} {to}']);
+}
+```
+
+Asset bundle's `$converterOptions` define additional options passed to conversion utility. In this case we're telling `sass`
+to minify resulting CSS.
+
+Now, registering asset bundle as usual would result in asset conversion taking place:
+
+```php
 $assetManager->register([
     \App\Assets\BootstrapAsset::class
 ]);
