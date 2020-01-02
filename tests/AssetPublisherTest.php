@@ -230,6 +230,40 @@ final class AssetPublisherTest extends TestCase
         );
     }
 
+    public function testSourcesCssJsDefaultOptions(): void
+    {
+        $this->publisher->setCssDefaultOptions([
+            'media' => 'none'
+        ]);
+
+        $this->publisher->setJsDefaultOptions([
+            'position' => 2
+        ]);
+
+        $this->assertEmpty($this->assetManager->getAssetBundles());
+
+        $this->assetManager->register([SourceAsset::class]);
+
+        $this->assertEquals(
+            [
+                'media' => 'none'
+            ],
+            $this->assetManager->getCssFiles()['/baseUrl/fc741d39/css/stub.css']['attributes']
+        );
+        $this->assertEquals(
+            [
+                'position' => 2
+            ],
+            $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
+        );
+        $this->assertEquals(
+            [
+                'position' => 2
+            ],
+            $this->assetManager->getJsFiles()['/baseUrl/fc741d39/js/stub.js']['attributes']
+        );
+    }
+
     public function testSourceSetHashCallback(): void
     {
         $this->publisher->setHashCallback(function () {

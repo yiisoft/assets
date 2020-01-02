@@ -58,6 +58,18 @@ final class AssetPublisher implements AssetPublisherInterface
     private ?string $baseUrl;
 
     /**
+     * @var array the options that will be passed to {@see \Yiisoft\View\View::registerCssFile()} when registering the
+     * CSS files all assets bundle.
+     */
+    private array $cssDefaultOptions = [];
+
+    /**
+     * @var array the options that will be passed to {@see \Yiisoft\View\View::registerJsFile()} when registering the
+     * JS files all assets bundle.
+     */
+    private array $jsDefaultOptions = [];
+
+    /**
      * @var int the permission to be set for newly generated asset directories. This value will be used by PHP chmod()
      * function. No umask will be applied. Defaults to 0775, meaning the directory is read-writable by owner
      * and group, but read-only for other users.
@@ -210,6 +222,9 @@ final class AssetPublisher implements AssetPublisherInterface
         foreach ($config as $property => $value) {
             $bundle->$property = $value;
         }
+
+        $bundle->cssOptions = array_merge($bundle->cssOptions, $this->cssDefaultOptions);
+        $bundle->jsOptions = array_merge($bundle->jsOptions, $this->jsDefaultOptions);
 
         if (!$bundle->cdn) {
             $this->checkBasePath($bundle->basePath);
@@ -364,6 +379,16 @@ final class AssetPublisher implements AssetPublisherInterface
     public function setBaseUrl(?string $value): void
     {
         $this->baseUrl = $value;
+    }
+
+    public function setCssDefaultOptions(array $value): void
+    {
+        $this->cssDefaultOptions = $value;
+    }
+
+    public function setJsDefaultOptions(array $value): void
+    {
+        $this->jsDefaultOptions = $value;
     }
 
     /**
