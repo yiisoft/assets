@@ -232,6 +232,12 @@ final class AssetPublisherTest extends TestCase
 
     public function testSourcesCssJsDefaultOptions(): void
     {
+        $bundle = new SourceAsset();
+
+        $sourcePath = $this->aliases->get($bundle->sourcePath);
+        $path = (is_file($sourcePath) ? \dirname($sourcePath) : $sourcePath) . @filemtime($sourcePath);
+        $hash = sprintf('%x', crc32($path . '|' . $this->publisher->getLinkAssets()));
+
         $this->publisher->setCssDefaultOptions([
             'media' => 'none'
         ]);
@@ -248,7 +254,7 @@ final class AssetPublisherTest extends TestCase
             [
                 'media' => 'none'
             ],
-            $this->assetManager->getCssFiles()['/baseUrl/fc741d39/css/stub.css']['attributes']
+            $this->assetManager->getCssFiles()["/baseUrl/$hash/css/stub.css"]['attributes']
         );
         $this->assertEquals(
             [
@@ -260,12 +266,20 @@ final class AssetPublisherTest extends TestCase
             [
                 'position' => 2
             ],
-            $this->assetManager->getJsFiles()['/baseUrl/fc741d39/js/stub.js']['attributes']
+            $this->assetManager->getJsFiles()["/baseUrl/$hash/js/stub.js"]['attributes']
         );
     }
 
     public function testSourceSetHashCallback(): void
     {
+        $bundle = new BaseAsset();
+
+        $timestampCss = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
+        $urlCss = "/baseUrl/css/basePath.css?v=$timestampCss";
+
+        $timestampJs = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
+        $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
+
         $this->publisher->setHashCallback(function () {
             return 'HashCallback';
         });
