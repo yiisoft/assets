@@ -165,23 +165,23 @@ final class AssetPublisher implements AssetPublisherInterface
         }
 
         if (!$bundle->cdn) {
-            $basePath = $this->aliases->get($bundle->basePath);
-            $baseUrl = $this->aliases->get($bundle->baseUrl);
+            $this->checkBasePath($bundle->basePath);
+            $this->checkBaseUrl($bundle->baseUrl);
         }
 
         if (!AssetUtil::isRelative($assetPath) || strncmp($assetPath, '/', 1) === 0) {
             return $assetPath;
         }
 
-        if (!is_file("$basePath/$assetPath")) {
-            throw new InvalidConfigException("Asset files not found: '$basePath/$assetPath.'");
+        if (!is_file("$this->basePath/$assetPath")) {
+            throw new InvalidConfigException("Asset files not found: '$this->basePath/$assetPath.'");
         }
 
-        if ($this->appendTimestamp  && ($timestamp = @filemtime("$basePath/$assetPath")) > 0) {
-            return "$baseUrl/$assetPath?v=$timestamp";
+        if ($this->appendTimestamp  && ($timestamp = @filemtime("$this->basePath/$assetPath")) > 0) {
+            return "$this->baseUrl/$assetPath?v=$timestamp";
         }
 
-        return "$baseUrl/$assetPath";
+        return "$this->baseUrl/$assetPath";
     }
 
     /**
@@ -260,7 +260,9 @@ final class AssetPublisher implements AssetPublisherInterface
     public function publish(AssetBundle $bundle): array
     {
         if (empty($bundle->sourcePath)) {
-            throw new InvalidConfigException("The sourcePath must be defined.");
+            throw new InvalidConfigException(
+                "The sourcePath must be defined in AssetBundle property public ?string $sourcePath = $path."
+            );
         }
 
         if (isset($this->published[$bundle->sourcePath])) {
