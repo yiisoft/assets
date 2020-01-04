@@ -97,27 +97,27 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @param string $asset the asset file path, relative to $basePath
      * @param string $basePath the directory the $asset is relative to.
-     * @param array $optionsConverter it allows you to {@see AssetConverter::runCommand} options by AssetBundle.
+     * @param array $options additional options to pass to {@see AssetConverter::runCommand}
      *
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert(string $asset, string $basePath, array $optionsConverter = []): string
+    public function convert(string $asset, string $basePath, array $options = []): string
     {
-        $options = null;
+        $commandOptions = null;
         $pos = strrpos($asset, '.');
 
         if ($pos !== false) {
             $srcExt = substr($asset, $pos + 1);
 
-            if (isset($optionsConverter[$srcExt])) {
-                $options = $optionsConverter[$srcExt];
+            if (isset($options[$srcExt])) {
+                $commandOptions = $options[$srcExt];
             }
 
             if (isset($this->commands[$srcExt])) {
                 [$ext, $command] = $this->commands[$srcExt];
                 $result = substr($asset, 0, $pos + 1).$ext;
                 if ($this->forceConvert || $this->isOutdated($basePath, $asset, $result, $srcExt, $ext)) {
-                    $this->runCommand($command, $basePath, $asset, $result, $options);
+                    $this->runCommand($command, $basePath, $asset, $result, $commandOptions);
                 }
 
                 return $result;
@@ -130,25 +130,25 @@ final class AssetConverter implements AssetConverterInterface
     /**
      * Allows you to set a command that is used to perform the asset conversion.
      *
-     * @param string $extension file from extension
-     * @param string $extension file to extension
-     * @param string $command
+     * @param string $from file extension of the format converting from
+     * @param string $to file extension of the format converting to
+     * @param string $command command to execute for conversion
      *
      * Example:
      *
-     * $converter->setCommand('php', 'txt', 'php {from} > {to}');
+     * $converter->setCommand('scss', 'css', 'sass {options} {from} {to}');
      *
      * @return void
      */
     public function setCommand(string $from, string $to, string $command): void
     {
-        $this->commands[$from] = ["$to", "$command"];
+        $this->commands[$from] = [$to, $command];
     }
 
     /**
      * Make the conversion regardless of whether the asset already exists.
      *
-     * @param boolean $value
+     * @param bool $value
      * @return void
      */
     public function setForceConvert(bool $value): void
