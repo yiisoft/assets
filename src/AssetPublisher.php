@@ -259,6 +259,10 @@ final class AssetPublisher implements AssetPublisherInterface
      */
     public function publish(AssetBundle $bundle): array
     {
+        if (empty($bundle->sourcePath)) {
+            throw new InvalidConfigException("The sourcePath must be defined.");
+        }
+
         if (isset($this->published[$bundle->sourcePath])) {
             return $this->published[$bundle->sourcePath];
         }
