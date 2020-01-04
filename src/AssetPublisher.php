@@ -261,7 +261,7 @@ final class AssetPublisher implements AssetPublisherInterface
     {
         if (empty($bundle->sourcePath)) {
             throw new InvalidConfigException(
-                "The sourcePath must be defined in AssetBundle property public ?string $sourcePath = $path."
+                'The sourcePath must be defined in AssetBundle property public ?string $sourcePath = $path.'
             );
         }
 
