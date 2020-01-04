@@ -36,6 +36,11 @@ class AssetBundle
     public ?string $baseUrl = null;
 
     /**
+     * @var bool Indicates whether the AssetBundle uses CDN exclusively.
+     */
+    public bool $cdn = false;
+
+    /**
      * @var array list of CSS files that this bundle contains. Each CSS file can be specified in one of the three
      * formats as explained in {@see js}.
      *
@@ -44,10 +49,28 @@ class AssetBundle
     public array $css = [];
 
     /**
-     * @var array the options that will be passed to {@see View::registerCssFile()} when registering the CSS files in
-     * this bundle.
+     * @var array the options that will be passed to {@see \Yiisoft\View::registerCssFile()} when registering the CSS
+     * files in this bundle.
      */
     public array $cssOptions = [];
+
+    /**
+     * @var array the options line command from converter.
+     *
+     * Example: Dart SASS minify css.
+     *
+     * public array $converterOptions = [
+     *     'css'   => '--style = compressed',
+     * ];
+     */
+    public array $converterOptions = [
+        'less'   => null,
+        'scss'   => null,
+        'sass'   => null,
+        'styl'   => null,
+        'coffee' => null,
+        'ts'     => null,
+    ];
 
     /**
      * @var array list of bundle class names that this bundle depends on.
@@ -81,8 +104,8 @@ class AssetBundle
     public array $js = [];
 
     /**
-     * @var array the options that will be passed to {@see View::registerJsFile()} when registering the JS files in this
-     * bundle.
+     * @var array the options that will be passed to {@see Yiisoft\View\View::registerJsFile()} when registering the JS
+     * files in this bundle.
      */
     public array $jsOptions = [];
 
@@ -97,7 +120,7 @@ class AssetBundle
      * file that is part of your source code repository of your Web application.
      *
      * You must set this property if the directory containing the source asset files is not Web accessible. By setting
-     * this property, [[AssetManager]] will publish the source asset files to a Web-accessible directory automatically
+     * this property, {@see AssetManager} will publish the source asset files to a Web-accessible directory automatically
      * when the asset bundle is registered on a page.
      *
      * If you do not set this property, it means the source asset files are located under {@see basePath}.

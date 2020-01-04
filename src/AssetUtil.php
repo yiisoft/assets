@@ -3,10 +3,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+/**
+ * AssetUtil shared functions.
+ */
 final class AssetUtil
 {
     /**
      * Returns a value indicating whether a URL is relative.
+     *
      * A relative URL does not have host info part.
      * @param string $url the URL to be checked
      * @return bool whether the URL is relative

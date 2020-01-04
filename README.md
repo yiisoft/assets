@@ -31,7 +31,8 @@ There are three main steps using the package:
 1. [Define asset bundles](docs/asset-bundles.md). These are config classes defining where your assets
    are and how they should be used.
 2. [Register bundles to asset manager](docs/asset-manager.md) and obtain list of files to include.
-3. Use your favorite method to include files into HTML (out of scope of this package). 
+3. Optionally [use asset converter with asset bundle](docs/asset-converter.md) for asset format conversion (such as TypeScript to JavaScript).
+4. Use your favorite method to include files into HTML (out of scope of this package). 
 
 ## Tests
 

@@ -40,7 +40,7 @@ EOF
 
         $converter = new AssetConverter($this->aliases, $this->logger);
 
-        $converter->setCommand('php', ['txt', 'php {from} > {to}']);
+        $converter->setCommand('php', 'txt', 'php {from} > {to}');
 
         $this->assertEquals('test.txt', $converter->convert('test.php', $this->tmpPath));
         $this->assertFileExists($this->tmpPath . '/test.txt', 'Failed asserting that asset output file exists.');
@@ -62,7 +62,7 @@ EOF
 
         $converter = new AssetConverter($this->aliases, $this->logger);
 
-        $converter->setCommand('php', ['txt', 'php {from} > {to}']);
+        $converter->setCommand('php', 'txt', 'php {from} > {to}');
 
         $converter->convert('test.php', $this->tmpPath);
         $initialConvertTime = file_get_contents($this->tmpPath . '/test.txt');
@@ -90,7 +90,7 @@ EOF
 
         $converter = new AssetConverter($this->aliases, $this->logger);
 
-        $converter->setCommand('php', ['txt', 'php {from} > {to}']);
+        $converter->setCommand('php', 'txt', 'php {from} > {to}');
 
         $converter->convert('test.php', $this->tmpPath);
         $initialConvertTime = file_get_contents($this->tmpPath . '/test.txt');
@@ -121,19 +121,19 @@ EOF
 
         $converter = new AssetConverter($this->aliases, $this->logger);
 
-        $converter->setCommand('php', ['txt', 'php {from} > {to}']);
+        $converter->setCommand('php', 'txt', 'php {from} > {to}');
 
         $converter->convert('test.php', $this->tmpPath);
         $initialConvertTime = file_get_contents($this->tmpPath . '/test.txt');
 
-        $converter->setIsOutdatedCallback(function () {
+        $converter->setIsOutdatedCallback(static function () {
             return false;
         });
 
         $converter->convert('test.php', $this->tmpPath);
         $this->assertStringEqualsFile($this->tmpPath . '/test.txt', $initialConvertTime);
 
-        $converter->setIsOutdatedCallback(function () {
+        $converter->setIsOutdatedCallback(static function () {
             return true;
         });
 

@@ -2,41 +2,38 @@
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
-use Yiisoft\Factory\Definitions\Reference;
+use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Log\Logger;
 
 return [
-    AssetConverter::class => [
-        '__class' => AssetConverter::class,
-        '__construct()' => [
-            Reference::to(Aliases::class),
-            Reference::to(LoggerInterface::class)
-        ]
-    ],
+    LoggerInterface::class => function (ContainerInterface $container) {
+        $logger = $container->get(Logger::class);
 
-    AssetConverterInterface::class => AssetConverter::class,
+        return $logger;
+    },
+
+    AssetConverterInterface::class => function (ContainerInterface $container) {
+        $assetConverter = $container->get(AssetConverter::class);
+
+        return $assetConverter;
+    },
+
+    AssetPublisherInterface::class => function (ContainerInterface $container) {
+        $publisher = $container->get(AssetPublisher::class);
+
+        return $publisher;
+    },
 
     AssetManager::class => function (ContainerInterface $container) {
-        $assetConverterInterface = $container->get(AssetConverterInterface::class);
-        $aliases = $container->get(Aliases::class);
-        $logger = $container->get(LoggerInterface::class);
-        $publisher = $container->get(AssetPublisher::class);
-        $assetManager = new AssetManager($aliases, $logger);
-        $assetManager->setConverter($assetConverterInterface);
-        $assetManager->setPublisher($publisher);
+        $assetManager = new AssetManager($container->get(LoggerInterface::class));
+
+        $assetManager->setConverter($container->get(AssetConverterInterface::class));
+        $assetManager->setPublisher($container->get(AssetPublisherInterface::class));
 
         return $assetManager;
     },
-
-    LoggerInterface::class => [
-        '__class' => Logger::class,
-        '__construct()' => [
-            'targets' => [],
-        ],
-    ],
 ];
