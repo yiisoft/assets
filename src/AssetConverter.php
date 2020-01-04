@@ -32,7 +32,6 @@ final class AssetConverter implements AssetConverterInterface
      * ```
      */
     private array $commands = [
-        'css'    => ['css', 'sass {options} {from} {to}'],
         'less'   => ['css', 'lessc {from} {to} --no-color --source-map'],
         'scss'   => ['css', 'sass {options} {from} {to}'],
         'sass'   => ['css', 'sass {options} {from} {to}'],
