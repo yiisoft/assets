@@ -263,12 +263,12 @@ final class AssetPublisher implements AssetPublisherInterface
             return $this->published[$bundle->sourcePath];
         }
 
+        $this->checkBasePath($bundle->basePath);
+        $this->checkBaseUrl($bundle->baseUrl);
+
         if (!file_exists($this->aliases->get($bundle->sourcePath))) {
             throw new InvalidConfigException("The sourcePath to be published does not exist: $bundle->sourcePath");
         }
-
-        $this->checkBasePath($bundle->basePath);
-        $this->checkBaseUrl($bundle->baseUrl);
 
         return $this->published[$bundle->sourcePath] = $this->publishDirectory(
             $bundle->sourcePath,
