@@ -150,18 +150,18 @@ final class AssetPublisher implements AssetPublisherInterface
      * the given asset path.
      *
      * @param AssetBundle $bundle the asset bundle which the asset file belongs to.
-     * @param string $pathAsset the asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
+     * @param string $assetPath the asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
      * {@see AssetBundle::$css}.
      *
      * @return string the actual URL for the specified asset.
      * @throws InvalidConfigException
      */
-    public function getAssetUrl(AssetBundle $bundle, string $pathAsset): string
+    public function getAssetUrl(AssetBundle $bundle, string $assetPath): string
     {
-        $asset = AssetUtil::resolveAsset($bundle, $pathAsset, $this->assetMap);
+        $asset = AssetUtil::resolveAsset($bundle, $assetPath, $this->assetMap);
 
         if (!empty($asset)) {
-            $pathAsset = $asset;
+            $assetPath = $asset;
         }
 
         if (!$bundle->cdn) {
@@ -169,19 +169,19 @@ final class AssetPublisher implements AssetPublisherInterface
             $baseUrl = $this->aliases->get($bundle->baseUrl);
         }
 
-        if (!AssetUtil::isRelative($pathAsset) || strncmp($pathAsset, '/', 1) === 0) {
-            return $pathAsset;
+        if (!AssetUtil::isRelative($assetPath) || strncmp($assetPath, '/', 1) === 0) {
+            return $assetPath;
         }
 
-        if (!is_file("$basePath/$pathAsset")) {
-            throw new InvalidConfigException("Asset files not found: '$basePath/$pathAsset.'");
+        if (!is_file("$basePath/$assetPath")) {
+            throw new InvalidConfigException("Asset files not found: '$basePath/$assetPath.'");
         }
 
-        if ($this->appendTimestamp  && ($timestamp = @filemtime("$basePath/$pathAsset")) > 0) {
-            return "$baseUrl/$pathAsset?v=$timestamp";
+        if ($this->appendTimestamp  && ($timestamp = @filemtime("$basePath/$assetPath")) > 0) {
+            return "$baseUrl/$assetPath?v=$timestamp";
         }
 
-        return "$baseUrl/$pathAsset";
+        return "$baseUrl/$assetPath";
     }
 
     /**
