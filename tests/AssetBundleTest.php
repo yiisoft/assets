@@ -11,6 +11,7 @@ use Yiisoft\Assets\Tests\stubs\CircleAsset;
 use Yiisoft\Assets\Tests\stubs\CircleDependsAsset;
 use Yiisoft\Assets\Tests\stubs\FileOptionsAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
+use Yiisoft\Assets\Tests\stubs\RootAsset;
 use Yiisoft\Assets\Tests\stubs\SimpleAsset;
 
 /**
@@ -78,7 +79,40 @@ final class AssetBundleTest extends TestCase
         $this->assetManager->register([BaseAsset::class]);
     }
 
-    public function testBaseUrlEmptyException(): void
+    public function testBaseUrlEmptyString(): void
+    {
+        $this->assetManager->setBundles(
+            [
+                RootAsset::class => [
+                    'baseUrl' => ''
+                ],
+            ]
+        );
+
+        $this->assertEmpty($this->assetManager->getAssetBundles());
+
+        $this->assetManager->register([RootAsset::class]);
+    }
+
+    public function testBaseUrlEmptyStringChain(): void
+    {
+        $this->assetManager->setBundles(
+            [
+                RootAsset::class => [
+                    'depends' => [BaseAsset::class]
+                ],
+                BaseAsset::class => [
+                    'baseUrl' => null,
+                ],
+            ]
+        );
+
+        $this->assertEmpty($this->assetManager->getAssetBundles());
+
+        $this->assetManager->register([RootAsset::class]);
+    }
+
+    public function testBaseUrlIsNotSetException(): void
     {
         $this->assetManager->setBundles(
             [
