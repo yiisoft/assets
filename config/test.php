@@ -22,6 +22,7 @@ return [
         '@npm' => '@root/node_modules',
         '@view' => '@public/view',
         '@web' => '@baseUrl',
+        '@webRoot' => '/',
         '@testSourcePath' => '@public/assetsources'
     ],
 
