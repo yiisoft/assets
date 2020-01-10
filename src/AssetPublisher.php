@@ -505,14 +505,14 @@ final class AssetPublisher implements AssetPublisherInterface
      */
     private function checkBaseUrl(?string $baseUrl): void
     {
-        if (!isset($this->baseUrl) && !isset($baseUrl)) {
+        if (!isset($this->baseUrl) && $baseUrl === null) {
             throw new InvalidConfigException(
                 'baseUrl must be set in AssetPublisher->setBaseUrl($path) or ' .
                 'AssetBundle property public ?string $baseUrl = $path'
             );
         }
 
-        if (isset($baseUrl)) {
+        if ($baseUrl !== null) {
             $this->baseUrl = $this->aliases->get($baseUrl);
         }
     }
