@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
@@ -207,7 +208,6 @@ final class AssetManagerTest extends TestCase
             ],
             $this->assetManager->getJsFiles()['/files/jsFile.js']['attributes']
         );
-
     }
 
     /**
