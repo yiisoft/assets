@@ -116,7 +116,7 @@ final class AssetConverter implements AssetConverterInterface
 
             if (isset($this->commands[$srcExt])) {
                 [$ext, $command] = $this->commands[$srcExt];
-                $result = substr($asset, 0, $pos + 1).$ext;
+                $result = substr($asset, 0, $pos + 1) . $ext;
                 if ($this->forceConvert || $this->isOutdated($basePath, $asset, $result, $srcExt, $ext)) {
                     $this->runCommand($command, $basePath, $asset, $result, $commandOptions);
                 }

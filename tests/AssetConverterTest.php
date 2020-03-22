@@ -30,7 +30,9 @@ final class AssetConverterTest extends TestCase
 
     public function testConvert(): void
     {
-        file_put_contents($this->tmpPath . '/test.php', <<<EOF
+        file_put_contents(
+            $this->tmpPath . '/test.php',
+            <<<EOF
 <?php
 
 echo "Hello World!\n";
@@ -53,7 +55,9 @@ EOF
     public function testConvertOutdated(): void
     {
         $srcFilename = $this->tmpPath . '/test.php';
-        file_put_contents($srcFilename, <<<'EOF'
+        file_put_contents(
+            $srcFilename,
+            <<<'EOF'
 <?php
 
 echo microtime();
@@ -81,7 +85,9 @@ EOF
      */
     public function testForceConvert(): void
     {
-        file_put_contents($this->tmpPath . '/test.php', <<<'EOF'
+        file_put_contents(
+            $this->tmpPath . '/test.php',
+            <<<'EOF'
 <?php
 
 echo microtime();
@@ -112,7 +118,9 @@ EOF
     public function testCheckOutdatedCallback(): void
     {
         $srcFilename = $this->tmpPath . '/test.php';
-        file_put_contents($srcFilename, <<<'EOF'
+        file_put_contents(
+            $srcFilename,
+            <<<'EOF'
 <?php
 
 echo microtime();

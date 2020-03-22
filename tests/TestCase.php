@@ -102,7 +102,7 @@ abstract class TestCase extends BaseTestCase
             if ($file === '.' || $file === '..' || $file === '.gitignore') {
                 continue;
             }
-            $path = $dir.DIRECTORY_SEPARATOR.$file;
+            $path = $dir . DIRECTORY_SEPARATOR . $file;
             if (is_dir($path)) {
                 FileHelper::removeDirectory($path);
             } else {
