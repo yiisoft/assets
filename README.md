@@ -11,7 +11,7 @@ It helps resolving dependencies and getting lists of files ready for generating 
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/assets/v/stable.png)](https://packagist.org/packages/yiisoft/assets)
 [![Total Downloads](https://poser.pugx.org/yiisoft/assets/downloads.png)](https://packagist.org/packages/yiisoft/assets)
-[![Build Status](https://travis-ci.com/yiisoft/assets.svg?branch=master)](https://travis-ci.com/yiisoft/assets)
+[![Build Status](https://github.com/yiisoft/assets/workflows/build/badge.svg)](https://github.com/yiisoft/assets/actions)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/assets/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/assets/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/assets/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/assets/?branch=master)
 
