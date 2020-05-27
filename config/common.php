@@ -10,23 +10,11 @@ use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Log\Logger;
 
 return [
-    LoggerInterface::class => function (ContainerInterface $container) {
-        $logger = $container->get(Logger::class);
+    LoggerInterface::class => Logger::class,
 
-        return $logger;
-    },
+    AssetConverterInterface::class => AssetConverter::class,
 
-    AssetConverterInterface::class => function (ContainerInterface $container) {
-        $assetConverter = $container->get(AssetConverter::class);
-
-        return $assetConverter;
-    },
-
-    AssetPublisherInterface::class => function (ContainerInterface $container) {
-        $publisher = $container->get(AssetPublisher::class);
-
-        return $publisher;
-    },
+    AssetPublisherInterface::class => AssetPublisher::class,
 
     AssetManager::class => function (ContainerInterface $container) {
         $assetManager = new AssetManager($container->get(LoggerInterface::class));
