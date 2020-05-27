@@ -17,7 +17,7 @@ namespace Yiisoft\Assets;
 class AssetBundle
 {
     /**
-     * @var string the Web-accessible directory that contains the asset files in this bundle.
+     * @var string|null the Web-accessible directory that contains the asset files in this bundle.
      *
      * If {@see sourcePath} is set, this property will be *overwritten* by {@see AssetManager} when it publishes the
      * asset files from {@see sourcePath}.
@@ -27,7 +27,7 @@ class AssetBundle
     public ?string $basePath = null;
 
     /**
-     * @var string the base URL for the relative asset files listed in {@see js} and {@see css}.
+     * @var string|null the base URL for the relative asset files listed in {@see js} and {@see css}.
      *
      * If {@see {sourcePath} is set, this property will be *overwritten* by {@see {AssetManager} when it publishes the
      * asset files from {@see {sourcePath}.
@@ -117,7 +117,7 @@ class AssetBundle
     public array $publishOptions = [];
 
     /**
-     * @var string the directory that contains the source asset files for this asset bundle. A source asset file is a
+     * @var string|null the directory that contains the source asset files for this asset bundle. A source asset file is a
      * file that is part of your source code repository of your Web application.
      *
      * You must set this property if the directory containing the source asset files is not Web accessible. By setting
