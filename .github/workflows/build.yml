@@ -83,3 +83,8 @@ jobs:
         run: |
           wget https://scrutinizer-ci.com/ocular.phar
           php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
+      - name: Phan static analysis
+        if: matrix.os == 'ubuntu-latest' && matrix.php-version == '7.4'
+        continue-on-error: true
+        run: phan --no-progress-bar --output-mode checkstyle | cs2pr
