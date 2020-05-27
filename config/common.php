@@ -7,16 +7,11 @@ use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\AssetPublisherInterface;
-use Yiisoft\Log\Logger;
 
 return [
-    LoggerInterface::class => Logger::class,
-
     AssetConverterInterface::class => AssetConverter::class,
-
     AssetPublisherInterface::class => AssetPublisher::class,
-
-    AssetManager::class => function (ContainerInterface $container) {
+    AssetManager::class => static function (ContainerInterface $container) {
         $assetManager = new AssetManager($container->get(LoggerInterface::class));
 
         $assetManager->setConverter($container->get(AssetConverterInterface::class));

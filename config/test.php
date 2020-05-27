@@ -2,13 +2,13 @@
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\AssetPublisherInterface;
-use Yiisoft\Log\Logger;
 
 $tempDir = sys_get_temp_dir();
 
@@ -26,13 +26,11 @@ return [
         '@testSourcePath' => '@public/assetsources'
     ],
 
-    LoggerInterface::class => Logger::class,
+    LoggerInterface::class => NullLogger::class,
 
     AssetConverterInterface::class => AssetConverter::class,
-
     AssetPublisherInterface::class => AssetPublisher::class,
-
-    AssetManager::class => function (ContainerInterface $container) {
+    AssetManager::class => static function (ContainerInterface $container) {
         $assetManager = new AssetManager($container->get(LoggerInterface::class));
 
         $assetManager->setConverter($container->get(AssetConverterInterface::class));
