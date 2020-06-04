@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Assets\Tests;
 
 use Yiisoft\Assets\AssetConverter;
