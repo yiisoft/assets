@@ -48,7 +48,7 @@ class BootstrapAsset extends AssetBundle
     ];
 
     public array $converterOptions = [
-        'scss' => '--style = compressed',
+        'scss' => '--style compressed',
     ];
 
     public array $depends = [

@@ -220,7 +220,7 @@ final class AssetConverter implements AssetConverterInterface
         $command = $this->aliases->get($command);
 
         $command = strtr($command, [
-            '{options}' => escapeshellarg("$options"),
+            '{options}' => $options,
             '{from}' => escapeshellarg("$basePath/$asset"),
             '{to}'   => escapeshellarg("$basePath/$result"),
         ]);
