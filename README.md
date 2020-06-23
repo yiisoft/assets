@@ -18,7 +18,7 @@ It helps resolving dependencies and getting lists of files ready for generating 
 [![static analysis](https://github.com/yiisoft/assets/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/assets/actions?query=workflow%3A%22static+analysis%22)
 
 
-### Intallation
+## Intallation
 
 The package could be installed via composer:
 
@@ -26,7 +26,7 @@ The package could be installed via composer:
 composer require yiisoft/assets
 ```
 
-### Usage
+## Usage
 
 There are three main steps using the package:
 
@@ -36,7 +36,7 @@ There are three main steps using the package:
 3. Optionally [use asset converter with asset bundle](docs/asset-converter.md) for asset format conversion (such as TypeScript to JavaScript).
 4. Use your favorite method to include files into HTML (out of scope of this package). 
 
-### Unit testing
+## Unit testing
 
 The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 
@@ -44,7 +44,7 @@ The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 ./vendor/bin/phpunit
 ```
 
-### Mutation testing
+## Mutation testing
 
 The package tests are checked with [Infection](https://infection.github.io/) mutation framework. To run it:
 
@@ -52,7 +52,7 @@ The package tests are checked with [Infection](https://infection.github.io/) mut
 ./vendor/bin/infection
 ```
 
-### Static analysis
+## Static analysis
 
 The code is statically analyzed with [Phan](https://github.com/phan/phan/wiki). To run static analysis:
 
