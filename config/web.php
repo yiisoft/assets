@@ -23,7 +23,6 @@ return [
     LoggerInterface::class => NullLogger::class,
 
     AssetConverterInterface::class => static function (ContainerInterface $container) use ($params) {
-
         $assetConverter = new AssetConverter(
             $container->get(Aliases::class),
             $container->get(LoggerInterface::class)
