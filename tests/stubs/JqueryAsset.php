@@ -8,7 +8,7 @@ use Yiisoft\Assets\AssetBundle;
 
 final class JqueryAsset extends AssetBundle
 {
-    public ?string $basePath = '@public/jquery';
+    public ?string $basePath = '@root/tests/public/jquery';
 
     public ?string $baseUrl = '/js';
 

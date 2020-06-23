@@ -35,7 +35,7 @@ final class AssetManagerTest extends TestCase
 
         $this->assertEquals(
             $this->assetManager->getPublisher()->getPublishedPath($bundle->sourcePath),
-            $this->aliases->get("@public/assets/$path")
+            $this->aliases->get("@root/tests/public/assets/$path")
         );
     }
 

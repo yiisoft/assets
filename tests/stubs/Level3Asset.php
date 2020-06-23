@@ -8,7 +8,7 @@ use Yiisoft\Assets\AssetBundle;
 
 final class Level3Asset extends AssetBundle
 {
-    public ?string $basePath = '@public/js';
+    public ?string $basePath = '@root/tests/public/js';
 
-    public ?string $baseUrl = '@web/js';
+    public ?string $baseUrl = '@assetUrl/js';
 }

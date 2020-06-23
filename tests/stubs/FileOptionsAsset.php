@@ -8,7 +8,7 @@ use Yiisoft\Assets\AssetBundle;
 
 final class FileOptionsAsset extends AssetBundle
 {
-    public ?string $basePath = '@public/media';
+    public ?string $basePath = '@root/tests/public/media';
 
     public ?string $baseUrl = '/baseUrl';
 

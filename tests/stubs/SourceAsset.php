@@ -8,9 +8,9 @@ use Yiisoft\Assets\AssetBundle;
 
 final class SourceAsset extends AssetBundle
 {
-    public ?string $basePath = '@public/assets';
+    public ?string $basePath = '@asset';
 
-    public ?string $baseUrl = '@web';
+    public ?string $baseUrl = '@assetUrl';
 
     public array $css = [
         'css/stub.css',
@@ -24,5 +24,5 @@ final class SourceAsset extends AssetBundle
         JqueryAsset::class,
     ];
 
-    public ?string $sourcePath = '@public/sourcepath';
+    public ?string $sourcePath = '@root/tests/public/sourcepath';
 }

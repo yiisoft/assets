@@ -14,6 +14,7 @@ Thumbs.db
 
 # composer vendor dir
 /vendor
+
 /composer.lock
 
 # composer itself is not needed
@@ -31,6 +32,3 @@ phpunit.phar
 
 # Phan
 analysis.txt
-
-#node_modules
-/node_modules

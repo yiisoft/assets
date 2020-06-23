@@ -24,7 +24,7 @@ final class AssetBundleTest extends TestCase
     {
         parent::tearDown();
 
-        $this->removeAssets('@basePath');
+        $this->removeAssets('@asset');
     }
 
     public function testBasePath(): void
@@ -124,7 +124,7 @@ final class AssetBundleTest extends TestCase
             ]
         );
 
-        $this->assetManager->getPublisher()->setBasePath('@basePath');
+        $this->assetManager->getPublisher()->setBasePath('@asset');
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
 
@@ -139,7 +139,7 @@ final class AssetBundleTest extends TestCase
 
     public function testBasePathEmptyWithAssetManagerSetBasePath(): void
     {
-        $this->assetManager->getPublisher()->setBasePath('@basePath');
+        $this->assetManager->getPublisher()->setBasePath('@asset');
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
         $this->assertIsObject($this->assetManager->getBundle(BaseAsset::class));
@@ -147,8 +147,8 @@ final class AssetBundleTest extends TestCase
 
     public function testBasePathEmptyBaseUrlEmptyWithAssetManagerSetBasePathSetBaseUrl(): void
     {
-        $this->assetManager->getPublisher()->setBasePath('@basePath');
-        $this->assetManager->getPublisher()->setBaseUrl('@baseUrl');
+        $this->assetManager->getPublisher()->setBasePath('@asset');
+        $this->assetManager->getPublisher()->setBaseUrl('@assetUrl');
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
 

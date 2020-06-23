@@ -31,9 +31,9 @@ use Yiisoft\Assets\AssetBundle;
  */
 final class BaseAsset extends AssetBundle
 {
-    public ?string $basePath = '@public/basepath';
+    public ?string $basePath = '@root/tests/public/basepath';
 
-    public ?string $baseUrl = '/baseUrl';
+    public ?string $baseUrl = '@assetUrl';
 
     public array $css = [
         'css/basePath.css',
