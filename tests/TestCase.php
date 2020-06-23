@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetManager;
-use Yiisoft\Assets\AssetPublisher;
+use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Di\Container;
 
@@ -51,16 +51,16 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $config = require Builder::path('tests');
-
-        $this->container = new Container($config);
+        $this->container = new Container(
+            require Builder::path('web'),
+        );
 
         $this->aliases = $this->container->get(Aliases::class);
         $this->assetManager = $this->container->get(AssetManager::class);
         $this->logger = $this->container->get(LoggerInterface::class);
-        $this->publisher = $this->container->get(AssetPublisher::class);
+        $this->publisher = $this->container->get(AssetPublisherInterface::class);
 
-        $this->removeAssets('@basePath');
+        $this->removeAssets('@asset');
     }
 
     /**

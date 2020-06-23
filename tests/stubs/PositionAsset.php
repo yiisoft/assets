@@ -8,7 +8,7 @@ use Yiisoft\Assets\AssetBundle;
 
 final class PositionAsset extends AssetBundle
 {
-    public ?string $basePath = '@public/files';
+    public ?string $basePath = '@root/tests/public/files';
 
     public ?string $baseUrl = '/files';
 

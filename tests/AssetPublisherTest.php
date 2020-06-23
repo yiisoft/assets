@@ -19,17 +19,17 @@ final class AssetPublisherTest extends TestCase
     {
         parent::tearDown();
 
-        $this->removeAssets('@basePath');
+        $this->removeAssets('@asset');
     }
 
     public function testBaseAppendtimestamp(): void
     {
         $bundle = new BaseAsset();
 
-        $timestampCss = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
+        $timestampCss = filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
         $urlCss = "/baseUrl/css/basePath.css?v=$timestampCss";
 
-        $timestampJs = @filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
+        $timestampJs = filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
         $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
@@ -98,22 +98,22 @@ final class AssetPublisherTest extends TestCase
         return [
             // Custom alias repeats in the asset URL
             [
-                'css', '@web/assetSources/repeat/css/stub.css', false,
+                'css', '@assetUrl/assetSources/repeat/css/stub.css', false,
                 '/repeat/assetSources/repeat/css/stub.css',
                 '/repeat',
             ],
             [
-                'js', '@web/assetSources/repeat/js/jquery.js', false,
+                'js', '@assetUrl/assetSources/repeat/js/jquery.js', false,
                 '/repeat/assetSources/repeat/js/jquery.js',
                 '/repeat',
             ],
             // JS files registration
             [
-                'js', '@web/assetSources/js/missing-file.js', true,
+                'js', '@assetUrl/assetSources/js/missing-file.js', true,
                 '/baseUrl/assetSources/js/missing-file.js'
             ],
             [
-                'js', '@web/assetSources/js/jquery.js', false,
+                'js', '@assetUrl/assetSources/js/jquery.js', false,
                 '/baseUrl/assetSources/js/jquery.js',
             ],
             [
@@ -134,11 +134,11 @@ final class AssetPublisherTest extends TestCase
             ],
             // CSS file registration
             [
-                'css', '@web/assetSources/css/missing-file.css', true,
+                'css', '@assetUrl/assetSources/css/missing-file.css', true,
                 '/baseUrl/assetSources/css/missing-file.css',
             ],
             [
-                'css', '@web/assetSources/css/stub.css', false,
+                'css', '@assetUrl/assetSources/css/stub.css', false,
                 '/baseUrl/assetSources/css/stub.css',
             ],
             [
@@ -157,9 +157,9 @@ final class AssetPublisherTest extends TestCase
                 'css', '/assetSources/css/stub.css', false,
                 '/assetSources/css/stub.css',
             ],
-            // Custom `@web` aliases
+            // Custom `@assetUrl` aliases
             [
-                'js', '@web/assetSources/js/missing-file1.js', true,
+                'js', '@assetUrl/assetSources/js/missing-file1.js', true,
                 '/backend/assetSources/js/missing-file1.js',
                 '/backend',
             ],
@@ -174,18 +174,18 @@ final class AssetPublisherTest extends TestCase
                 '/backend',
             ],
             [
-                'css', '@web/assetSources/css/stub.css', false,
+                'css', '@assetUrl/assetSources/css/stub.css', false,
                 '/en/blog/backend/assetSources/css/stub.css',
                 '/en/blog/backend',
             ],
             // UTF-8 chars
             [
-                'css', '@web/assetSources/css/stub.css', false,
+                'css', '@assetUrl/assetSources/css/stub.css', false,
                 '/рус/сайт/assetSources/css/stub.css',
                 '/рус/сайт',
             ],
             [
-                'js', '@web/assetSources/js/jquery.js', false,
+                'js', '@assetUrl/assetSources/js/jquery.js', false,
                 '/汉语/漢語/assetSources/js/jquery.js',
                 '/汉语/漢語',
             ],
@@ -208,13 +208,13 @@ final class AssetPublisherTest extends TestCase
         string $expected,
         ?string $webAlias = null
     ): void {
-        $originalAlias = $this->aliases->get('@web');
+        $originalAlias = $this->aliases->get('@assetUrl');
 
         if ($webAlias === null) {
             $webAlias = $originalAlias;
         }
 
-        $this->aliases->set('@web', $webAlias);
+        $this->aliases->set('@assetUrl', $webAlias);
 
         $path = $this->aliases->get($path);
 

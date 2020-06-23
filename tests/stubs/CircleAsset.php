@@ -8,9 +8,9 @@ use Yiisoft\Assets\AssetBundle;
 
 final class CircleAsset extends AssetBundle
 {
-    public ?string $basePath = '@public/assets';
+    public ?string $basePath = '@root/tests/public/assets';
 
-    public ?string $baseUrl = '@web/js';
+    public ?string $baseUrl = '@assetUrl/js';
 
     public array $js = [
         'js/jquery.js',
@@ -20,5 +20,5 @@ final class CircleAsset extends AssetBundle
         CircleDependsAsset::class,
     ];
 
-    public ?string $sourcePath = '@public/sourcepath';
+    public ?string $sourcePath = '@root/tests/public/sourcepath';
 }

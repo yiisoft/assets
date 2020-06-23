@@ -22,14 +22,15 @@
         "php": "^7.4",
         "ext-mbstring": "*",
         "psr/log": "^1.1",
+        "yiisoft/aliases": "^1.0",
+        "yiisoft/di": "^3.0@dev",
         "yiisoft/files": "^3.0@dev"
     },
     "require-dev": {
-        "yiisoft/composer-config-plugin": "^1.0@dev",
-        "phpunit/phpunit": "^9.0",
-        "phan/phan": "^3.0",
-        "yiisoft/aliases": "^1.0",
-        "yiisoft/di": "^3.0@dev"
+        "infection/infection": "^0.16.3",
+        "phan/phan": "^3.0.2",
+        "phpunit/phpunit": "^9.2",
+        "yiisoft/composer-config-plugin": "^1.0@dev"
     },
     "autoload": {
         "psr-4": {
@@ -49,12 +50,9 @@
             "sort-packages": true
         },
         "config-plugin": {
-            "common": "config/common.php",
-            "tests": "config/test.php"
+            "params": "config/params.php",
+            "web": "config/web.php"
         }
-    },
-    "scripts": {
-        "phan": "phan --progress-bar -o analysis.txt"
     },
     "config": {
         "sort-packages": true
