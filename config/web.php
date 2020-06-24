@@ -30,8 +30,8 @@ return [
 
         if (
             $params['yiisoft/asset']['assetConverter']['command']['from'] !== '' &&
-            $params['yiisoft/asset']['assetconverter']['command']['to'] !== '' &&
-            $params['yiisoft/asset']['assetconverter']['command']['command'] !== ''
+            $params['yiisoft/asset']['assetConverter']['command']['to'] !== '' &&
+            $params['yiisoft/asset']['assetConverter']['command']['command'] !== ''
         ) {
             $assetConverter->setCommand(
                 $params['yiisoft/asset']['assetConverter']['command']['from'],
