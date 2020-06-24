@@ -18,7 +18,7 @@ It helps resolving dependencies and getting lists of files ready for generating 
 [![static analysis](https://github.com/yiisoft/assets/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/assets/actions?query=workflow%3A%22static+analysis%22)
 
 
-## Intallation
+## Installation
 
 The package could be installed via composer:
 
