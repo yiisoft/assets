@@ -32,3 +32,6 @@ phpunit.phar
 
 # Phan
 analysis.txt
+
+# node_modules
+/node_modules

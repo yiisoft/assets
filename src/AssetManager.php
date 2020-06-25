@@ -263,7 +263,8 @@ final class AssetManager
                         \array_unshift($css, $this->converter->convert(
                             $file,
                             $bundle->basePath,
-                            $bundle->converterOptions
+                            $bundle->converterOptions,
+                            $bundle->converterLoadPath
                         ));
 
                         $bundle->css[$i] = $css;
@@ -271,7 +272,12 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($css)) {
                 if (is_file("$bundle->basePath/$css")) {
-                    $bundle->css[$i] = $this->converter->convert($css, $bundle->basePath, $bundle->converterOptions);
+                    $bundle->css[$i] = $this->converter->convert(
+                        $css,
+                        $bundle->basePath,
+                        $bundle->converterOptions,
+                        $bundle->converterLoadPath
+                    );
                 }
             }
         }

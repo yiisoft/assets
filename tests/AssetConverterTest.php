@@ -151,4 +151,30 @@ EOF
         $converter->convert('test.php', $this->tmpPath);
         $this->assertNotEquals($initialConvertTime, file_get_contents($this->tmpPath . '/test.txt'));
     }
+
+    public function testSassCli(): void
+    {
+        $converter = new AssetConverter($this->aliases, $this->logger);
+
+        $converter->setCommand('scss', 'css', '@npm/.bin/sass {options} {from} {to}');
+
+        $converter->convert(
+            'custom.scss',
+            $this->aliases->get('@root/tests/public/sass'),
+            ['scss' => '--style compressed'],
+            ['scss' => ['command' => '-I', 'path' => '@root/tests/public/sourcepath/sass']]
+        );
+
+        $customCss = file_get_contents($this->aliases->get('@root/tests/public/sass/custom.css'));
+
+        $this->assertFileExists($this->aliases->get('@root/tests/public/sass/custom.css'));
+        $this->assertFileExists($this->aliases->get('@root/tests/public/sass/custom.css.map'));
+        $this->assertStringEqualsFile(
+            $this->aliases->get('@root/tests/public/sass/custom.css'),
+            $customCss
+        );
+
+        unlink($this->aliases->get('@root/tests/public/sass/custom.css'));
+        unlink($this->aliases->get('@root/tests/public/sass/custom.css.map'));
+    }
 }

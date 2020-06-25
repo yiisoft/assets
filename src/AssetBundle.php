@@ -131,4 +131,18 @@ class AssetBundle
      * {@see publishOptions}
      */
     public ?string $sourcePath = null;
+
+    /**
+     * It allows to provide source files load path using aliases.
+     *
+     * ```php
+     * [
+     *     'sass' => [
+     *          'command' => 'I',
+     *          'path' => '@npm'
+     *     ]
+     * ]
+     * ```
+     */
+    public array $converterLoadPath = [];
 }

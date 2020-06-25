@@ -102,16 +102,22 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert(string $asset, string $basePath, array $options = []): string
+    public function convert(string $asset, string $basePath, array $options = [], array $loadPath = []): string
     {
         $commandOptions = null;
+
         $pos = strrpos($asset, '.');
 
         if ($pos !== false) {
             $srcExt = substr($asset, $pos + 1);
 
+            if (isset($loadPath[$srcExt])) {
+                $commandOptions =  $loadPath[$srcExt]['command'] . ' ' .
+                    $this->aliases->get($loadPath[$srcExt]['path']) . ' ';
+            }
+
             if (isset($options[$srcExt])) {
-                $commandOptions = $options[$srcExt];
+                $commandOptions .= $options[$srcExt];
             }
 
             if (isset($this->commands[$srcExt])) {
