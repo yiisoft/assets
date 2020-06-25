@@ -111,7 +111,11 @@ final class AssetConverter implements AssetConverterInterface
         if ($pos !== false) {
             $srcExt = substr($asset, $pos + 1);
 
-            if (isset($loadPath[$srcExt])) {
+            if (
+                isset($loadPath[$srcExt]) &&
+                isset($loadPath[$srcExt]['command']) &&
+                isset($loadPath[$srcExt]['path'])
+            ) {
                 $commandOptions =  $loadPath[$srcExt]['command'] . ' ' .
                     $this->aliases->get($loadPath[$srcExt]['path']) . ' ';
             }
