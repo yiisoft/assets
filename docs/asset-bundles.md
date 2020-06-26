@@ -61,8 +61,8 @@ return [
     'aliases' => [
         '@root' => dirname(__DIR__),
         '@public' => '@root/public',
-        '@basePath' => '@public/assets',
-        '@web' => '/assets',
+        '@assets' => '@public/assets',
+        '@assetsUrl' => '/assets',
         '@npm' => '@root/node_modules' // <-- this
     ],
 ];
@@ -84,9 +84,9 @@ use Yiisoft\Assets\AssetBundle;
  */
 class BootstrapAsset extends AssetBundle
 {
-    public ?string $basePath = '@basePath';
+    public ?string $basePath = '@assets';
 
-    public ?string $baseUrl = '@web';
+    public ?string $baseUrl = '@assetsUrl';
 
     public ?string $sourcePath = '@npm/bootstrap/dist';
 
@@ -128,9 +128,9 @@ use Yiisoft\Assets\AssetBundle;
  */
 class JqueryAsset extends AssetBundle
 {
-    public ?string $basePath = '@basePath';
+    public ?string $basePath = '@assets';
 
-    public ?string $baseUrl = '@web';
+    public ?string $baseUrl = '@assetsUrl';
 
     public ?string $sourcePath = '@npm/jquery';
 
@@ -162,9 +162,9 @@ use Yiisoft\Assets\AssetBundle;
  */
 class PopperAsset extends AssetBundle
 {
-    public ?string $basePath = '@basePath';
+    public ?string $basePath = '@assets';
 
-    public ?string $baseUrl = '@web';
+    public ?string $baseUrl = '@assetsUrl';
 
     public ?string $sourcePath = '@npm/popper.js/dist';
 

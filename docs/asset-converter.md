@@ -37,9 +37,9 @@ use Yiisoft\Assets\AssetBundle;
  */
 class BootstrapAsset extends AssetBundle
 {
-    public ?string $basePath = '@basePath';
+    public ?string $basePath = '@assets';
 
-    public ?string $baseUrl = '@web/assets';
+    public ?string $baseUrl = '@assetsUrl';
 
     public ?string $sourcePath = '@npm/bootstrap';
 
@@ -82,7 +82,8 @@ AssetConverterInterface::class => static function (\Psr\Container\ContainerInter
     $aliases = $container->get(\Yiisoft\Aliases\Aliases::class);
     $logger = $container->get(\Psr\Log\LoggerInterface::class);
     $converter = new \Yiisoft\Assets\AssetConverter($aliases, $logger);
-    $converter->setCommand('scss', ['css', '@npm/.bin/sass {options} {from} {to}']);
+    $converter->setCommand('scss', 'css', '@npm/.bin/sass {options} {from} {to}');
+    return $converter;
 }
 ```
 
