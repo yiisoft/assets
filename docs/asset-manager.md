@@ -33,8 +33,8 @@ return [
          * $publisher->setAssetMap([
          *     'jquery.js' => 'https://code.jquery.com/jquery-3.4.1.js',
          * ]);        
-         * $publisher->setBasePath('@basePath');
-         * $publisher->setBaseUrl('@web');
+         * $publisher->setBasePath('@assets');
+         * $publisher->setBaseUrl('@assetsUrl');
          * $publisher->setDirMode(0775);
          * $publisher->setFileMode(0755);
          * $publisher->setForceCopy(true);
@@ -55,7 +55,7 @@ return [
          * 
          *  In view/layout command example:
          * 
-         *  $assetManager->getConverter()->setCommand('php', ['txt', 'php {from} > {to}']);
+         *  $assetManager->getConverter()->setCommand('php', 'txt', 'php {from} > {to}');
          */ 
         $assetManager->setConverter($container->get(AssetConverterInterface::class));
 
@@ -99,21 +99,21 @@ use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
 
 /**
- * Inyect dependencies in constructor:
+ * Inject dependencies in constructor:
  * 
  * \Yisoft\Aliases\Aliases $aliases, \Psr\Log\LoggerInterface $logger
  */
 $converter = new AssetConverter($aliases, $logger);
 
 /**
- * Inyect dependencies in constructor:
+ * Inject dependencies in constructor:
  * 
  * \Yisoft\Aliases\Aliases $aliases
  */
 $publisher = new AssetPublisher($aliases);
 
 /**
- * Inyect dependencies in constructor:
+ * Inject dependencies in constructor:
  * 
  * \Yisoft\Aliases\Aliases $aliases, \Psr\Log\LoggerInterface $logger
  */
