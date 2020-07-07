@@ -102,27 +102,14 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert(string $asset, string $basePath, array $options = [], array $loadPath = []): string
+    public function convert(string $asset, string $basePath, array $options = []): string
     {
-        $commandOptions = null;
-
         $pos = strrpos($asset, '.');
 
         if ($pos !== false) {
             $srcExt = substr($asset, $pos + 1);
 
-            if (
-                isset($loadPath[$srcExt]) &&
-                isset($loadPath[$srcExt]['command']) &&
-                isset($loadPath[$srcExt]['path'])
-            ) {
-                $commandOptions =  $loadPath[$srcExt]['command'] . ' ' .
-                    $this->aliases->get($loadPath[$srcExt]['path']) . ' ';
-            }
-
-            if (isset($options[$srcExt])) {
-                $commandOptions .= $options[$srcExt];
-            }
+            $commandOptions = $this->buildConverterOptions($srcExt, $options);
 
             if (isset($this->commands[$srcExt])) {
                 [$ext, $command] = $this->commands[$srcExt];
@@ -261,5 +248,28 @@ final class AssetConverter implements AssetConverterInterface
         }
 
         return $status === 0;
+    }
+
+    private function buildConverterOptions(string $srcExt, array $options): string
+    {
+        $command = '';
+        $commandOptions = '';
+        $path = '';
+
+        foreach ($options[$srcExt] as $key => $value) {
+            if ($key === 'command') {
+                $command .= $value . ' ';
+            }
+
+            if ($key === 'path') {
+                $path = $this->aliases->get($value);
+            }
+
+            $commandOptions = strtr($command, [
+                '{path}' => $path
+            ]);
+        }
+
+        return $commandOptions;
     }
 }

@@ -263,8 +263,7 @@ final class AssetManager
                         \array_unshift($css, $this->converter->convert(
                             $file,
                             $bundle->basePath,
-                            $bundle->converterOptions,
-                            $bundle->converterLoadPath
+                            $bundle->converterOptions
                         ));
 
                         $bundle->css[$i] = $css;
@@ -275,8 +274,7 @@ final class AssetManager
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
                         $bundle->basePath,
-                        $bundle->converterOptions,
-                        $bundle->converterLoadPath
+                        $bundle->converterOptions
                     );
                 }
             }

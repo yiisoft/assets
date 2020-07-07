@@ -51,15 +51,11 @@ final class BootstrapAsset extends AssetBundle
         ],
     ];
 
-    public array $converterLoadPath = [
-        'scss' => [
-            'command' => '-I',
-            'path' => '@npm/bootstrap/scss',
-        ]
-    ];
-
     public array $converterOptions = [
-        'scss' => '--style compressed',
+        'scss' => [
+            'command' => '-I {path} --style compressed',
+            'path' => '@root/tests/public/sourcepath/sass'
+        ]
     ];
 }
 ```

@@ -61,7 +61,10 @@ class AssetBundle
      * Example: Dart SASS minify css.
      *
      * public array $converterOptions = [
-     *     'css'   => '--style = compressed',
+     *      'scss' => [
+     *          'command' => '-I {path} --style compressed',
+     *          'path' => '@root/tests/public/sourcepath/sass'
+     *      ],
      * ];
      */
     public array $converterOptions = [
@@ -131,18 +134,4 @@ class AssetBundle
      * {@see publishOptions}
      */
     public ?string $sourcePath = null;
-
-    /**
-     * It allows to provide source files load path using aliases.
-     *
-     * ```php
-     * [
-     *     'sass' => [
-     *          'command' => 'I',
-     *          'path' => '@npm'
-     *     ]
-     * ]
-     * ```
-     */
-    public array $converterLoadPath = [];
 }

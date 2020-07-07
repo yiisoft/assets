@@ -161,8 +161,12 @@ EOF
         $converter->convert(
             'custom.scss',
             $this->aliases->get('@root/tests/public/sass'),
-            ['scss' => '--style compressed'],
-            ['scss' => ['command' => '-I', 'path' => '@root/tests/public/sourcepath/sass']]
+            [
+                'scss' => [
+                    'command' => '-I {path} --style compressed',
+                    'path' => '@root/tests/public/sourcepath/sass',
+                ]
+            ]
         );
 
         $customCss = file_get_contents($this->aliases->get('@root/tests/public/sass/custom.css'));
