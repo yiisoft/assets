@@ -255,16 +255,10 @@ final class AssetConverter implements AssetConverterInterface
         $command = '';
         $commandOptions = '';
         $path = '';
-        $options[$srcExt] = $options[$srcExt] ?? [];
 
-        foreach ($options[$srcExt] as $key => $value) {
-            if ($key === 'command') {
-                $command .= $value . ' ';
-            }
-
-            if ($key === 'path') {
-                $path = $this->aliases->get($value);
-            }
+        if (isset($options[$srcExt])) {
+            $command .= $options[$srcExt]['command'] . ' ';
+            $path = $this->aliases->get($options[$srcExt]['path']);
 
             $commandOptions = strtr($command, [
                 '{path}' => $path
