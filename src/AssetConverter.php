@@ -255,6 +255,7 @@ final class AssetConverter implements AssetConverterInterface
         $command = '';
         $commandOptions = '';
         $path = '';
+        $options[$srcExt] = $options[$srcExt] ?? [];
 
         foreach ($options[$srcExt] as $key => $value) {
             if ($key === 'command') {
