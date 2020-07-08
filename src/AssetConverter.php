@@ -7,6 +7,8 @@ namespace Yiisoft\Assets;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 
+use function array_key_exists;
+
 /**
  * AssetConverter supports conversion of several popular script formats into JavaScript or CSS.
  *
@@ -257,12 +259,17 @@ final class AssetConverter implements AssetConverterInterface
         $path = '';
 
         if (isset($options[$srcExt])) {
-            $command .= $options[$srcExt]['command'] . ' ';
-            $path = $this->aliases->get($options[$srcExt]['path']);
+            if (array_key_exists('command', $options[$srcExt])) {
+                $command .= $options[$srcExt]['command'] . ' ';
+            }
 
-            $commandOptions = strtr($command, [
-                '{path}' => $path
-            ]);
+            if (array_key_exists('path', $options[$srcExt])) {
+                $path = $this->aliases->get($options[$srcExt]['path']);
+
+                $commandOptions = strtr($command, [
+                    '{path}' => $path
+                ]);
+            }
         }
 
         return $commandOptions;
