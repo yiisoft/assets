@@ -50,7 +50,7 @@ class AssetBundle
     public array $css = [];
 
     /**
-     * @var array the options that will be passed to {@see \Yiisoft\View::registerCssFile()} when registering the CSS
+     * @var array the options that will be passed to {@see \Yiisoft\View\View::registerCssFile()} when registering the CSS
      * files in this bundle.
      */
     public array $cssOptions = [];
@@ -61,7 +61,10 @@ class AssetBundle
      * Example: Dart SASS minify css.
      *
      * public array $converterOptions = [
-     *     'css'   => '--style = compressed',
+     *      'scss' => [
+     *          'command' => '-I {path} --style compressed',
+     *          'path' => '@root/tests/public/sourcepath/sass'
+     *      ],
      * ];
      */
     public array $converterOptions = [

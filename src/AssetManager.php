@@ -271,7 +271,11 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($css)) {
                 if (is_file("$bundle->basePath/$css")) {
-                    $bundle->css[$i] = $this->converter->convert($css, $bundle->basePath, $bundle->converterOptions);
+                    $bundle->css[$i] = $this->converter->convert(
+                        $css,
+                        $bundle->basePath,
+                        $bundle->converterOptions
+                    );
                 }
             }
         }

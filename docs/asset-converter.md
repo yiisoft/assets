@@ -35,47 +35,40 @@ use Yiisoft\Assets\AssetBundle;
  *
  * BootstrapAsset.
  */
-class BootstrapAsset extends AssetBundle
+final class BootstrapAsset extends AssetBundle
 {
     public ?string $basePath = '@assets';
-
     public ?string $baseUrl = '@assetsUrl';
-
-    public ?string $sourcePath = '@npm/bootstrap';
+    public ?string $sourcePath = '@npm/bootstrap/scss';
 
     public array $css = [
-        'scss/bootstrap.scss',
-    ];
-
-    public array $converterOptions = [
-        'scss' => '--style compressed',
-    ];
-
-    public array $depends = [
-        \App\Assets\JqueryAsset::class,
-        \App\Assets\PopperAsset::class,
+        'bootstrap.scss',
     ];
 
     public array $publishOptions = [
         'only' => [
-            'scss/*',
-            'scss/mixins/*',
-            'scss/utilities/*',
-            'scss/vendor/*'
+            'bootstrap.scss',
         ],
+    ];
+
+    public array $converterOptions = [
+        'scss' => [
+            'command' => '-I {path} --style compressed',
+            'path' => '@root/tests/public/sourcepath/sass'
+        ]
     ];
 }
 ```
 
-Since in `$css` we are pointing to `.scss`, asset manager asks asset converter to check if such file could be converted
-to CSS. By default asset converter has command definitions for less, scss, sass, styl, coffee and ts but since all these
-are meant to be installed globally and we have it as local depdendency, we need to redefine a command:
+Since in `$css` we are pointing to `.scss`, asset manager asks asset converter to check if such a file could be converted
+to CSS. By default, asset converter has command definitions for less, scss, sass, styl, coffee and ts but since all these
+are meant to be installed globally, and we have it as local dependency, we need to redefine a command:
 
 ```php
 $assetManager->getConverter()->setCommand('scss', ['css', '@npm/.bin/sass {options} {from} {to}']);
 ```  
 
-or, if done via yiisoft/di container:
+or, if done via `yiisoft/di` container:
 
 ```php
 AssetConverterInterface::class => static function (\Psr\Container\ContainerInterface $container) {
@@ -86,6 +79,22 @@ AssetConverterInterface::class => static function (\Psr\Container\ContainerInter
     return $converter;
 }
 ```
+
+or, if done via params.php:
+
+```php
+'yiisoft/asset' => [
+    'assetConverter' => [
+        'command' => [
+            'from' => 'scss',
+            'to' => 'css',
+            'command' => '@npm/.bin/sass {options} {from} {to}'
+        ],
+        'forceConvert' => false
+    ],
+],
+```
+
 
 Asset bundle's `$converterOptions` define additional options passed to conversion utility. In this case we're telling `sass`
 to minify resulting CSS.

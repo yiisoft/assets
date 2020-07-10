@@ -7,6 +7,8 @@ namespace Yiisoft\Assets;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 
+use function array_key_exists;
+
 /**
  * AssetConverter supports conversion of several popular script formats into JavaScript or CSS.
  *
@@ -104,15 +106,12 @@ final class AssetConverter implements AssetConverterInterface
      */
     public function convert(string $asset, string $basePath, array $options = []): string
     {
-        $commandOptions = null;
         $pos = strrpos($asset, '.');
 
         if ($pos !== false) {
             $srcExt = substr($asset, $pos + 1);
 
-            if (isset($options[$srcExt])) {
-                $commandOptions = $options[$srcExt];
-            }
+            $commandOptions = $this->buildConverterOptions($srcExt, $options);
 
             if (isset($this->commands[$srcExt])) {
                 [$ext, $command] = $this->commands[$srcExt];
@@ -251,5 +250,27 @@ final class AssetConverter implements AssetConverterInterface
         }
 
         return $status === 0;
+    }
+
+    private function buildConverterOptions(string $srcExt, array $options): string
+    {
+        $command = '';
+        $commandOptions = '';
+
+        if (isset($options[$srcExt])) {
+            if (array_key_exists('command', $options[$srcExt])) {
+                $command .= $options[$srcExt]['command'] . ' ';
+            }
+
+            if (array_key_exists('path', $options[$srcExt])) {
+                $path = $this->aliases->get($options[$srcExt]['path']);
+
+                $commandOptions = strtr($command, [
+                    '{path}' => $path
+                ]);
+            }
+        }
+
+        return $commandOptions;
     }
 }
