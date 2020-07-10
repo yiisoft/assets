@@ -60,15 +60,15 @@ final class BootstrapAsset extends AssetBundle
 }
 ```
 
-Since in `$css` we are pointing to `.scss`, asset manager asks asset converter to check if such file could be converted
-to CSS. By default asset converter has command definitions for less, scss, sass, styl, coffee and ts but since all these
-are meant to be installed globally and we have it as local depdendency, we need to redefine a command:
+Since in `$css` we are pointing to `.scss`, asset manager asks asset converter to check if such a file could be converted
+to CSS. By default, asset converter has command definitions for less, scss, sass, styl, coffee and ts but since all these
+are meant to be installed globally, and we have it as local dependency, we need to redefine a command:
 
 ```php
 $assetManager->getConverter()->setCommand('scss', ['css', '@npm/.bin/sass {options} {from} {to}']);
 ```  
 
-or, if done via yiisoft/di container:
+or, if done via `yiisoft/di` container:
 
 ```php
 AssetConverterInterface::class => static function (\Psr\Container\ContainerInterface $container) {

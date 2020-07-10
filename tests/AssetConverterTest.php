@@ -15,7 +15,7 @@ final class AssetConverterTest extends TestCase
     /**
      * @var string temporary files path
      */
-    private $tmpPath;
+    private string $tmpPath;
 
     protected function setUp(): void
     {

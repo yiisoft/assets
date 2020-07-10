@@ -256,7 +256,6 @@ final class AssetConverter implements AssetConverterInterface
     {
         $command = '';
         $commandOptions = '';
-        $path = '';
 
         if (isset($options[$srcExt])) {
             if (array_key_exists('command', $options[$srcExt])) {
