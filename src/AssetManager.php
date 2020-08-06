@@ -245,6 +245,64 @@ final class AssetManager
     }
 
     /**
+     * Registers a JS string.
+     *
+     * This method should be used for simple registration of JS files. If you want to use features of
+     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
+     * and {@see registerAssetBundle()} instead.
+     *
+     * @param string $url the JS string to be registered.
+     * @param array $options the HTML attributes for the script tag. The following options are specially handled and
+     * are not treated as HTML attributes:
+     *
+     * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
+     *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section. This is the default value.
+     *
+     * @return void
+     */
+    public function registerJsString(string $jsString, array $options = [], string $key = null): void
+    {
+        $key = $key ?: $jsString;
+
+        if (!\array_key_exists('position', $options)) {
+            $options = array_merge(['position' => 3], $options);
+        }
+
+        $this->js[$key]['key'] = $jsString;
+        $this->js[$key]['attributes'] = $options;
+    }
+
+    /**
+     * Registers a JS variable.
+     *
+     * This method should be used for simple registration of JS files. If you want to use features of
+     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
+     * and {@see registerAssetBundle()} instead.
+     *
+     * @param string $url the JS string to be registered.
+     * @param array $options the HTML attributes for the script tag. The following options are specially handled and
+     * are not treated as HTML attributes:
+     *
+     * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section. This is the default value.
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
+     *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section
+     *
+     * @return void
+     */
+    public function registerJsVar(string $key, string $jsVar, array $options = []): void
+    {
+        if (!\array_key_exists('position', $options)) {
+            $options = array_merge(['position' => 1], $options);
+        }
+
+        $this->jsVar[$key]['key'] = $jsVar;
+        $this->jsVar[$key]['attributes'] = $options;
+    }
+
+    /**
      * Converter SASS, SCSS, Stylus and other formats to CSS.
      *
      * @param AssetBundle $bundle
@@ -437,6 +495,27 @@ final class AssetManager
                 $this->registerJsFile($this->publisher->getAssetUrl($bundle, $file), $options);
             } elseif ($js !== null) {
                 $this->registerJsFile($this->publisher->getAssetUrl($bundle, $js), $bundle->jsOptions);
+            }
+        }
+
+        foreach ($bundle->jsStrings as $jsString) {
+            if (\is_array($jsString)) {
+                $string = array_shift($jsString);
+                $options = array_merge($bundle->jsOptions, $jsString);
+                $this->registerJsString($string, $options);
+            } elseif ($jsString !== null) {
+                $this->registerJsString($jsString, $bundle->jsOptions);
+            }
+        }
+
+        foreach ($bundle->jsVars as $jsVar) {
+            if (\is_array($jsVar)) {
+                $key = key($jsVar);
+                $var = array_shift($jsVar);
+                $options = array_merge($bundle->jsOptions, $jsVar);
+                $this->registerJsVar($key, $var, $options);
+            } elseif ($jsVar !== null) {
+                $this->registerJsVar(key($jsVar), $jsVar, $bundle->jsOptions);
             }
         }
 

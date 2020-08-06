@@ -52,4 +52,13 @@ final class BaseAsset extends AssetBundle
         'integrity' => 'integrity-hash',
         'crossorigin' => 'anonymous',
     ];
+
+    public array $jsStrings = [
+        'uniqueName' => 'app.start();',
+    ];
+
+    public array $jsVars = [
+        'var1' => ['options1' => 'value1'],
+        'var2' => ['options2' => 'value2'],
+    ];
 }

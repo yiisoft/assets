@@ -114,6 +114,16 @@ class AssetBundle
     public array $jsOptions = [];
 
     /**
+     * @var array Plain Javascript strings that will be passed to {@see Yiisoft\View\View::registerJs()}.
+     */
+    public array $jsStrings = [];
+
+    /**
+     * @var array Javascript variables that will be passed to {@see Yiisoft\View\View::registerJsVar()}.
+     */
+    public array $jsVars = [];
+
+    /**
      * @var array the options to be passed to {@see AssetManager::publish()} when the asset bundle  is being published.
      * This property is used only when {@see sourcePath} is set.
      */
