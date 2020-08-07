@@ -54,11 +54,12 @@ final class BaseAsset extends AssetBundle
     ];
 
     public array $jsStrings = [
-        'uniqueName' => 'app.start();',
+        'uniqueName' => 'app1.start();',
+        'app2.start();',
     ];
 
     public array $jsVars = [
-        'var1' => ['options1' => 'value1'],
-        'var2' => ['options2' => 'value2'],
+        'var1' => ['option1' => 'value1'],
+        'var2' => ['option2' => 'value2', 'option3' => 'value3'],
     ];
 }

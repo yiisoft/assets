@@ -148,6 +148,26 @@ final class AssetManager
         return $this->jsFiles;
     }
 
+    /**
+     * Return JS code blocks.
+     *
+     * @return array
+     */
+    public function getJsStrings(): array
+    {
+        return $this->jsStrings;
+    }
+
+    /**
+     * Return JS variables.
+     *
+     * @return array
+     */
+    public function getJsVars(): array
+    {
+        return $this->jsVars;
+    }
+
     public function getPublisher(): AssetPublisherInterface
     {
         return $this->publisher;
@@ -285,7 +305,7 @@ final class AssetManager
             $options = array_merge(['position' => 3], $options);
         }
 
-        $this->jsStrings[$key]['key'] = $jsString;
+        $this->jsStrings[$key]['string'] = $jsString;
         $this->jsStrings[$key]['attributes'] = $options;
     }
 
@@ -297,7 +317,7 @@ final class AssetManager
      * and {@see registerAssetBundle()} instead.
      *
      * @parem string $key the key that identifies and sets the variable name
-     * @param string $jsVar the JS code block to be registered.
+     * @param array|string $jsVar the JS code block to be registered.
      * @param array $options the HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
      *
@@ -308,13 +328,13 @@ final class AssetManager
      *
      * @return void
      */
-    public function registerJsVar(string $key, string $jsVar, array $options = []): void
+    public function registerJsVar(string $key, $jsVar, array $options = []): void
     {
         if (!\array_key_exists('position', $options)) {
             $options = array_merge(['position' => 1], $options);
         }
 
-        $this->jsVars[$key]['key'] = $jsVar;
+        $this->jsVars[$key]['variables'] = $jsVar;
         $this->jsVars[$key]['attributes'] = $options;
     }
 
@@ -514,25 +534,18 @@ final class AssetManager
             }
         }
 
-        foreach ($bundle->jsStrings as $jsString) {
+        foreach ($bundle->jsStrings as $key => $jsString) {
+            $key = is_int($key) ? $jsString : $key;
             if (\is_array($jsString)) {
                 $string = array_shift($jsString);
-                $options = array_merge($bundle->jsOptions, $jsString);
-                $this->registerJsString($string, $options);
+                $this->registerJsString($string, $jsString, (string) $key);
             } elseif ($jsString !== null) {
-                $this->registerJsString($jsString, $bundle->jsOptions);
+                $this->registerJsString($jsString, $bundle->jsOptions, $key);
             }
         }
 
-        foreach ($bundle->jsVars as $jsVar) {
-            if (\is_array($jsVar)) {
-                $key = key($jsVar);
-                $var = array_shift($jsVar);
-                $options = array_merge($bundle->jsOptions, $jsVar);
-                $this->registerJsVar($key, $var, $options);
-            } elseif ($jsVar !== null) {
-                $this->registerJsVar(key($jsVar), $jsVar, $bundle->jsOptions);
-            }
+        foreach ($bundle->jsVars as $key => $jsVar) {
+            $this->registerJsVar($key, $jsVar, $jsVar);
         }
 
         foreach ($bundle->css as $css) {

@@ -207,6 +207,43 @@ final class AssetBundleTest extends TestCase
         );
     }
 
+    public function testJsString(): void
+    {
+        $this->assertEmpty($this->assetManager->getAssetBundles());
+
+        $this->assetManager->register([BaseAsset::class]);
+
+        $this->assertEquals(
+            'app1.start();',
+            $this->assetManager->getJsStrings()['uniqueName']['string']
+        );
+        $this->assertEquals(
+            'app2.start();',
+            $this->assetManager->getJsStrings()['app2.start();']['string']
+        );
+    }
+
+    public function testJsVars(): void
+    {
+        $this->assertEmpty($this->assetManager->getAssetBundles());
+
+        $this->assetManager->register([BaseAsset::class]);
+
+        $this->assertEquals(
+            [
+                'option1' => 'value1',
+            ],
+            $this->assetManager->getJsVars()['var1']['variables']
+        );
+        $this->assertEquals(
+            [
+                'option2' => 'value2',
+                'option3' => 'value3',
+            ],
+            $this->assetManager->getJsVars()['var2']['variables']
+        );
+    }
+
     public function testFileOptionsAsset(): void
     {
         $this->assertEmpty($this->assetManager->getAssetBundles());
