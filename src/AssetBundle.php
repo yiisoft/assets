@@ -114,12 +114,12 @@ class AssetBundle
     public array $jsOptions = [];
 
     /**
-     * @var array Plain Javascript strings that will be passed to {@see Yiisoft\View\View::registerJs()}.
+     * @var array JavaScript code blocks to be passed to {@see \Yiisoft\View\WebView::registerJs()}.
      */
     public array $jsStrings = [];
 
     /**
-     * @var array Javascript variables that will be passed to {@see Yiisoft\View\View::registerJsVar()}.
+     * @var array JavaScript variables to be passed to {@see \Yiisoft\View\WebView::registerJsVar()}.
      */
     public array $jsVars = [];
 

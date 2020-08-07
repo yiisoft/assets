@@ -57,6 +57,20 @@ final class AssetManager
     private array $jsFiles = [];
 
     /**
+     * @var array the registered JS code blocks.
+     *
+     * {@see registerJs()}
+     */
+    private array $jsStrings = [];
+
+    /**
+     * @var array the registered JS variables.
+     *
+     * {@see registerJsVar()}
+     */
+    private array $jsVars = [];
+
+    /**
      * @var LoggerInterface $logger
      */
     private LoggerInterface $logger;
@@ -245,15 +259,15 @@ final class AssetManager
     }
 
     /**
-     * Registers a JS string.
+     * Registers a JavaScript code block.
      *
-     * This method should be used for simple registration of JS files. If you want to use features of
-     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
-     * and {@see registerAssetBundle()} instead.
+     * This method should be used for simple registration of JavaScript code blocks.
      *
-     * @param string $url the JS string to be registered.
+     * @param string $jsString the JavaScript code block to be registered.
      * @param array $options the HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
+     * @param string|null $key the key that identifies the JS code block. If null, it will use $js as the key. If two JS code
+     * blocks are registered with the same key, the latter will overwrite the former.
      *
      * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
      *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section
@@ -270,8 +284,8 @@ final class AssetManager
             $options = array_merge(['position' => 3], $options);
         }
 
-        $this->js[$key]['key'] = $jsString;
-        $this->js[$key]['attributes'] = $options;
+        $this->jsStrings[$key]['key'] = $jsString;
+        $this->jsStrings[$key]['attributes'] = $options;
     }
 
     /**
@@ -281,6 +295,7 @@ final class AssetManager
      * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
      * and {@see registerAssetBundle()} instead.
      *
+     * @parem string $key the key that identifies and sets the variable name
      * @param string $url the JS string to be registered.
      * @param array $options the HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
@@ -298,8 +313,8 @@ final class AssetManager
             $options = array_merge(['position' => 1], $options);
         }
 
-        $this->jsVar[$key]['key'] = $jsVar;
-        $this->jsVar[$key]['attributes'] = $options;
+        $this->jsVars[$key]['key'] = $jsVar;
+        $this->jsVars[$key]['attributes'] = $options;
     }
 
     /**
