@@ -538,7 +538,7 @@ final class AssetManager
             $key = is_int($key) ? $jsString : $key;
             if (\is_array($jsString)) {
                 $string = array_shift($jsString);
-                $this->registerJsString($string, $jsString, (string) $key);
+                $this->registerJsString($string, $jsString, $key);
             } elseif ($jsString !== null) {
                 $this->registerJsString($jsString, $bundle->jsOptions, $key);
             }
