@@ -266,13 +266,14 @@ final class AssetManager
      * @param string $jsString the JavaScript code block to be registered.
      * @param array $options the HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
-     * @param string|null $key the key that identifies the JS code block. If null, it will use $js as the key. If two JS code
-     * blocks are registered with the same key, the latter will overwrite the former.
      *
      * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
      *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section
      *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
      *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section. This is the default value.
+     *
+     * @param string|null $key the key that identifies the JS code block. If null, it will use $jsString as the key. If two JS code
+     * blocks are registered with the same key, the latter will overwrite the former.
      *
      * @return void
      */
@@ -296,7 +297,7 @@ final class AssetManager
      * and {@see registerAssetBundle()} instead.
      *
      * @parem string $key the key that identifies and sets the variable name
-     * @param string $url the JS string to be registered.
+     * @param string $jsVar the JS code block to be registered.
      * @param array $options the HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
      *
