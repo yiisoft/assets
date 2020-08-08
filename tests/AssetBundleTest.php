@@ -209,8 +209,6 @@ final class AssetBundleTest extends TestCase
 
     public function testJsString(): void
     {
-        $this->assertEmpty($this->assetManager->getAssetBundles());
-
         $this->assetManager->register([BaseAsset::class]);
 
         $this->assertEquals(
@@ -221,12 +219,14 @@ final class AssetBundleTest extends TestCase
             'app2.start();',
             $this->assetManager->getJsStrings()['app2.start();']['string']
         );
+        $this->assertEquals(
+            1,
+            $this->assetManager->getJsStrings()['uniqueName2']['attributes']['position']
+        );
     }
 
     public function testJsVars(): void
     {
-        $this->assertEmpty($this->assetManager->getAssetBundles());
-
         $this->assetManager->register([BaseAsset::class]);
 
         $this->assertEquals(
@@ -241,6 +241,10 @@ final class AssetBundleTest extends TestCase
                 'option3' => 'value3',
             ],
             $this->assetManager->getJsVars()['var2']['variables']
+        );
+        $this->assertEquals(
+            3,
+            $this->assetManager->getJsVars()['var3']['attributes']['position']
         );
     }
 

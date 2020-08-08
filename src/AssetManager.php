@@ -316,7 +316,7 @@ final class AssetManager
      * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
      * and {@see registerAssetBundle()} instead.
      *
-     * @parem string $key the key that identifies and sets the variable name
+     * @parem string $varName the variable name
      * @param array|string $jsVar the JS code block to be registered.
      * @param array $options the HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
@@ -328,14 +328,14 @@ final class AssetManager
      *
      * @return void
      */
-    public function registerJsVar(string $key, $jsVar, array $options = []): void
+    public function registerJsVar(string $varName, $jsVar, array $options = []): void
     {
         if (!\array_key_exists('position', $options)) {
             $options = array_merge(['position' => 1], $options);
         }
 
-        $this->jsVars[$key]['variables'] = $jsVar;
-        $this->jsVars[$key]['attributes'] = $options;
+        $this->jsVars[$varName]['variables'] = $jsVar;
+        $this->jsVars[$varName]['attributes'] = $options;
     }
 
     /**
