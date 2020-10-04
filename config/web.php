@@ -15,11 +15,6 @@ use Yiisoft\Assets\AssetPublisherInterface;
 /* @var array $params */
 
 return [
-    Aliases::class => [
-        '__class' => Aliases::class,
-        '__construct()' => [$params['aliases']],
-    ],
-
     LoggerInterface::class => NullLogger::class,
 
     AssetConverterInterface::class => static function (ContainerInterface $container) use ($params) {
