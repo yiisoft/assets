@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
-use Yiisoft\Composer\Config\Builder;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetBundle;
+use Yiisoft\Assets\AssetConverter;
+use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
+use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Di\Container;
+use Yiisoft\Factory\Definitions\Reference;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -51,9 +55,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->container = new Container(
-            require Builder::path('web'),
-        );
+        $this->container = new Container($this->config());
 
         $this->aliases = $this->container->get(Aliases::class);
         $this->assetManager = $this->container->get(AssetManager::class);
@@ -144,5 +146,58 @@ abstract class TestCase extends BaseTestCase
     protected function unlink(string $file): bool
     {
         return FileHelper::unlink($file);
+    }
+
+    private function config(): array
+    {
+        $params = $this->params();
+
+        return [
+            Aliases::class => [
+                '__construct()' => [$params['aliases']]
+            ],
+
+            LoggerInterface::class => NullLogger::class,
+
+            AssetConverterInterface::class => [
+                '__class' => AssetConverter::class,
+                '__construct()' => [
+                    Reference::to(Aliases::class),
+                    Reference::to(LoggerInterface::class)
+                ],
+                'setCommand()' => [
+                    $params['yiisoft/asset']['assetConverter']['command']['from'],
+                    $params['yiisoft/asset']['assetConverter']['command']['to'],
+                    $params['yiisoft/asset']['assetConverter']['command']['command']
+                ],
+                'setForceConvert()' => [$params['yiisoft/asset']['assetConverter']['forceConvert']]
+            ],
+
+            AssetPublisherInterface::class => [
+                '__class' => AssetPublisher::class,
+                '__construct()' => [Reference::to(Aliases::class)],
+                'setAppendTimestamp()' => [$params['yiisoft/asset']['assetPublisher']['appendTimestamp']],
+                'setAssetMap()' => [$params['yiisoft/asset']['assetPublisher']['assetMap']],
+                'setBasePath()' => [$params['yiisoft/asset']['assetPublisher']['basePath']],
+                'setBaseUrl()' => [$params['yiisoft/asset']['assetPublisher']['baseUrl']],
+                'setForceCopy()' => [$params['yiisoft/asset']['assetPublisher']['forceCopy']],
+                'setLinkAssets()' => [$params['yiisoft/asset']['assetPublisher']['linkAssets']]
+
+            ],
+
+            AssetManager::class => [
+                '__class' => AssetManager::class,
+                '__construct()' => [Reference::to(LoggerInterface::class)],
+                'setConverter()' => [Reference::to(AssetConverterInterface::class)],
+                'setPublisher()' => [Reference::to(AssetPublisherInterface::class)],
+                'setBundles()' => [$params['yiisoft/asset']['assetManager']['bundles']],
+                'register()' => [$params['yiisoft/asset']['assetManager']['register']]
+            ]
+        ];
+    }
+
+    private function params(): array
+    {
+        return require dirname(__DIR__) . '/config/params.php';
     }
 }

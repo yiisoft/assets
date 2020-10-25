@@ -16,6 +16,7 @@ It helps resolving dependencies and getting lists of files ready for generating 
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/assets/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/assets/?branch=master)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fassets%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/assets/master)
 [![static analysis](https://github.com/yiisoft/assets/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/assets/actions?query=workflow%3A%22static+analysis%22)
+[![type-coverage](https://shepherd.dev/github/yiisoft/assets/coverage.svg)](https://shepherd.dev/github/yiisoft/assets)
 
 
 ## Installation
@@ -54,8 +55,8 @@ The package tests are checked with [Infection](https://infection.github.io/) mut
 
 ## Static analysis
 
-The code is statically analyzed with [Phan](https://github.com/phan/phan/wiki). To run static analysis:
+The code is statically analyzed with [Psalm](https://psalm.dev/docs/). To run static analysis:
 
 ```php
-./vendor/bin/phan
+./vendor/bin/psalm
 ```

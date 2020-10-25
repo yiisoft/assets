@@ -100,18 +100,18 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @param string $asset the asset file path, relative to $basePath
      * @param string $basePath the directory the $asset is relative to.
-     * @param array $options additional options to pass to {@see AssetConverter::runCommand}
+     * @param array $optionsConverter additional options to pass to {@see AssetConverter::runCommand}
      *
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert(string $asset, string $basePath, array $options = []): string
+    public function convert(string $asset, string $basePath, array $optionsConverter = []): string
     {
         $pos = strrpos($asset, '.');
 
         if ($pos !== false) {
             $srcExt = substr($asset, $pos + 1);
 
-            $commandOptions = $this->buildConverterOptions($srcExt, $options);
+            $commandOptions = $this->buildConverterOptions($srcExt, $optionsConverter);
 
             if (isset($this->commands[$srcExt])) {
                 [$ext, $command] = $this->commands[$srcExt];
@@ -183,7 +183,7 @@ final class AssetConverter implements AssetConverterInterface
     {
         $resultModificationTime = @filemtime("$basePath/$targetFile");
 
-        if ($resultModificationTime === false || $resultModificationTime === null) {
+        if ($resultModificationTime === false) {
             return true;
         }
 

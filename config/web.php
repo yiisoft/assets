@@ -2,81 +2,49 @@
 
 declare(strict_types=1);
 
-use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\AssetPublisherInterface;
+use Yiisoft\Factory\Definitions\Reference;
 
 /* @var array $params */
 
 return [
-    LoggerInterface::class => NullLogger::class,
+    AssetConverterInterface::class => [
+        '__class' => AssetConverter::class,
+        '__construct()' => [
+            Reference::to(Aliases::class),
+            Reference::to(LoggerInterface::class)
+        ],
+        'setCommand()' => [
+            $params['yiisoft/asset']['assetConverter']['command']['from'],
+            $params['yiisoft/asset']['assetConverter']['command']['to'],
+            $params['yiisoft/asset']['assetConverter']['command']['command']
+        ],
+        'setForceConvert()' => [$params['yiisoft/asset']['assetConverter']['forceConvert']]
+    ],
 
-    AssetConverterInterface::class => static function (ContainerInterface $container) use ($params) {
-        $assetConverter = new AssetConverter(
-            $container->get(Aliases::class),
-            $container->get(LoggerInterface::class)
-        );
+    AssetPublisherInterface::class => [
+        '__class' => AssetPublisher::class,
+        '__construct()' => [Reference::to(Aliases::class)],
+        'setAppendTimestamp()' => $params['yiisoft/asset']['assetPublisher']['appendTimestamp'],
+        'setAssetMap()' => $params['yiisoft/asset']['assetPublisher']['assetMap'],
+        'setBasePath()' => $params['yiisoft/asset']['assetPublisher']['basePath'],
+        'setBaseUrl()' => $params['yiisoft/asset']['assetPublisher']['baseUrl'],
+        'setForceCopy()' => $params['yiisoft/asset']['assetPublisher']['forceCopy'],
+        'setLinkAssets()' => $params['yiisoft/asset']['assetPublisher']['linkAssets']
 
-        if (
-            $params['yiisoft/asset']['assetConverter']['command']['from'] !== '' &&
-            $params['yiisoft/asset']['assetConverter']['command']['to'] !== '' &&
-            $params['yiisoft/asset']['assetConverter']['command']['command'] !== ''
-        ) {
-            $assetConverter->setCommand(
-                $params['yiisoft/asset']['assetConverter']['command']['from'],
-                $params['yiisoft/asset']['assetConverter']['command']['to'],
-                $params['yiisoft/asset']['assetConverter']['command']['command'],
-            );
-        }
+    ],
 
-        $assetConverter->setForceConvert($params['yiisoft/asset']['assetConverter']['forceConvert']);
-
-        return $assetConverter;
-    },
-
-    AssetPublisherInterface::class => static function (ContainerInterface $container) use ($params) {
-        $assetPublisher = new AssetPublisher($container->get(Aliases::class));
-
-        $assetPublisher->setAppendTimestamp($params['yiisoft/asset']['assetPublisher']['appendTimestamp']);
-
-        if ($params['yiisoft/asset']['assetPublisher']['assetMap'] != []) {
-            $assetPublisher->setAssetMap($params['yiisoft/asset']['assetPublisher']['assetMap']);
-        }
-
-        if ($params['yiisoft/asset']['assetPublisher']['basePath'] !== '') {
-            $assetPublisher->setBasePath($params['yiisoft/asset']['assetPublisher']['basePath']);
-        }
-
-        if ($params['yiisoft/asset']['assetPublisher']['baseUrl'] !== '') {
-            $assetPublisher->setBaseUrl($params['yiisoft/asset']['assetPublisher']['baseUrl']);
-        }
-
-        $assetPublisher->setForceCopy($params['yiisoft/asset']['assetPublisher']['forceCopy']);
-        $assetPublisher->setLinkAssets($params['yiisoft/asset']['assetPublisher']['linkAssets']);
-
-        return $assetPublisher;
-    },
-
-    AssetManager::class => static function (ContainerInterface $container) use ($params) {
-        $assetManager = new AssetManager($container->get(LoggerInterface::class));
-
-        $assetManager->setConverter($container->get(AssetConverterInterface::class));
-        $assetManager->setPublisher($container->get(AssetPublisherInterface::class));
-
-        if ($params['yiisoft/asset']['assetManager']['bundles'] !== []) {
-            $assetManager->setBundles($params['yiisoft/asset']['assetManager']['bundles']);
-        }
-
-        if ($params['yiisoft/asset']['assetManager']['register'] !== []) {
-            $assetManager->register($params['yiisoft/asset']['assetManager']['register']);
-        }
-
-        return $assetManager;
-    },
+    AssetManager::class => [
+        '__class' => AssetManager::class,
+        '__construct()' => [Reference::to(LoggerInterface::class)],
+        'setConverter()' => [Reference::to(AssetConverterInterface::class)],
+        'setPublisher()' => [Reference::to(AssetPublisherInterface::class)],
+        'setBundles()' => [$params['yiisoft/asset']['assetManager']['bundles']],
+        'register()' => [$params['yiisoft/asset']['assetManager']['register']]
+    ]
 ];

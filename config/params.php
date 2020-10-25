@@ -15,25 +15,23 @@ return [
     'yiisoft/asset' => [
         'assetConverter' => [
             'command' => [
-                'from' => '',
-                'to' => '',
-                'command' => ''
+                'from' => 'sass',
+                'to' => 'css',
+                'command' => 'sass {options} {from} {to}'
             ],
             'forceConvert' => false
         ],
         'assetPublisher' => [
             'appendTimestamp' => false,
             'assetMap' => [],
-            'basePath' => '',
-            'baseUrl' => '',
+            'basePath' => null,
+            'baseUrl' => null,
             'forceCopy' => false,
             'linkAssets' => false,
         ],
         'assetManager' => [
-            'bundles' => [
-            ],
-            'register' => [
-            ],
+            'bundles' => [],
+            'register' => [],
         ],
     ],
 ];

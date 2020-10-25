@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Yiisoft\Assets\Assetbundle;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
