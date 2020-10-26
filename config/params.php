@@ -27,11 +27,11 @@ return [
             'basePath' => null,
             'baseUrl' => null,
             'forceCopy' => false,
-            'linkAssets' => false,
+            'linkAssets' => false
         ],
         'assetManager' => [
             'bundles' => [],
-            'register' => [],
-        ],
-    ],
+            'register' => []
+        ]
+    ]
 ];
