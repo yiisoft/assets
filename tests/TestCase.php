@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
+use Exception;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -46,11 +47,6 @@ abstract class TestCase extends BaseTestCase
      */
     protected $logger;
 
-    /**
-     * setUp
-     *
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -65,11 +61,6 @@ abstract class TestCase extends BaseTestCase
         $this->removeAssets('@asset');
     }
 
-    /**
-     * tearDown
-     *
-     * @return void
-     */
     protected function tearDown(): void
     {
         $this->container = null;
@@ -97,7 +88,7 @@ abstract class TestCase extends BaseTestCase
         $handle = opendir($dir = $this->aliases->get($basePath));
 
         if ($handle === false) {
-            throw new \Exception("Unable to open directory: $dir");
+            throw new Exception("Unable to open directory: $dir");
         }
 
         while (($file = readdir($handle)) !== false) {
@@ -161,10 +152,6 @@ abstract class TestCase extends BaseTestCase
 
             AssetConverterInterface::class => [
                 '__class' => AssetConverter::class,
-                '__construct()' => [
-                    Reference::to(Aliases::class),
-                    Reference::to(LoggerInterface::class)
-                ],
                 'setCommand()' => [
                     $params['yiisoft/asset']['assetConverter']['command']['from'],
                     $params['yiisoft/asset']['assetConverter']['command']['to'],
@@ -175,7 +162,6 @@ abstract class TestCase extends BaseTestCase
 
             AssetPublisherInterface::class => [
                 '__class' => AssetPublisher::class,
-                '__construct()' => [Reference::to(Aliases::class)],
                 'setAppendTimestamp()' => [$params['yiisoft/asset']['assetPublisher']['appendTimestamp']],
                 'setAssetMap()' => [$params['yiisoft/asset']['assetPublisher']['assetMap']],
                 'setBasePath()' => [$params['yiisoft/asset']['assetPublisher']['basePath']],
@@ -187,7 +173,6 @@ abstract class TestCase extends BaseTestCase
 
             AssetManager::class => [
                 '__class' => AssetManager::class,
-                '__construct()' => [Reference::to(LoggerInterface::class)],
                 'setConverter()' => [Reference::to(AssetConverterInterface::class)],
                 'setPublisher()' => [Reference::to(AssetPublisherInterface::class)],
                 'setBundles()' => [$params['yiisoft/asset']['assetManager']['bundles']],
