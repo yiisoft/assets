@@ -566,8 +566,11 @@ final class AssetPublisher implements AssetPublisherInterface
                     }
                 }
             }
-        } elseif (!empty($options['forceCopy']) ||
-            ($this->forceCopy && !isset($options['forceCopy'])) || !is_dir($dstDir)) {
+        } elseif (
+            !empty($options['forceCopy']) ||
+            ($this->forceCopy && !isset($options['forceCopy'])) ||
+            !is_dir($dstDir)
+        ) {
             $opts = array_merge(
                 $options,
                 [
