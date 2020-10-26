@@ -145,7 +145,16 @@ abstract class TestCase extends BaseTestCase
 
         return [
             Aliases::class => [
-                '__construct()' => [$params['aliases']]
+                '__construct()' => [
+                    [
+                        '@root' => dirname(__DIR__, 1),
+                        '@asset' => '@root/tests/public/assets',
+                        '@assetUrl'  => '/baseUrl',
+                        '@converter' => '@root/tests/public/assetconverter',
+                        '@npm' => '@root/node_modules',
+                        '@testSourcePath' => '@root/tests/public/assetsources'
+                    ]
+                ]
             ],
 
             LoggerInterface::class => NullLogger::class,
