@@ -58,12 +58,14 @@ Add alias to the application config at `config/params.php`:
 
 ```php
 return [
-    'aliases' => [
-        '@root' => dirname(__DIR__),
-        '@public' => '@root/public',
-        '@assets' => '@public/assets',
-        '@assetsUrl' => '/assets',
-        '@npm' => '@root/node_modules' // <-- this
+    'yiisoft/aliases' => [
+        'aliases' => [
+            '@root' => dirname(__DIR__),
+            '@public' => '@root/public',
+            '@assets' => '@public/assets',
+            '@assetsUrl' => '/assets',
+            '@npm' => '@root/node_modules' // <-- this
+        ],
     ],
 ];
 ```
