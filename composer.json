@@ -26,10 +26,10 @@
         "yiisoft/files": "^3.0@dev"
     },
     "require-dev": {
-        "infection/infection": "^0.19",
-        "phpunit/phpunit": "^9.4",
-        "vimeo/psalm": "^4.0",
         "foxy/foxy": "^1.0.8",
+        "phpunit/phpunit": "^9.4",
+        "roave/infection-static-analysis-plugin": "^1.3",
+        "vimeo/psalm": "^4.1",
         "yiisoft/di": "^3.0@dev"
     },
     "autoload": {
