@@ -12,6 +12,34 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 interface AssetPublisherInterface
 {
     /**
+     * Returns the actual URL for the specified asset.
+     *
+     * The actual URL is obtained by prepending either {@see AssetBundle::$baseUrl} or {@see AssetManager::$baseUrl} to
+     * the given asset path.
+     *
+     * @param AssetBundle $bundle the asset bundle which the asset file belongs to.
+     * @param string $assetPath the asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
+     * {@see AssetBundle::$css}.
+     *
+     * @throws InvalidConfigException
+     *
+     * @return string the actual URL for the specified asset.
+     */
+    public function getAssetUrl(AssetBundle $bundle, string $assetPath): string;
+
+    /**
+     * Loads asset bundle class by name.
+     *
+     * @param string $name bundle name.
+     * @param array $config bundle object configuration.
+     *
+     * @return AssetBundle
+     *
+     * @throws InvalidConfigException
+     */
+    public function loadBundle(string $name, array $config = []): AssetBundle;
+
+    /**
      * Publishes a file or a directory.
      *
      * This method will copy the specified file or directory to {@see basePath} so that it can be accessed via the Web
