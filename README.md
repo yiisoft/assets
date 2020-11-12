@@ -6,7 +6,7 @@
     <br>
 </p>
 
-The package impements clietside asset (such as CSS and JavaScript) management for PHP.
+The package impements client-side asset (such as CSS and JavaScript) management for PHP.
 It helps resolving dependencies and getting lists of files ready for generating HTML `<script` and `<link` tags.
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/assets/v/stable.png)](https://packagist.org/packages/yiisoft/assets)
