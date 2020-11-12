@@ -10,6 +10,7 @@ use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
+use Yiisoft\Files\FileHelper;
 
 final class AssetManagerTest extends TestCase
 {
@@ -27,7 +28,7 @@ final class AssetManagerTest extends TestCase
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
 
-        $path = $sourcePath . @filemtime($sourcePath);
+        $path = $sourcePath . FileHelper::lastModifiedTime($sourcePath);
         $path = sprintf('%x', crc32($path . '|' . $this->assetManager->getPublisher()->getLinkAssets()));
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
@@ -54,7 +55,7 @@ final class AssetManagerTest extends TestCase
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
 
-        $path = $sourcePath . @filemtime($sourcePath);
+        $path = $sourcePath . FileHelper::lastModifiedTime($sourcePath);
         $path = sprintf('%x', crc32($path . '|' . $this->assetManager->getPublisher()->getLinkAssets()));
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
