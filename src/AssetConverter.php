@@ -197,11 +197,11 @@ final class AssetConverter implements AssetConverterInterface
         string $sourceExtension,
         string $targetExtension
     ): bool {
-        $resultModificationTime = FileHelper::lastModifiedTime("$basePath/$targetFile");
-
-        if ($resultModificationTime === false) {
+        if (!is_file("$basePath/$targetFile")) {
             return true;
         }
+
+        $resultModificationTime = FileHelper::lastModifiedTime("$basePath/$targetFile");
 
         if ($resultModificationTime < FileHelper::lastModifiedTime("$basePath/$sourceFile")) {
             return true;
