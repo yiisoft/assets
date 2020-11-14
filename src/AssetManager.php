@@ -304,7 +304,7 @@ final class AssetManager
      *
      * {@see registerJsFile()} for more details on javascript position.
      *
-     * @throws InvalidConfigException|RuntimeException if the asset bundle does not exist or a circular dependency
+     * @throws RuntimeException if the asset bundle does not exist or a circular dependency
      * is detected.
      *
      * @return AssetBundle the registered asset bundle instance.
@@ -316,7 +316,6 @@ final class AssetManager
 
             $this->assetBundles[$name] = false;
 
-            /** register dependencies */
             $pos = $bundle->jsOptions['position'] ?? null;
 
             foreach ($bundle->depends as $dep) {
@@ -342,7 +341,7 @@ final class AssetManager
                 );
             }
 
-            /** update position for all dependencies */
+            // update position for all dependencies
             foreach ($bundle->depends as $dep) {
                 $this->registerAssetBundle($dep, $pos);
             }
