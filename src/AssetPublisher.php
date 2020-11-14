@@ -550,7 +550,7 @@ final class AssetPublisher implements AssetPublisherInterface
         if ($this->linkAssets) {
             if (!is_dir($dstDir)) {
                 FileHelper::createDirectory(dirname($dstDir), $this->dirMode);
-                try { /** fix #6226 symlinking multi threaded */
+                try { // fix #6226 symlinking multi threaded
                     symlink($src, $dstDir);
                 } catch (Exception $e) {
                     if (!is_dir($dstDir)) {
