@@ -26,10 +26,10 @@ final class AssetPublisherTest extends TestCase
     {
         $bundle = new BaseAsset();
 
-        $timestampCss = filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
+        $timestampCss = FileHelper::lastModifiedTime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
         $urlCss = "/baseUrl/css/basePath.css?v=$timestampCss";
 
-        $timestampJs = filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
+        $timestampJs = FileHelper::lastModifiedTime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
         $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
@@ -236,7 +236,8 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
-        $path = (is_file($sourcePath) ? \dirname($sourcePath) : $sourcePath) . @filemtime($sourcePath);
+        $path = (is_file($sourcePath) ? \dirname($sourcePath) : $sourcePath) .
+            FileHelper::lastModifiedTime($sourcePath);
         $hash = sprintf('%x', crc32($path . '|' . $this->publisher->getLinkAssets()));
 
         $this->publisher->setCssDefaultOptions([
