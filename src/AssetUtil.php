@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use function mb_strlen;
+use function strncmp;
+use function strpos;
+use function substr_compare;
+
 /**
  * AssetUtil shared functions.
  */
