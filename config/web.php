@@ -17,9 +17,9 @@ return [
         'setCommand()' => [
             $params['yiisoft/asset']['assetConverter']['command']['from'],
             $params['yiisoft/asset']['assetConverter']['command']['to'],
-            $params['yiisoft/asset']['assetConverter']['command']['command']
+            $params['yiisoft/asset']['assetConverter']['command']['command'],
         ],
-        'setForceConvert()' => [$params['yiisoft/asset']['assetConverter']['forceConvert']]
+        'setForceConvert()' => [$params['yiisoft/asset']['assetConverter']['forceConvert']],
     ],
 
     AssetPublisherInterface::class => [
@@ -29,8 +29,7 @@ return [
         'setBasePath()' => [$params['yiisoft/asset']['assetPublisher']['basePath']],
         'setBaseUrl()' => [$params['yiisoft/asset']['assetPublisher']['baseUrl']],
         'setForceCopy()' => [$params['yiisoft/asset']['assetPublisher']['forceCopy']],
-        'setLinkAssets()' => [$params['yiisoft/asset']['assetPublisher']['linkAssets']]
-
+        'setLinkAssets()' => [$params['yiisoft/asset']['assetPublisher']['linkAssets']],
     ],
 
     AssetManager::class => [
@@ -38,6 +37,6 @@ return [
         'setConverter()' => [Reference::to(AssetConverterInterface::class)],
         'setPublisher()' => [Reference::to(AssetPublisherInterface::class)],
         'setBundles()' => [$params['yiisoft/asset']['assetManager']['bundles']],
-        'register()' => [$params['yiisoft/asset']['assetManager']['register']]
-    ]
+        'register()' => [$params['yiisoft/asset']['assetManager']['register']],
+    ],
 ];

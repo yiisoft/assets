@@ -16,34 +16,34 @@ use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\AssetPublisherInterface;
-use Yiisoft\Files\FileHelper;
 use Yiisoft\Di\Container;
 use Yiisoft\Factory\Definitions\Reference;
+use Yiisoft\Files\FileHelper;
 
 abstract class TestCase extends BaseTestCase
 {
     /**
-     * @var ContainerInterface $container
+     * @var ContainerInterface
      */
     private $container;
 
     /**
-     * @var Aliases $aliases
+     * @var Aliases
      */
     protected $aliases;
 
     /**
-     * @var AssetManager $assetManager
+     * @var AssetManager
      */
     protected $assetManager;
 
     /**
-     * @var AssetPublisher $assetPublisher
+     * @var AssetPublisher
      */
     protected $publisher;
 
     /**
-     * @var LoggerInterface $logger
+     * @var LoggerInterface
      */
     protected $logger;
 
@@ -69,11 +69,10 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * Asserting two strings equality ignoring line endings.
+     *
      * @param string $expected
      * @param string $actual
      * @param string $message
-     *
-     * @return void
      */
     protected function assertEqualsWithoutLE(string $expected, string $actual, string $message = ''): void
     {
@@ -111,8 +110,6 @@ abstract class TestCase extends BaseTestCase
      *
      * @param string $type
      * @param AssetBundle $bundle
-     *
-     * @return void
      */
     protected function sourcesPublishVerifyFiles(string $type, AssetBundle $bundle): void
     {
@@ -149,12 +146,12 @@ abstract class TestCase extends BaseTestCase
                     [
                         '@root' => dirname(__DIR__, 1),
                         '@asset' => '@root/tests/public/assets',
-                        '@assetUrl'  => '/baseUrl',
+                        '@assetUrl' => '/baseUrl',
                         '@converter' => '@root/tests/public/assetconverter',
                         '@npm' => '@root/node_modules',
-                        '@testSourcePath' => '@root/tests/public/assetsources'
-                    ]
-                ]
+                        '@testSourcePath' => '@root/tests/public/assetsources',
+                    ],
+                ],
             ],
 
             LoggerInterface::class => NullLogger::class,
@@ -164,9 +161,9 @@ abstract class TestCase extends BaseTestCase
                 'setCommand()' => [
                     $params['yiisoft/asset']['assetConverter']['command']['from'],
                     $params['yiisoft/asset']['assetConverter']['command']['to'],
-                    $params['yiisoft/asset']['assetConverter']['command']['command']
+                    $params['yiisoft/asset']['assetConverter']['command']['command'],
                 ],
-                'setForceConvert()' => [$params['yiisoft/asset']['assetConverter']['forceConvert']]
+                'setForceConvert()' => [$params['yiisoft/asset']['assetConverter']['forceConvert']],
             ],
 
             AssetPublisherInterface::class => [
@@ -176,8 +173,7 @@ abstract class TestCase extends BaseTestCase
                 'setBasePath()' => [$params['yiisoft/asset']['assetPublisher']['basePath']],
                 'setBaseUrl()' => [$params['yiisoft/asset']['assetPublisher']['baseUrl']],
                 'setForceCopy()' => [$params['yiisoft/asset']['assetPublisher']['forceCopy']],
-                'setLinkAssets()' => [$params['yiisoft/asset']['assetPublisher']['linkAssets']]
-
+                'setLinkAssets()' => [$params['yiisoft/asset']['assetPublisher']['linkAssets']],
             ],
 
             AssetManager::class => [
@@ -185,8 +181,8 @@ abstract class TestCase extends BaseTestCase
                 'setConverter()' => [Reference::to(AssetConverterInterface::class)],
                 'setPublisher()' => [Reference::to(AssetPublisherInterface::class)],
                 'setBundles()' => [$params['yiisoft/asset']['assetManager']['bundles']],
-                'register()' => [$params['yiisoft/asset']['assetManager']['register']]
-            ]
+                'register()' => [$params['yiisoft/asset']['assetManager']['register']],
+            ],
         ];
     }
 

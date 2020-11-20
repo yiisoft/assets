@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Exception;
-use Psr\Log\LoggerInterface;
-use Yiisoft\Aliases\Aliases;
-use Yiisoft\Files\FileHelper;
-
 use function array_key_exists;
-use function call_user_func;
 use function escapeshellarg;
+use Exception;
 use function fclose;
+
 use function proc_close;
 use function proc_open;
+use Psr\Log\LoggerInterface;
 use function stream_get_contents;
 use function strrpos;
 use function strtr;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Files\FileHelper;
 
 /**
  * AssetConverter supports conversion of several popular script formats into JavaScript or CSS.
@@ -45,12 +44,12 @@ final class AssetConverter implements AssetConverterInterface
      * ```
      */
     private array $commands = [
-        'less'   => ['css', 'lessc {from} {to} --no-color --source-map'],
-        'scss'   => ['css', 'sass {options} {from} {to}'],
-        'sass'   => ['css', 'sass {options} {from} {to}'],
-        'styl'   => ['css', 'stylus < {from} > {to}'],
+        'less' => ['css', 'lessc {from} {to} --no-color --source-map'],
+        'scss' => ['css', 'sass {options} {from} {to}'],
+        'sass' => ['css', 'sass {options} {from} {to}'],
+        'styl' => ['css', 'stylus < {from} > {to}'],
         'coffee' => ['js', 'coffee -p {from} > {to}'],
-        'ts'     => ['js', 'tsc --out {to} {from}'],
+        'ts' => ['js', 'tsc --out {to} {from}'],
     ];
 
     /**
@@ -148,8 +147,6 @@ final class AssetConverter implements AssetConverterInterface
      * Example:
      *
      * $converter->setCommand('scss', 'css', 'sass {options} {from} {to}');
-     *
-     * @return void
      */
     public function setCommand(string $from, string $to, string $command): void
     {
@@ -160,7 +157,6 @@ final class AssetConverter implements AssetConverterInterface
      * Make the conversion regardless of whether the asset already exists.
      *
      * @param bool $value
-     * @return void
      */
     public function setForceConvert(bool $value): void
     {
@@ -171,8 +167,6 @@ final class AssetConverter implements AssetConverterInterface
      * PHP callback, which should be invoked to check whether asset conversion result is outdated.
      *
      * @param callable $value
-     *
-     * @return void
      */
     public function setIsOutdatedCallback(callable $value): void
     {
@@ -211,8 +205,7 @@ final class AssetConverter implements AssetConverterInterface
             return false;
         }
 
-        return call_user_func(
-            $this->isOutdatedCallback,
+        return ($this->isOutdatedCallback)(
             $basePath,
             $sourceFile,
             $targetFile,
@@ -247,7 +240,7 @@ final class AssetConverter implements AssetConverterInterface
         $command = strtr($command, [
             '{options}' => $options,
             '{from}' => escapeshellarg("$basePath/$asset"),
-            '{to}'   => escapeshellarg("$basePath/$result"),
+            '{to}' => escapeshellarg("$basePath/$result"),
         ]);
 
         $descriptors = [
@@ -298,7 +291,7 @@ final class AssetConverter implements AssetConverterInterface
                 $path = $this->aliases->get($options[$srcExt]['path']);
 
                 $commandOptions = strtr($command, [
-                    '{path}' => $path
+                    '{path}' => $path,
                 ]);
             }
         }

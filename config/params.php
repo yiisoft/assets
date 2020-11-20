@@ -8,9 +8,9 @@ return [
             'command' => [
                 'from' => 'sass',
                 'to' => 'css',
-                'command' => 'sass {options} {from} {to}'
+                'command' => 'sass {options} {from} {to}',
             ],
-            'forceConvert' => false
+            'forceConvert' => false,
         ],
         'assetPublisher' => [
             'appendTimestamp' => false,
@@ -18,11 +18,11 @@ return [
             'basePath' => null,
             'baseUrl' => null,
             'forceCopy' => false,
-            'linkAssets' => false
+            'linkAssets' => false,
         ],
         'assetManager' => [
             'bundles' => [],
-            'register' => []
-        ]
-    ]
+            'register' => [],
+        ],
+    ],
 ];

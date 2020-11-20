@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use RuntimeException;
-use Yiisoft\Assets\Exception\InvalidConfigException;
-
 use function array_key_exists;
 use function array_merge;
+
 use function array_shift;
 use function array_unshift;
 use function is_array;
 use function is_file;
+use RuntimeException;
+use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
@@ -158,7 +158,7 @@ final class AssetManager
      * Generate the array configuration of the AssetBundles
      *
      * @param array $names
-     * @param integer|null $position
+     * @param int|null $position
      *
      * @throws InvalidConfigException
      */

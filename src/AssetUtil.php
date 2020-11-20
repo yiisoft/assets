@@ -18,7 +18,9 @@ final class AssetUtil
      * Returns a value indicating whether a URL is relative.
      *
      * A relative URL does not have host info part.
+     *
      * @param string $url the URL to be checked
+     *
      * @return bool whether the URL is relative
      */
     public static function isRelative(string $url): bool
@@ -39,7 +41,7 @@ final class AssetUtil
             return $assetMap[$pathAsset];
         }
 
-        if (!empty($bundle->sourcePath) && static::isRelative($pathAsset)) {
+        if (!empty($bundle->sourcePath) && self::isRelative($pathAsset)) {
             $pathAsset = $bundle->sourcePath . '/' . $pathAsset;
         }
 

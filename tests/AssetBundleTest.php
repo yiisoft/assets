@@ -40,7 +40,7 @@ final class AssetBundleTest extends TestCase
         $this->assertEquals(
             [
                 'integrity' => 'integrity-hash',
-                'crossorigin' => 'anonymous'
+                'crossorigin' => 'anonymous',
             ],
             $this->assetManager->getCssFiles()['/baseUrl/css/basePath.css']['attributes']
         );
@@ -53,7 +53,7 @@ final class AssetBundleTest extends TestCase
             [
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()['/baseUrl/js/basePath.js']['attributes']
         );
@@ -65,7 +65,7 @@ final class AssetBundleTest extends TestCase
             [
                 BaseAsset::class => [
                     'basePath' => null,
-                ]
+                ],
             ]
         );
 
@@ -85,7 +85,7 @@ final class AssetBundleTest extends TestCase
         $this->assetManager->setBundles(
             [
                 RootAsset::class => [
-                    'baseUrl' => ''
+                    'baseUrl' => '',
                 ],
             ]
         );
@@ -100,7 +100,7 @@ final class AssetBundleTest extends TestCase
         $this->assetManager->setBundles(
             [
                 RootAsset::class => [
-                    'depends' => [BaseAsset::class]
+                    'depends' => [BaseAsset::class],
                 ],
                 BaseAsset::class => [
                     'baseUrl' => null,
@@ -120,7 +120,7 @@ final class AssetBundleTest extends TestCase
                 BaseAsset::class => [
                     'basePath' => null,
                     'baseUrl' => null,
-                ]
+                ],
             ]
         );
 
@@ -201,7 +201,7 @@ final class AssetBundleTest extends TestCase
         );
         $this->assertEquals(
             [
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
         );
@@ -220,7 +220,7 @@ final class AssetBundleTest extends TestCase
         $this->assertEquals(
             [
                 'media' => 'screen',
-                'hreflang' => 'en'
+                'hreflang' => 'en',
             ],
             $this->assetManager->getCssFiles()['/baseUrl/css/default_options.css']['attributes']
         );
@@ -232,7 +232,7 @@ final class AssetBundleTest extends TestCase
         $this->assertEquals(
             [
                 'media' => 'tv',
-                'hreflang' => 'en'
+                'hreflang' => 'en',
             ],
             $this->assetManager->getCssFiles()['/baseUrl/css/tv.css']['attributes']
         );
@@ -244,7 +244,7 @@ final class AssetBundleTest extends TestCase
         $this->assertEquals(
             [
                 'media' => 'screen, print',
-                'hreflang' => 'en'
+                'hreflang' => 'en',
             ],
             $this->assetManager->getCssFiles()['/baseUrl/css/screen_and_print.css']['attributes']
         );
@@ -256,7 +256,7 @@ final class AssetBundleTest extends TestCase
         $this->assertEquals(
             [
                 'charset' => 'utf-8',
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()['/baseUrl/js/normal.js']['attributes']
         );
@@ -269,7 +269,7 @@ final class AssetBundleTest extends TestCase
             [
                 'charset' => 'utf-8',
                 'defer' => true,
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()['/baseUrl/js/defered.js']['attributes']
         );
