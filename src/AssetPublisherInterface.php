@@ -33,9 +33,9 @@ interface AssetPublisherInterface
      * @param string $name bundle name.
      * @param array $config bundle object configuration.
      *
-     * @return AssetBundle
-     *
      * @throws InvalidConfigException
+     *
+     * @return AssetBundle
      */
     public function loadBundle(string $name, array $config = []): AssetBundle;
 
@@ -64,9 +64,9 @@ interface AssetPublisherInterface
      *
      * - only: array, list of patterns that the file paths should match if they want to be copied.
      *
-     * @return array the path (directory or file path) and the URL that the asset is published as.
      * @throws InvalidConfigException if the asset to be published does not exist.
      *
+     * @return array the path (directory or file path) and the URL that the asset is published as.
      */
     public function publish(AssetBundle $bundle): array;
 }

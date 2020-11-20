@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Exception;
-use Yiisoft\Assets\Exception\InvalidConfigException;
-use Yiisoft\Aliases\Aliases;
-use Yiisoft\Files\FileHelper;
-
 use function array_merge;
-use function call_user_func;
 use function crc32;
 use function dirname;
+use Exception;
+
 use function file_exists;
 use function is_callable;
 use function is_dir;
@@ -20,6 +16,9 @@ use function is_file;
 use function sprintf;
 use function strncmp;
 use function symlink;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Assets\Exception\InvalidConfigException;
+use Yiisoft\Files\FileHelper;
 
 /**
  * AssetPublisher is responsible for executing the publication of the assets from {@see sourcePath} to {@see basePath}.
@@ -201,7 +200,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Return config linkAssets.
      *
-     * @return boolean
+     * @return bool
      */
     public function getLinkAssets(): bool
     {
@@ -214,9 +213,9 @@ final class AssetPublisher implements AssetPublisherInterface
      * @param string $name bundle name.
      * @param array $config bundle object configuration.
      *
-     * @return AssetBundle
-     *
      * @throws InvalidConfigException
+     *
+     * @return AssetBundle
      */
     public function loadBundle(string $name, array $config = []): AssetBundle
     {
@@ -410,7 +409,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * The permission to be set for newly generated asset directories.
      *
-     * @param integer $value
+     * @param int $value
      *
      * {@see dirMode}
      */
@@ -422,7 +421,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * The permission to be set for newly published asset files.
      *
-     * @param integer $value
+     * @param int $value
      *
      * {@see fileMode}
      */
@@ -434,7 +433,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Whether the directory being published should be copied even if it is found in the target directory.
      *
-     * @param boolean $value
+     * @param bool $value
      *
      * {@see forceCopy}
      */
@@ -458,7 +457,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Whether to use symbolic link to publish asset files.
      *
-     * @param boolean $value
+     * @param bool $value
      *
      * {@see linkAssets}
      */
@@ -520,7 +519,7 @@ final class AssetPublisher implements AssetPublisherInterface
     private function hash(string $path): string
     {
         if (is_callable($this->hashCallback)) {
-            return call_user_func($this->hashCallback, $path);
+            return ($this->hashCallback)($path);
         }
 
         $path = (is_file($path) ? dirname($path) : $path) . FileHelper::lastModifiedTime($path);

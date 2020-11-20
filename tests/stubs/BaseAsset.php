@@ -41,7 +41,7 @@ final class BaseAsset extends AssetBundle
 
     public array $cssOptions = [
         'integrity' => 'integrity-hash',
-        'crossorigin' => 'anonymous'
+        'crossorigin' => 'anonymous',
     ];
 
     public array $js = [

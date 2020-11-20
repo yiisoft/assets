@@ -45,7 +45,7 @@ final class AssetPublisherTest extends TestCase
         $this->assertEquals(
             [
                 'integrity' => 'integrity-hash',
-                'crossorigin' => 'anonymous'
+                'crossorigin' => 'anonymous',
             ],
             $this->assetManager->getCssFiles()[$urlCss]['attributes']
         );
@@ -58,7 +58,7 @@ final class AssetPublisherTest extends TestCase
             [
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()[$urlJs]['attributes']
         );
@@ -84,7 +84,7 @@ final class AssetPublisherTest extends TestCase
         );
         $this->assertEquals(
             [
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()[$urlJs]['attributes']
         );
@@ -110,7 +110,7 @@ final class AssetPublisherTest extends TestCase
             // JS files registration
             [
                 'js', '@assetUrl/assetSources/js/missing-file.js', true,
-                '/baseUrl/assetSources/js/missing-file.js'
+                '/baseUrl/assetSources/js/missing-file.js',
             ],
             [
                 'js', '@assetUrl/assetSources/js/jquery.js', false,
@@ -241,11 +241,11 @@ final class AssetPublisherTest extends TestCase
         $hash = sprintf('%x', crc32($path . '|' . $this->publisher->getLinkAssets()));
 
         $this->publisher->setCssDefaultOptions([
-            'media' => 'none'
+            'media' => 'none',
         ]);
 
         $this->publisher->setJsDefaultOptions([
-            'position' => 2
+            'position' => 2,
         ]);
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
@@ -254,19 +254,19 @@ final class AssetPublisherTest extends TestCase
 
         $this->assertEquals(
             [
-                'media' => 'none'
+                'media' => 'none',
             ],
             $this->assetManager->getCssFiles()["/baseUrl/$hash/css/stub.css"]['attributes']
         );
         $this->assertEquals(
             [
-                'position' => 2
+                'position' => 2,
             ],
             $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
         );
         $this->assertEquals(
             [
-                'position' => 2
+                'position' => 2,
             ],
             $this->assetManager->getJsFiles()["/baseUrl/$hash/js/stub.js"]['attributes']
         );
@@ -297,7 +297,7 @@ final class AssetPublisherTest extends TestCase
         );
         $this->assertEquals(
             [
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
         );
@@ -308,7 +308,7 @@ final class AssetPublisherTest extends TestCase
         );
         $this->assertEquals(
             [
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['attributes']
         );
@@ -320,7 +320,7 @@ final class AssetPublisherTest extends TestCase
 
         $bundle->publishOptions = [
             'only' => [
-                'js/*'
+                'js/*',
             ],
         ];
 

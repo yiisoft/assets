@@ -165,7 +165,7 @@ EOF
                 'scss' => [
                     'command' => '-I {path} --style compressed',
                     'path' => '@root/tests/public/sourcepath/sass',
-                ]
+                ],
             ]
         );
 
