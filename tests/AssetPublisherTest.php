@@ -9,6 +9,7 @@ use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Files\FileHelper;
+use Yiisoft\Files\PathMatcher\PathMatcher;
 
 /**
  * AssetPublisherTest.
@@ -319,9 +320,7 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $bundle->publishOptions = [
-            'only' => [
-                'js/*',
-            ],
+            'filter' => (new PathMatcher())->only('js/*'),
         ];
 
         [$bundle->basePath, $bundle->baseUrl] = $this->publisher->publish($bundle);
