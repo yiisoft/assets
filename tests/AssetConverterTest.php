@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
@@ -180,5 +179,19 @@ EOF
 
         unlink($this->aliases->get('@root/tests/public/sass/custom.css'));
         unlink($this->aliases->get('@root/tests/public/sass/custom.css.map'));
+    }
+
+    public function testNotExistsConverter(): void
+    {
+        $converter = (new AssetConverter($this->aliases, $this->logger));
+
+        $converter->setCommand('scss', 'css', 'not-exist/sass');
+
+        $converter->convert(
+            'custom.scss',
+            $this->aliases->get('@root/tests/public/sass'),
+        );
+
+        $this->assertFileDoesNotExist($this->aliases->get('@root/tests/public/sass/custom.css'));
     }
 }
