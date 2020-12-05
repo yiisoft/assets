@@ -41,10 +41,10 @@ final class AssetManager
      */
     private array $bundles = [];
     private array $cssFiles = [];
-    private array $dummyBundles;
+    private array $dummyBundles = [];
     private array $jsFiles = [];
-    private AssetConverterInterface $converter;
-    private AssetPublisherInterface $publisher;
+    private ?AssetConverterInterface $converter = null;
+    private ?AssetPublisherInterface $publisher = null;
 
     /**
      * Registers the asset manager being used by this view object.

@@ -61,7 +61,7 @@ final class AssetConverter implements AssetConverterInterface
     private bool $forceConvert = false;
 
     /**
-     * @var callable a PHP callback, which should be invoked to check whether asset conversion result is outdated.
+     * @var null|callable a PHP callback, which should be invoked to check whether asset conversion result is outdated.
      * It will be invoked only if conversion target file exists and its modification time is older then the one of
      * source file.
      * Callback should match following signature:
@@ -94,7 +94,7 @@ final class AssetConverter implements AssetConverterInterface
      * }
      * ```
      */
-    private $isOutdatedCallback;
+    private $isOutdatedCallback = null;
     private LoggerInterface $logger;
 
     public function __construct(Aliases $aliases, LoggerInterface $logger)
