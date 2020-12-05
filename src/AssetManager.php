@@ -234,6 +234,7 @@ final class AssetManager
                     $css = array_merge($bundle->cssOptions, $css);
 
                     if (is_file("$bundle->basePath/$file")) {
+                        /** @psalm-suppress PossiblyNullArgument */
                         array_unshift($css, $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -245,6 +246,7 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($css)) {
                 if (is_file("$bundle->basePath/$css")) {
+                    /** @psalm-suppress PossiblyNullArgument */
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
                         $bundle->basePath,
@@ -258,7 +260,7 @@ final class AssetManager
     }
 
     /**
-     * Convert files CoffeScript, TypeScript and other formats to JavaScript.
+     * Convert files CoffeeScript, TypeScript and other formats to JavaScript.
      *
      * @param AssetBundle $bundle
      *
@@ -273,6 +275,7 @@ final class AssetManager
                     $js = array_merge($bundle->jsOptions, $js);
 
                     if (is_file("$bundle->basePath/$file")) {
+                        /** @psalm-suppress PossiblyNullArgument */
                         array_unshift($js, $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -284,6 +287,7 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($js)) {
                 if (is_file("$bundle->basePath/$js")) {
+                    /** @psalm-suppress PossiblyNullArgument */
                     $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
             }
