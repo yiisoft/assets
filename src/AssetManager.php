@@ -43,8 +43,8 @@ final class AssetManager
     private array $cssFiles = [];
     private array $dummyBundles = [];
     private array $jsFiles = [];
-    private ?AssetConverterInterface $converter = null;
-    private ?AssetPublisherInterface $publisher = null;
+    private AssetConverterInterface $converter;
+    private AssetPublisherInterface $publisher;
 
     /**
      * Registers the asset manager being used by this view object.
@@ -134,7 +134,7 @@ final class AssetManager
     /**
      * AssetConverter component.
      *
-     * @param AssetConverterInterface $value the asset converter. This can be eitheran object implementing the
+     * @param AssetConverterInterface $value the asset converter. This can be either object implementing the
      * {@see AssetConverterInterface}, or a configuration array that can be used to create the asset converter object.
      */
     public function setConverter(AssetConverterInterface $value): void

@@ -61,15 +61,13 @@ final class AssetPublisher implements AssetPublisherInterface
 
     /**
      * @var string|null the root directory storing the published asset files.
-     * @psalm-suppress PropertyNotSetInConstructor
      */
-    private ?string $basePath;
+    private ?string $basePath = null;
 
     /**
      * @var string|null the root directory storing the published asset files.
-     * @psalm-suppress PropertyNotSetInConstructor
      */
-    private ?string $baseUrl;
+    private ?string $baseUrl = null;
 
     /**
      * @var array the options that will be passed to {@see \Yiisoft\View\View::registerCssFile()} when registering the
