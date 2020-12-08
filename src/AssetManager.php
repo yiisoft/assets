@@ -134,7 +134,7 @@ final class AssetManager
     /**
      * AssetConverter component.
      *
-     * @param AssetConverterInterface $value the asset converter. This can be either object implementing the
+     * @param AssetConverterInterface $value the asset converter. This can be either an object implementing the
      * {@see AssetConverterInterface}, or a configuration array that can be used to create the asset converter object.
      */
     public function setConverter(AssetConverterInterface $value): void
