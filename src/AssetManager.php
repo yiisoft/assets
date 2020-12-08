@@ -266,7 +266,7 @@ final class AssetManager
     }
 
     /**
-     * Convert files CoffeeScript, TypeScript and other formats to JavaScript.
+     * Convert files from TypeScript and other formats into JavaScript.
      *
      * @param AssetBundle $bundle
      *
