@@ -43,7 +43,7 @@ final class AssetManager
     private array $cssFiles = [];
     private array $dummyBundles = [];
     private array $jsFiles = [];
-    private AssetConverterInterface $converter;
+    private ?AssetConverterInterface $converter = null;
     private AssetPublisherInterface $publisher;
 
     /**
@@ -89,7 +89,7 @@ final class AssetManager
         throw new InvalidConfigException("Invalid asset bundle configuration: $name");
     }
 
-    public function getConverter(): AssetConverterInterface
+    public function getConverter(): ?AssetConverterInterface
     {
         return $this->converter;
     }
@@ -234,7 +234,10 @@ final class AssetManager
                     $css = array_merge($bundle->cssOptions, $css);
 
                     if (is_file("$bundle->basePath/$file")) {
-                        /** @psalm-suppress PossiblyNullArgument */
+                        /**
+                         * @psalm-suppress PossiblyNullArgument
+                         * @psalm-suppress PossiblyNullReference
+                         */
                         array_unshift($css, $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -246,7 +249,10 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($css)) {
                 if (is_file("$bundle->basePath/$css")) {
-                    /** @psalm-suppress PossiblyNullArgument */
+                    /**
+                     * @psalm-suppress PossiblyNullArgument
+                     * @psalm-suppress PossiblyNullReference
+                     */
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
                         $bundle->basePath,
@@ -275,7 +281,10 @@ final class AssetManager
                     $js = array_merge($bundle->jsOptions, $js);
 
                     if (is_file("$bundle->basePath/$file")) {
-                        /** @psalm-suppress PossiblyNullArgument */
+                        /**
+                         * @psalm-suppress PossiblyNullArgument
+                         * @psalm-suppress PossiblyNullReference
+                         */
                         array_unshift($js, $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -287,7 +296,10 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($js)) {
                 if (is_file("$bundle->basePath/$js")) {
-                    /** @psalm-suppress PossiblyNullArgument */
+                    /**
+                     * @psalm-suppress PossiblyNullArgument
+                     * @psalm-suppress PossiblyNullReference
+                     */
                     $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
             }
@@ -403,7 +415,7 @@ final class AssetManager
      */
     private function registerAssetFiles(AssetBundle $bundle): void
     {
-        if (isset($bundle->basePath, $bundle->baseUrl) && !empty($this->converter)) {
+        if (isset($bundle->basePath, $bundle->baseUrl) && !is_null($this->converter)) {
             $this->convertCss($bundle);
             $this->convertJs($bundle);
         }
