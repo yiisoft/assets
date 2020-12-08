@@ -35,11 +35,11 @@ final class AssetConverterTest extends TestCase
         file_put_contents(
             $this->tmpPath . '/test.php',
             <<<EOF
-<?php
+            <?php
 
-echo "Hello World!\n";
-echo "Hello Yii!";
-EOF
+            echo "Hello World!\n";
+            echo "Hello Yii!";
+            EOF
         );
 
         $converter = new AssetConverter($this->aliases, $this->logger);
@@ -60,10 +60,10 @@ EOF
         file_put_contents(
             $srcFilename,
             <<<'EOF'
-<?php
+            <?php
 
-echo microtime();
-EOF
+            echo microtime();
+            EOF
         );
 
         $converter = new AssetConverter($this->aliases, $this->logger);
@@ -90,10 +90,10 @@ EOF
         file_put_contents(
             $this->tmpPath . '/test.php',
             <<<'EOF'
-<?php
+            <?php
 
-echo microtime();
-EOF
+            echo microtime();
+            EOF
         );
 
         $converter = new AssetConverter($this->aliases, $this->logger);
@@ -123,10 +123,10 @@ EOF
         file_put_contents(
             $srcFilename,
             <<<'EOF'
-<?php
+            <?php
 
-echo microtime();
-EOF
+            echo microtime();
+            EOF
         );
 
         $converter = new AssetConverter($this->aliases, $this->logger);

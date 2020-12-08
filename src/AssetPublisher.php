@@ -62,12 +62,12 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * @var string|null the root directory storing the published asset files.
      */
-    private ?string $basePath;
+    private ?string $basePath = null;
 
     /**
      * @var string|null the root directory storing the published asset files.
      */
-    private ?string $baseUrl;
+    private ?string $baseUrl = null;
 
     /**
      * @var array the options that will be passed to {@see \Yiisoft\View\View::registerCssFile()} when registering the
@@ -104,7 +104,7 @@ final class AssetPublisher implements AssetPublisherInterface
     private bool $forceCopy = false;
 
     /**
-     * @var callable a callback that will be called to produce hash for asset directory generation. The signature of the
+     * @var callable|null a callback that will be called to produce hash for asset directory generation. The signature of the
      * callback should be as follows:
      *
      * ```
@@ -125,7 +125,7 @@ final class AssetPublisher implements AssetPublisherInterface
      * }
      * ```
      */
-    private $hashCallback;
+    private $hashCallback = null;
 
     /**
      * @var bool whether to use symbolic link to publish asset files. Defaults to false, meaning asset files are copied
@@ -219,7 +219,10 @@ final class AssetPublisher implements AssetPublisherInterface
      */
     public function loadBundle(string $name, array $config = []): AssetBundle
     {
-        /** @var AssetBundle $bundle */
+        /**
+         * @var AssetBundle $bundle
+         * @psalm-var class-string $name
+         */
         $bundle = new $name();
 
         foreach ($config as $property => $value) {

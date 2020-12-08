@@ -41,9 +41,9 @@ final class AssetManager
      */
     private array $bundles = [];
     private array $cssFiles = [];
-    private array $dummyBundles;
+    private array $dummyBundles = [];
     private array $jsFiles = [];
-    private AssetConverterInterface $converter;
+    private ?AssetConverterInterface $converter = null;
     private AssetPublisherInterface $publisher;
 
     /**
@@ -89,7 +89,7 @@ final class AssetManager
         throw new InvalidConfigException("Invalid asset bundle configuration: $name");
     }
 
-    public function getConverter(): AssetConverterInterface
+    public function getConverter(): ?AssetConverterInterface
     {
         return $this->converter;
     }
@@ -134,7 +134,7 @@ final class AssetManager
     /**
      * AssetConverter component.
      *
-     * @param AssetConverterInterface $value the asset converter. This can be eitheran object implementing the
+     * @param AssetConverterInterface $value the asset converter. This can be either an object implementing the
      * {@see AssetConverterInterface}, or a configuration array that can be used to create the asset converter object.
      */
     public function setConverter(AssetConverterInterface $value): void
@@ -234,6 +234,10 @@ final class AssetManager
                     $css = array_merge($bundle->cssOptions, $css);
 
                     if (is_file("$bundle->basePath/$file")) {
+                        /**
+                         * @psalm-suppress PossiblyNullArgument
+                         * @psalm-suppress PossiblyNullReference
+                         */
                         array_unshift($css, $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -245,6 +249,10 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($css)) {
                 if (is_file("$bundle->basePath/$css")) {
+                    /**
+                     * @psalm-suppress PossiblyNullArgument
+                     * @psalm-suppress PossiblyNullReference
+                     */
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
                         $bundle->basePath,
@@ -258,7 +266,7 @@ final class AssetManager
     }
 
     /**
-     * Convert files CoffeScript, TypeScript and other formats to JavaScript.
+     * Convert files from TypeScript and other formats into JavaScript.
      *
      * @param AssetBundle $bundle
      *
@@ -273,6 +281,10 @@ final class AssetManager
                     $js = array_merge($bundle->jsOptions, $js);
 
                     if (is_file("$bundle->basePath/$file")) {
+                        /**
+                         * @psalm-suppress PossiblyNullArgument
+                         * @psalm-suppress PossiblyNullReference
+                         */
                         array_unshift($js, $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -284,6 +296,10 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($js)) {
                 if (is_file("$bundle->basePath/$js")) {
+                    /**
+                     * @psalm-suppress PossiblyNullArgument
+                     * @psalm-suppress PossiblyNullReference
+                     */
                     $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
             }
@@ -399,7 +415,7 @@ final class AssetManager
      */
     private function registerAssetFiles(AssetBundle $bundle): void
     {
-        if (isset($bundle->basePath, $bundle->baseUrl) && !empty($this->converter)) {
+        if (isset($bundle->basePath, $bundle->baseUrl) && null !== $this->converter) {
             $this->convertCss($bundle);
             $this->convertJs($bundle);
         }
