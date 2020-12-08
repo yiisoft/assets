@@ -415,7 +415,7 @@ final class AssetManager
      */
     private function registerAssetFiles(AssetBundle $bundle): void
     {
-        if (isset($bundle->basePath, $bundle->baseUrl) && !is_null($this->converter)) {
+        if (isset($bundle->basePath, $bundle->baseUrl) && null !== $this->converter) {
             $this->convertCss($bundle);
             $this->convertJs($bundle);
         }

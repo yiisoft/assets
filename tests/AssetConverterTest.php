@@ -36,7 +36,7 @@ final class AssetConverterTest extends TestCase
             $this->tmpPath . '/test.php',
             <<<EOF
             <?php
-            
+
             echo "Hello World!\n";
             echo "Hello Yii!";
             EOF
@@ -61,7 +61,7 @@ final class AssetConverterTest extends TestCase
             $srcFilename,
             <<<'EOF'
             <?php
-            
+
             echo microtime();
             EOF
         );
@@ -91,7 +91,7 @@ final class AssetConverterTest extends TestCase
             $this->tmpPath . '/test.php',
             <<<'EOF'
             <?php
-            
+
             echo microtime();
             EOF
         );
@@ -124,7 +124,7 @@ final class AssetConverterTest extends TestCase
             $srcFilename,
             <<<'EOF'
             <?php
-            
+
             echo microtime();
             EOF
         );

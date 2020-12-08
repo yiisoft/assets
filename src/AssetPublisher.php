@@ -104,7 +104,7 @@ final class AssetPublisher implements AssetPublisherInterface
     private bool $forceCopy = false;
 
     /**
-     * @var null|callable a callback that will be called to produce hash for asset directory generation. The signature of the
+     * @var callable|null a callback that will be called to produce hash for asset directory generation. The signature of the
      * callback should be as follows:
      *
      * ```
