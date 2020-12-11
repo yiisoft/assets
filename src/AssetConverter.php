@@ -279,7 +279,6 @@ final class AssetConverter implements AssetConverterInterface
 
     private function buildConverterOptions(string $srcExt, array $options): string
     {
-        $command = '';
         $commandOptions = '';
 
         if (isset($options[$srcExt])) {
