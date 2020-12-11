@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use RuntimeException;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Assets\Exception\InvalidConfigException;
+
 use function array_key_exists;
 use function array_merge;
-
 use function array_shift;
 use function array_unshift;
 use function is_array;
 use function is_file;
-use RuntimeException;
-use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
@@ -45,6 +46,12 @@ final class AssetManager
     private array $jsFiles = [];
     private ?AssetConverterInterface $converter = null;
     private AssetPublisherInterface $publisher;
+    private Aliases $aliases;
+
+    public function __construct(Aliases $aliases)
+    {
+        $this->aliases = $aliases;
+    }
 
     /**
      * Registers the asset manager being used by this view object.
@@ -232,8 +239,8 @@ final class AssetManager
                 $file = array_shift($css);
                 if (AssetUtil::isRelative($file)) {
                     $css = array_merge($bundle->cssOptions, $css);
-
-                    if (is_file("$bundle->basePath/$file")) {
+                    $baseFile = $this->aliases->get("$bundle->basePath/$file");
+                    if (is_file($baseFile)) {
                         /**
                          * @psalm-suppress PossiblyNullArgument
                          * @psalm-suppress PossiblyNullReference
@@ -248,7 +255,8 @@ final class AssetManager
                     }
                 }
             } elseif (AssetUtil::isRelative($css)) {
-                if (is_file("$bundle->basePath/$css")) {
+                $baseCss = $this->aliases->get("$bundle->basePath/$css");
+                if (is_file("$baseCss")) {
                     /**
                      * @psalm-suppress PossiblyNullArgument
                      * @psalm-suppress PossiblyNullReference
@@ -279,8 +287,8 @@ final class AssetManager
                 $file = array_shift($js);
                 if (AssetUtil::isRelative($file)) {
                     $js = array_merge($bundle->jsOptions, $js);
-
-                    if (is_file("$bundle->basePath/$file")) {
+                    $baseFile = $this->aliases->get("$bundle->basePath/$file");
+                    if (is_file($baseFile)) {
                         /**
                          * @psalm-suppress PossiblyNullArgument
                          * @psalm-suppress PossiblyNullReference
@@ -295,7 +303,8 @@ final class AssetManager
                     }
                 }
             } elseif (AssetUtil::isRelative($js)) {
-                if (is_file("$bundle->basePath/$js")) {
+                $baseJs = $this->aliases->get("$bundle->basePath/$js");
+                if (is_file($baseJs)) {
                     /**
                      * @psalm-suppress PossiblyNullArgument
                      * @psalm-suppress PossiblyNullReference
