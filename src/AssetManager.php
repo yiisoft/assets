@@ -20,9 +20,6 @@ final class AssetManager
      */
     private array $assetBundles = [];
 
-    private AssetConverterInterface $converter;
-    private AssetPublisher $publisher;
-
     /**
      * @var array list of asset bundle configurations. This property is provided to customize asset bundles.
      * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration specified here, the
@@ -36,49 +33,13 @@ final class AssetManager
      * always return null.
      */
     private array $bundles = [];
-
-    /**
-     * @var array the registered CSS files.
-     *
-     * {@see registerCssFile()}
-     */
     private array $cssFiles = [];
-
-    /**
-     * @var array $dummyBundles
-     */
-    private array $dummyBundles;
-
-    /**
-     * @var array the registered JS files.
-     *
-     * {@see registerJsFile()}
-     */
+    private array $dummyBundles = [];
     private array $jsFiles = [];
-
-    /**
-     * @var array the registered JS code blocks.
-     *
-     * {@see registerJs()}
-     */
     private array $jsStrings = [];
-
-    /**
-     * @var array the registered JS variables.
-     *
-     * {@see registerJsVar()}
-     */
     private array $jsVars = [];
-
-    /**
-     * @var LoggerInterface $logger
-     */
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
+    private ?AssetConverterInterface $converter = null;
+    private AssetPublisherInterface $publisher;
 
     /**
      * Registers the asset manager being used by this view object.
