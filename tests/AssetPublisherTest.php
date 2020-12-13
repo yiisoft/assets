@@ -9,6 +9,7 @@ use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Files\FileHelper;
+use Yiisoft\Files\PathMatcher\PathMatcher;
 
 /**
  * AssetPublisherTest.
@@ -26,10 +27,10 @@ final class AssetPublisherTest extends TestCase
     {
         $bundle = new BaseAsset();
 
-        $timestampCss = filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
+        $timestampCss = FileHelper::lastModifiedTime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
         $urlCss = "/baseUrl/css/basePath.css?v=$timestampCss";
 
-        $timestampJs = filemtime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
+        $timestampJs = FileHelper::lastModifiedTime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
         $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
@@ -45,7 +46,7 @@ final class AssetPublisherTest extends TestCase
         $this->assertEquals(
             [
                 'integrity' => 'integrity-hash',
-                'crossorigin' => 'anonymous'
+                'crossorigin' => 'anonymous',
             ],
             $this->assetManager->getCssFiles()[$urlCss]['attributes']
         );
@@ -58,7 +59,7 @@ final class AssetPublisherTest extends TestCase
             [
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()[$urlJs]['attributes']
         );
@@ -84,7 +85,7 @@ final class AssetPublisherTest extends TestCase
         );
         $this->assertEquals(
             [
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()[$urlJs]['attributes']
         );
@@ -110,7 +111,7 @@ final class AssetPublisherTest extends TestCase
             // JS files registration
             [
                 'js', '@assetUrl/assetSources/js/missing-file.js', true,
-                '/baseUrl/assetSources/js/missing-file.js'
+                '/baseUrl/assetSources/js/missing-file.js',
             ],
             [
                 'js', '@assetUrl/assetSources/js/jquery.js', false,
@@ -236,15 +237,16 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
-        $path = (is_file($sourcePath) ? \dirname($sourcePath) : $sourcePath) . @filemtime($sourcePath);
+        $path = (is_file($sourcePath) ? \dirname($sourcePath) : $sourcePath) .
+            FileHelper::lastModifiedTime($sourcePath);
         $hash = sprintf('%x', crc32($path . '|' . $this->publisher->getLinkAssets()));
 
         $this->publisher->setCssDefaultOptions([
-            'media' => 'none'
+            'media' => 'none',
         ]);
 
         $this->publisher->setJsDefaultOptions([
-            'position' => 2
+            'position' => 2,
         ]);
 
         $this->assertEmpty($this->assetManager->getAssetBundles());
@@ -253,19 +255,19 @@ final class AssetPublisherTest extends TestCase
 
         $this->assertEquals(
             [
-                'media' => 'none'
+                'media' => 'none',
             ],
             $this->assetManager->getCssFiles()["/baseUrl/$hash/css/stub.css"]['attributes']
         );
         $this->assertEquals(
             [
-                'position' => 2
+                'position' => 2,
             ],
             $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
         );
         $this->assertEquals(
             [
-                'position' => 2
+                'position' => 2,
             ],
             $this->assetManager->getJsFiles()["/baseUrl/$hash/js/stub.js"]['attributes']
         );
@@ -296,7 +298,7 @@ final class AssetPublisherTest extends TestCase
         );
         $this->assertEquals(
             [
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
         );
@@ -307,7 +309,7 @@ final class AssetPublisherTest extends TestCase
         );
         $this->assertEquals(
             [
-                'position' => 3
+                'position' => 3,
             ],
             $this->assetManager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['attributes']
         );
@@ -318,9 +320,7 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $bundle->publishOptions = [
-            'only' => [
-                'js/*'
-            ],
+            'filter' => (new PathMatcher())->only('js/*'),
         ];
 
         [$bundle->basePath, $bundle->baseUrl] = $this->publisher->publish($bundle);

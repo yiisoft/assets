@@ -4,7 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Psr\Log\LoggerInterface;
+use function array_key_exists;
+use function array_merge;
+
+use function array_shift;
+use function array_unshift;
+use function is_array;
+use function is_file;
+use RuntimeException;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
@@ -59,9 +66,9 @@ final class AssetManager
      *
      * @param string $name the class name of the asset bundle (without the leading backslash).
      *
-     * @return AssetBundle the asset bundle instance
-     *
      * @throws InvalidConfigException
+     *
+     * @return AssetBundle the asset bundle instance
      */
     public function getBundle(string $name): AssetBundle
     {
@@ -73,7 +80,7 @@ final class AssetManager
             return $this->bundles[$name];
         }
 
-        if (\is_array($this->bundles[$name])) {
+        if (is_array($this->bundles[$name])) {
             return $this->bundles[$name] = $this->publisher->loadBundle($name, $this->bundles[$name]);
         }
 
@@ -84,7 +91,7 @@ final class AssetManager
         throw new InvalidConfigException("Invalid asset bundle configuration: $name");
     }
 
-    public function getConverter(): AssetConverterInterface
+    public function getConverter(): ?AssetConverterInterface
     {
         return $this->converter;
     }
@@ -139,8 +146,6 @@ final class AssetManager
      *
      * @param array $value
      *
-     * @return void
-     *
      * {@see bundles}
      */
     public function setBundles(array $value): void
@@ -151,7 +156,7 @@ final class AssetManager
     /**
      * AssetConverter component.
      *
-     * @param AssetConverterInterface $value the asset converter. This can be eitheran object implementing the
+     * @param AssetConverterInterface $value the asset converter. This can be either an object implementing the
      * {@see AssetConverterInterface}, or a configuration array that can be used to create the asset converter object.
      */
     public function setConverter(AssetConverterInterface $value): void
@@ -162,9 +167,7 @@ final class AssetManager
     /**
      * AssetPublisher component.
      *
-     * @param AssetPublisher $value
-     *
-     * @return void
+     * @param AssetPublisherInterface $value
      *
      * {@see publisher}
      */
@@ -177,9 +180,9 @@ final class AssetManager
      * Generate the array configuration of the AssetBundles
      *
      * @param array $names
-     * @param integer|null $position
+     * @param int|null $position
      *
-     * @return void
+     * @throws InvalidConfigException
      */
     public function register(array $names, ?int $position = null): void
     {
@@ -198,8 +201,7 @@ final class AssetManager
      *
      * @param string $url the CSS file to be registered.
      * @param array $options the HTML attributes for the link tag.
-     *
-     * @return void
+     * @param string|null $key
      */
     public function registerCssFile(string $url, array $options = [], string $key = null): void
     {
@@ -224,14 +226,13 @@ final class AssetManager
      *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section
      *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
      *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section. This is the default value.
-     *
-     * @return void
+     * @param string|null $key
      */
     public function registerJsFile(string $url, array $options = [], string $key = null): void
     {
         $key = $key ?: $url;
 
-        if (!\array_key_exists('position', $options)) {
+        if (!array_key_exists('position', $options)) {
             $options = array_merge(['position' => 3], $options);
         }
 
@@ -309,13 +310,17 @@ final class AssetManager
     private function convertCss(AssetBundle $bundle): AssetBundle
     {
         foreach ($bundle->css as $i => $css) {
-            if (\is_array($css)) {
-                $file = \array_shift($css);
+            if (is_array($css)) {
+                $file = array_shift($css);
                 if (AssetUtil::isRelative($file)) {
-                    $css = \array_merge($bundle->cssOptions, $css);
+                    $css = array_merge($bundle->cssOptions, $css);
 
                     if (is_file("$bundle->basePath/$file")) {
-                        \array_unshift($css, $this->converter->convert(
+                        /**
+                         * @psalm-suppress PossiblyNullArgument
+                         * @psalm-suppress PossiblyNullReference
+                         */
+                        array_unshift($css, $this->converter->convert(
                             $file,
                             $bundle->basePath,
                             $bundle->converterOptions
@@ -326,6 +331,10 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($css)) {
                 if (is_file("$bundle->basePath/$css")) {
+                    /**
+                     * @psalm-suppress PossiblyNullArgument
+                     * @psalm-suppress PossiblyNullReference
+                     */
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
                         $bundle->basePath,
@@ -339,7 +348,7 @@ final class AssetManager
     }
 
     /**
-     * Convert files CoffeScript, TypeScript and other formats to JavaScript.
+     * Convert files from TypeScript and other formats into JavaScript.
      *
      * @param AssetBundle $bundle
      *
@@ -348,13 +357,17 @@ final class AssetManager
     private function convertJs(AssetBundle $bundle): AssetBundle
     {
         foreach ($bundle->js as $i => $js) {
-            if (\is_array($js)) {
-                $file = \array_shift($js);
+            if (is_array($js)) {
+                $file = array_shift($js);
                 if (AssetUtil::isRelative($file)) {
-                    $js = \array_merge($bundle->jsOptions, $js);
+                    $js = array_merge($bundle->jsOptions, $js);
 
                     if (is_file("$bundle->basePath/$file")) {
-                        \array_unshift($js, $this->converter->convert(
+                        /**
+                         * @psalm-suppress PossiblyNullArgument
+                         * @psalm-suppress PossiblyNullReference
+                         */
+                        array_unshift($js, $this->converter->convert(
                             $file,
                             $bundle->basePath,
                             $bundle->converterOptions
@@ -365,6 +378,10 @@ final class AssetManager
                 }
             } elseif (AssetUtil::isRelative($js)) {
                 if (is_file("$bundle->basePath/$js")) {
+                    /**
+                     * @psalm-suppress PossiblyNullArgument
+                     * @psalm-suppress PossiblyNullReference
+                     */
                     $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
             }
@@ -385,19 +402,18 @@ final class AssetManager
      *
      * {@see registerJsFile()} for more details on javascript position.
      *
-     * @return AssetBundle the registered asset bundle instance
-     * @throws InvalidConfigException
+     * @throws RuntimeException if the asset bundle does not exist or a circular dependency
+     * is detected.
      *
-     * @throws \RuntimeException if the asset bundle does not exist or a circular dependency is detected
+     * @return AssetBundle the registered asset bundle instance.
      */
-    private function registerAssetBundle(string $name, ?int $position = null): AssetBundle
+    private function registerAssetBundle(string $name, int $position = null): AssetBundle
     {
         if (!isset($this->assetBundles[$name])) {
             $bundle = $this->getBundle($name);
 
             $this->assetBundles[$name] = false;
 
-            // register dependencies
             $pos = $bundle->jsOptions['position'] ?? null;
 
             foreach ($bundle->depends as $dep) {
@@ -406,7 +422,7 @@ final class AssetManager
 
             $this->assetBundles[$name] = $bundle;
         } elseif ($this->assetBundles[$name] === false) {
-            throw new \RuntimeException("A circular dependency is detected for bundle '$name'.");
+            throw new RuntimeException("A circular dependency is detected for bundle '$name'.");
         } else {
             $bundle = $this->assetBundles[$name];
         }
@@ -417,7 +433,7 @@ final class AssetManager
             if ($pos === null) {
                 $bundle->jsOptions['position'] = $pos = $position;
             } elseif ($pos > $position) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     "An asset bundle that depends on '$name' has a higher javascript file " .
                     "position configured than '$name'."
                 );
@@ -437,7 +453,6 @@ final class AssetManager
      * @param string $bundleName AssetBunle name
      *
      * @return AssetBundle
-     * @throws InvalidConfigException
      */
     private function loadDummyBundle(string $bundleName): AssetBundle
     {
@@ -458,7 +473,7 @@ final class AssetManager
      *
      * @param string $bundleName
      *
-     * @return void
+     * @throws InvalidConfigException
      */
     private function registerFiles(string $bundleName): void
     {
@@ -477,16 +492,18 @@ final class AssetManager
 
     /**
      * Registers asset files from a bundle considering dependencies
+     *
+     * @param AssetBundle $bundle
      */
     private function registerAssetFiles(AssetBundle $bundle): void
     {
-        if (isset($bundle->basePath, $bundle->baseUrl) && !empty($this->converter)) {
+        if (isset($bundle->basePath, $bundle->baseUrl) && null !== $this->converter) {
             $this->convertCss($bundle);
             $this->convertJs($bundle);
         }
 
         foreach ($bundle->js as $js) {
-            if (\is_array($js)) {
+            if (is_array($js)) {
                 $file = array_shift($js);
                 $options = array_merge($bundle->jsOptions, $js);
                 $this->registerJsFile($this->publisher->getAssetUrl($bundle, $file), $options);
@@ -510,7 +527,7 @@ final class AssetManager
         }
 
         foreach ($bundle->css as $css) {
-            if (\is_array($css)) {
+            if (is_array($css)) {
                 $file = array_shift($css);
                 $options = array_merge($bundle->cssOptions, $css);
                 $this->registerCssFile($this->publisher->getAssetUrl($bundle, $file), $options);

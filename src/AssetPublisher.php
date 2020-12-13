@@ -4,8 +4,20 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Yiisoft\Assets\Exception\InvalidConfigException;
+use function array_merge;
+use function crc32;
+use function dirname;
+use Exception;
+
+use function file_exists;
+use function is_callable;
+use function is_dir;
+use function is_file;
+use function sprintf;
+use function strncmp;
+use function symlink;
 use Yiisoft\Aliases\Aliases;
+use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
 
 /**
@@ -50,12 +62,12 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * @var string|null the root directory storing the published asset files.
      */
-    private ?string $basePath;
+    private ?string $basePath = null;
 
     /**
      * @var string|null the root directory storing the published asset files.
      */
-    private ?string $baseUrl;
+    private ?string $baseUrl = null;
 
     /**
      * @var array the options that will be passed to {@see \Yiisoft\View\View::registerCssFile()} when registering the
@@ -92,7 +104,7 @@ final class AssetPublisher implements AssetPublisherInterface
     private bool $forceCopy = false;
 
     /**
-     * @var callable a callback that will be called to produce hash for asset directory generation. The signature of the
+     * @var callable|null a callback that will be called to produce hash for asset directory generation. The signature of the
      * callback should be as follows:
      *
      * ```
@@ -113,7 +125,7 @@ final class AssetPublisher implements AssetPublisherInterface
      * }
      * ```
      */
-    private $hashCallback;
+    private $hashCallback = null;
 
     /**
      * @var bool whether to use symbolic link to publish asset files. Defaults to false, meaning asset files are copied
@@ -153,8 +165,9 @@ final class AssetPublisher implements AssetPublisherInterface
      * @param string $assetPath the asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
      * {@see AssetBundle::$css}.
      *
-     * @return string the actual URL for the specified asset.
      * @throws InvalidConfigException
+     *
+     * @return string the actual URL for the specified asset.
      */
     public function getAssetUrl(AssetBundle $bundle, string $assetPath): string
     {
@@ -177,7 +190,7 @@ final class AssetPublisher implements AssetPublisherInterface
             throw new InvalidConfigException("Asset files not found: '$this->basePath/$assetPath.'");
         }
 
-        if ($this->appendTimestamp  && ($timestamp = @filemtime("$this->basePath/$assetPath")) > 0) {
+        if ($this->appendTimestamp  && ($timestamp = FileHelper::lastModifiedTime("$this->basePath/$assetPath")) > 0) {
             return "$this->baseUrl/$assetPath?v=$timestamp";
         }
 
@@ -187,7 +200,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Return config linkAssets.
      *
-     * @return boolean
+     * @return bool
      */
     public function getLinkAssets(): bool
     {
@@ -200,13 +213,16 @@ final class AssetPublisher implements AssetPublisherInterface
      * @param string $name bundle name.
      * @param array $config bundle object configuration.
      *
-     * @return AssetBundle
-     *
      * @throws InvalidConfigException
+     *
+     * @return AssetBundle
      */
     public function loadBundle(string $name, array $config = []): AssetBundle
     {
-        /** @var AssetBundle $bundle */
+        /**
+         * @var AssetBundle $bundle
+         * @psalm-var class-string $name
+         */
         $bundle = new $name();
 
         foreach ($config as $property => $value) {
@@ -253,9 +269,9 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * - only: array, list of patterns that the file paths should match if they want to be copied.
      *
-     * @return array the path (directory or file path) and the URL that the asset is published as.
      * @throws InvalidConfigException if the asset to be published does not exist.
      *
+     * @return array the path (directory or file path) and the URL that the asset is published as.
      */
     public function publish(AssetBundle $bundle): array
     {
@@ -326,8 +342,6 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param bool $value
      *
-     * @return void
-     *
      * {@see appendTimestamp}
      */
     public function setAppendTimestamp(bool $value): void
@@ -339,8 +353,6 @@ final class AssetPublisher implements AssetPublisherInterface
      * Mapping from source asset files (keys) to target asset files (values).
      *
      * @param array $value
-     *
-     * @return void
      *
      * {@see assetMap}
      */
@@ -354,8 +366,6 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param string|null $value
      *
-     * @return void
-     *
      * {@see basePath}
      */
     public function setBasePath(?string $value): void
@@ -367,8 +377,6 @@ final class AssetPublisher implements AssetPublisherInterface
      * The base URL through which the published asset files can be accessed.
      *
      * @param string|null $value
-     *
-     * @return void
      *
      * {@see baseUrl}
      */
@@ -382,8 +390,6 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param array $value
      *
-     * @return void
-     *
      * {@see $cssDefaultOptions}
      */
     public function setCssDefaultOptions(array $value): void
@@ -396,8 +402,6 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param array $value
      *
-     * @return void
-     *
      * {@see $jsDefaultOptions}
      */
     public function setJsDefaultOptions(array $value): void
@@ -408,9 +412,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * The permission to be set for newly generated asset directories.
      *
-     * @param integer $value
-     *
-     * @return void
+     * @param int $value
      *
      * {@see dirMode}
      */
@@ -422,9 +424,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * The permission to be set for newly published asset files.
      *
-     * @param integer $value
-     *
-     * @return void
+     * @param int $value
      *
      * {@see fileMode}
      */
@@ -436,9 +436,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Whether the directory being published should be copied even if it is found in the target directory.
      *
-     * @param boolean $value
-     *
-     * @return void
+     * @param bool $value
      *
      * {@see forceCopy}
      */
@@ -452,8 +450,6 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param callable $value
      *
-     * @return void
-     *
      * {@see hashCallback}
      */
     public function setHashCallback(callable $value): void
@@ -464,9 +460,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Whether to use symbolic link to publish asset files.
      *
-     * @param boolean $value
-     *
-     * @return void
+     * @param bool $value
      *
      * {@see linkAssets}
      */
@@ -480,7 +474,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param string|null $basePath
      *
-     * @return void
+     * @throws InvalidConfigException
      */
     private function checkBasePath(?string $basePath): void
     {
@@ -501,7 +495,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param string|null $baseUrl
      *
-     * @return void
+     * @throws InvalidConfigException
      */
     private function checkBaseUrl(?string $baseUrl): void
     {
@@ -527,11 +521,11 @@ final class AssetPublisher implements AssetPublisherInterface
      */
     private function hash(string $path): string
     {
-        if (\is_callable($this->hashCallback)) {
-            return \call_user_func($this->hashCallback, $path);
+        if (is_callable($this->hashCallback)) {
+            return ($this->hashCallback)($path);
         }
 
-        $path = (is_file($path) ? \dirname($path) : $path) . @filemtime($path);
+        $path = (is_file($path) ? dirname($path) : $path) . FileHelper::lastModifiedTime($path);
 
         return sprintf('%x', crc32($path . '|' . $this->linkAssets));
     }
@@ -545,9 +539,9 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * - only: patterns that the file paths should match if they want to be copied.
      *
-     * @return array the path directory and the URL that the asset is published as.
+     * @throws Exception if the asset to be published does not exist.
      *
-     * @throws \Exception if the asset to be published does not exist.
+     * @return array the path directory and the URL that the asset is published as.
      */
     private function publishDirectory(string $src, array $options): array
     {
@@ -557,17 +551,20 @@ final class AssetPublisher implements AssetPublisherInterface
 
         if ($this->linkAssets) {
             if (!is_dir($dstDir)) {
-                FileHelper::createDirectory(\dirname($dstDir), $this->dirMode);
+                FileHelper::createDirectory(dirname($dstDir), $this->dirMode);
                 try { // fix #6226 symlinking multi threaded
                     symlink($src, $dstDir);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     if (!is_dir($dstDir)) {
                         throw $e;
                     }
                 }
             }
-        } elseif (!empty($options['forceCopy']) ||
-            ($this->forceCopy && !isset($options['forceCopy'])) || !is_dir($dstDir)) {
+        } elseif (
+            !empty($options['forceCopy']) ||
+            ($this->forceCopy && !isset($options['forceCopy'])) ||
+            !is_dir($dstDir)
+        ) {
             $opts = array_merge(
                 $options,
                 [

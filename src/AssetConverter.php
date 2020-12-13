@@ -4,10 +4,19 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Psr\Log\LoggerInterface;
-use Yiisoft\Aliases\Aliases;
-
 use function array_key_exists;
+use function escapeshellarg;
+use Exception;
+use function fclose;
+
+use function proc_close;
+use function proc_open;
+use Psr\Log\LoggerInterface;
+use function stream_get_contents;
+use function strrpos;
+use function strtr;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Files\FileHelper;
 
 /**
  * AssetConverter supports conversion of several popular script formats into JavaScript or CSS.
@@ -35,12 +44,12 @@ final class AssetConverter implements AssetConverterInterface
      * ```
      */
     private array $commands = [
-        'less'   => ['css', 'lessc {from} {to} --no-color --source-map'],
-        'scss'   => ['css', 'sass {options} {from} {to}'],
-        'sass'   => ['css', 'sass {options} {from} {to}'],
-        'styl'   => ['css', 'stylus < {from} > {to}'],
+        'less' => ['css', 'lessc {from} {to} --no-color --source-map'],
+        'scss' => ['css', 'sass {options} {from} {to}'],
+        'sass' => ['css', 'sass {options} {from} {to}'],
+        'styl' => ['css', 'stylus < {from} > {to}'],
         'coffee' => ['js', 'coffee -p {from} > {to}'],
-        'ts'     => ['js', 'tsc --out {to} {from}'],
+        'ts' => ['js', 'tsc --out {to} {from}'],
     ];
 
     /**
@@ -52,7 +61,7 @@ final class AssetConverter implements AssetConverterInterface
     private bool $forceConvert = false;
 
     /**
-     * @var callable a PHP callback, which should be invoked to check whether asset conversion result is outdated.
+     * @var callable|null a PHP callback, which should be invoked to check whether asset conversion result is outdated.
      * It will be invoked only if conversion target file exists and its modification time is older then the one of
      * source file.
      * Callback should match following signature:
@@ -85,8 +94,7 @@ final class AssetConverter implements AssetConverterInterface
      * }
      * ```
      */
-    private $isOutdatedCallback;
-
+    private $isOutdatedCallback = null;
     private LoggerInterface $logger;
 
     public function __construct(Aliases $aliases, LoggerInterface $logger)
@@ -100,18 +108,20 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @param string $asset the asset file path, relative to $basePath
      * @param string $basePath the directory the $asset is relative to.
-     * @param array $options additional options to pass to {@see AssetConverter::runCommand}
+     * @param array $optionsConverter additional options to pass to {@see AssetConverter::runCommand}
+     *
+     * @throws Exception
      *
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert(string $asset, string $basePath, array $options = []): string
+    public function convert(string $asset, string $basePath, array $optionsConverter = []): string
     {
         $pos = strrpos($asset, '.');
 
         if ($pos !== false) {
             $srcExt = substr($asset, $pos + 1);
 
-            $commandOptions = $this->buildConverterOptions($srcExt, $options);
+            $commandOptions = $this->buildConverterOptions($srcExt, $optionsConverter);
 
             if (isset($this->commands[$srcExt])) {
                 [$ext, $command] = $this->commands[$srcExt];
@@ -137,8 +147,6 @@ final class AssetConverter implements AssetConverterInterface
      * Example:
      *
      * $converter->setCommand('scss', 'css', 'sass {options} {from} {to}');
-     *
-     * @return void
      */
     public function setCommand(string $from, string $to, string $command): void
     {
@@ -149,7 +157,6 @@ final class AssetConverter implements AssetConverterInterface
      * Make the conversion regardless of whether the asset already exists.
      *
      * @param bool $value
-     * @return void
      */
     public function setForceConvert(bool $value): void
     {
@@ -160,8 +167,6 @@ final class AssetConverter implements AssetConverterInterface
      * PHP callback, which should be invoked to check whether asset conversion result is outdated.
      *
      * @param callable $value
-     *
-     * @return void
      */
     public function setIsOutdatedCallback(callable $value): void
     {
@@ -179,15 +184,20 @@ final class AssetConverter implements AssetConverterInterface
      *
      * @return bool whether asset is outdated or not.
      */
-    private function isOutdated(string $basePath, string $sourceFile, string $targetFile, string $sourceExtension, string $targetExtension): bool
-    {
-        $resultModificationTime = @filemtime("$basePath/$targetFile");
-
-        if ($resultModificationTime === false || $resultModificationTime === null) {
+    private function isOutdated(
+        string $basePath,
+        string $sourceFile,
+        string $targetFile,
+        string $sourceExtension,
+        string $targetExtension
+    ): bool {
+        if (!is_file("$basePath/$targetFile")) {
             return true;
         }
 
-        if ($resultModificationTime < @filemtime("$basePath/$sourceFile")) {
+        $resultModificationTime = FileHelper::lastModifiedTime("$basePath/$targetFile");
+
+        if ($resultModificationTime < FileHelper::lastModifiedTime("$basePath/$sourceFile")) {
             return true;
         }
 
@@ -195,7 +205,13 @@ final class AssetConverter implements AssetConverterInterface
             return false;
         }
 
-        return \call_user_func($this->isOutdatedCallback, $basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension);
+        return ($this->isOutdatedCallback)(
+            $basePath,
+            $sourceFile,
+            $targetFile,
+            $sourceExtension,
+            $targetExtension
+        );
     }
 
     /**
@@ -206,14 +222,17 @@ final class AssetConverter implements AssetConverterInterface
      * @param string $basePath asset base path and command working directory
      * @param string $asset the name of the asset file
      * @param string $result the name of the file to be generated by the converter command
-     *
-     * @throws \Exception when the command fails and YII_DEBUG is true.
-     * In production mode the error will be logged.
+     * @param string|null $options
      *
      * @return bool true on success, false on failure. Failures will be logged.
      */
-    private function runCommand(string $command, string $basePath, string $asset, string $result, ?string $options = null): bool
-    {
+    private function runCommand(
+        string $command,
+        string $basePath,
+        string $asset,
+        string $result,
+        string $options = null
+    ): bool {
         $basePath = $this->aliases->get($basePath);
 
         $command = $this->aliases->get($command);
@@ -221,7 +240,7 @@ final class AssetConverter implements AssetConverterInterface
         $command = strtr($command, [
             '{options}' => $options,
             '{from}' => escapeshellarg("$basePath/$asset"),
-            '{to}'   => escapeshellarg("$basePath/$result"),
+            '{to}' => escapeshellarg("$basePath/$result"),
         ]);
 
         $descriptors = [
@@ -244,9 +263,15 @@ final class AssetConverter implements AssetConverterInterface
         $status = proc_close($proc);
 
         if ($status === 0) {
-            $this->logger->debug("Converted $asset into $result:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr", [__METHOD__]);
+            $this->logger->debug(
+                "Converted $asset into $result:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr",
+                [__METHOD__]
+            );
         } else {
-            $this->logger->error("AssetConverter command '$command' failed with exit code $status:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr", [__METHOD__]);
+            $this->logger->error(
+                "AssetConverter command '$command' failed with exit code $status:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr",
+                [__METHOD__]
+            );
         }
 
         return $status === 0;
@@ -266,7 +291,7 @@ final class AssetConverter implements AssetConverterInterface
                 $path = $this->aliases->get($options[$srcExt]['path']);
 
                 $commandOptions = strtr($command, [
-                    '{path}' => $path
+                    '{path}' => $path,
                 ]);
             }
         }

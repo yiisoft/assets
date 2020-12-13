@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
@@ -36,11 +35,11 @@ final class AssetConverterTest extends TestCase
         file_put_contents(
             $this->tmpPath . '/test.php',
             <<<EOF
-<?php
+            <?php
 
-echo "Hello World!\n";
-echo "Hello Yii!";
-EOF
+            echo "Hello World!\n";
+            echo "Hello Yii!";
+            EOF
         );
 
         $converter = new AssetConverter($this->aliases, $this->logger);
@@ -61,10 +60,10 @@ EOF
         file_put_contents(
             $srcFilename,
             <<<'EOF'
-<?php
+            <?php
 
-echo microtime();
-EOF
+            echo microtime();
+            EOF
         );
 
         $converter = new AssetConverter($this->aliases, $this->logger);
@@ -91,10 +90,10 @@ EOF
         file_put_contents(
             $this->tmpPath . '/test.php',
             <<<'EOF'
-<?php
+            <?php
 
-echo microtime();
-EOF
+            echo microtime();
+            EOF
         );
 
         $converter = new AssetConverter($this->aliases, $this->logger);
@@ -124,10 +123,10 @@ EOF
         file_put_contents(
             $srcFilename,
             <<<'EOF'
-<?php
+            <?php
 
-echo microtime();
-EOF
+            echo microtime();
+            EOF
         );
 
         $converter = new AssetConverter($this->aliases, $this->logger);
@@ -165,7 +164,7 @@ EOF
                 'scss' => [
                     'command' => '-I {path} --style compressed',
                     'path' => '@root/tests/public/sourcepath/sass',
-                ]
+                ],
             ]
         );
 
@@ -180,5 +179,19 @@ EOF
 
         unlink($this->aliases->get('@root/tests/public/sass/custom.css'));
         unlink($this->aliases->get('@root/tests/public/sass/custom.css.map'));
+    }
+
+    public function testNotExistsConverter(): void
+    {
+        $converter = (new AssetConverter($this->aliases, $this->logger));
+
+        $converter->setCommand('scss', 'css', 'not-exist/sass');
+
+        $converter->convert(
+            'custom.scss',
+            $this->aliases->get('@root/tests/public/sass'),
+        );
+
+        $this->assertFileDoesNotExist($this->aliases->get('@root/tests/public/sass/custom.css'));
     }
 }

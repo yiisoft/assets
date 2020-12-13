@@ -68,12 +68,12 @@ class AssetBundle
      * ];
      */
     public array $converterOptions = [
-        'less'   => null,
-        'scss'   => null,
-        'sass'   => null,
-        'styl'   => null,
+        'less' => null,
+        'scss' => null,
+        'sass' => null,
+        'styl' => null,
         'coffee' => null,
-        'ts'     => null,
+        'ts' => null,
     ];
 
     /**

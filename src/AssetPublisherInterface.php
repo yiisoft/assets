@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Yiisoft\Assets\Assetbundle;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
@@ -12,6 +11,34 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
  */
 interface AssetPublisherInterface
 {
+    /**
+     * Returns the actual URL for the specified asset.
+     *
+     * The actual URL is obtained by prepending either {@see AssetBundle::$baseUrl} or {@see AssetManager::$baseUrl} to
+     * the given asset path.
+     *
+     * @param AssetBundle $bundle the asset bundle which the asset file belongs to.
+     * @param string $assetPath the asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
+     * {@see AssetBundle::$css}.
+     *
+     * @throws InvalidConfigException
+     *
+     * @return string the actual URL for the specified asset.
+     */
+    public function getAssetUrl(AssetBundle $bundle, string $assetPath): string;
+
+    /**
+     * Loads asset bundle class by name.
+     *
+     * @param string $name bundle name.
+     * @param array $config bundle object configuration.
+     *
+     * @throws InvalidConfigException
+     *
+     * @return AssetBundle
+     */
+    public function loadBundle(string $name, array $config = []): AssetBundle;
+
     /**
      * Publishes a file or a directory.
      *
@@ -37,9 +64,9 @@ interface AssetPublisherInterface
      *
      * - only: array, list of patterns that the file paths should match if they want to be copied.
      *
-     * @return array the path (directory or file path) and the URL that the asset is published as.
      * @throws InvalidConfigException if the asset to be published does not exist.
      *
+     * @return array the path (directory or file path) and the URL that the asset is published as.
      */
     public function publish(AssetBundle $bundle): array;
 }
