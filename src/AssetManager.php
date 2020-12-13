@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use RuntimeException;
+use Yiisoft\Assets\Exception\InvalidConfigException;
+
 use function array_key_exists;
 use function array_merge;
-
 use function array_shift;
 use function array_unshift;
 use function is_array;
 use function is_file;
-use RuntimeException;
-use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
@@ -44,7 +44,7 @@ final class AssetManager
     private array $dummyBundles = [];
     private array $jsFiles = [];
     private array $jsStrings = [];
-    private array $jsVars = [];
+    private array $jsVar = [];
     private ?AssetConverterInterface $converter = null;
     private AssetPublisherInterface $publisher;
 
@@ -131,9 +131,9 @@ final class AssetManager
      *
      * @return array
      */
-    public function getJsVars(): array
+    public function getJsVar(): array
     {
-        return $this->jsVars;
+        return $this->jsVar;
     }
 
     public function getPublisher(): AssetPublisherInterface
@@ -296,8 +296,8 @@ final class AssetManager
             $options = array_merge(['position' => 1], $options);
         }
 
-        $this->jsVars[$varName]['variables'] = $jsVar;
-        $this->jsVars[$varName]['attributes'] = $options;
+        $this->jsVar[$varName]['variables'] = $jsVar;
+        $this->jsVar[$varName]['attributes'] = $options;
     }
 
     /**
@@ -522,7 +522,7 @@ final class AssetManager
             }
         }
 
-        foreach ($bundle->jsVars as $key => $jsVar) {
+        foreach ($bundle->jsVar as $key => $jsVar) {
             $this->registerJsVar($key, $jsVar, $jsVar);
         }
 
