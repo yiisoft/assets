@@ -253,11 +253,8 @@ final class AssetManager
      *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section
      *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
      *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section. This is the default value.
-     *
      * @param string|null $key the key that identifies the JS code block. If null, it will use $jsString as the key. If two JS code
      * blocks are registered with the same key, the latter will overwrite the former.
-     *
-     * @return void
      */
     public function registerJsString(string $jsString, array $options = [], string $key = null): void
     {
@@ -278,7 +275,7 @@ final class AssetManager
      * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
      * and {@see registerAssetBundle()} instead.
      *
-     * @parem string $varName the variable name
+     * @param string $varName the variable name
      * @param array|string $jsVar the JS code block to be registered.
      * @param array $options the HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
@@ -287,8 +284,6 @@ final class AssetManager
      *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section. This is the default value.
      *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
      *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section
-     *
-     * @return void
      */
     public function registerJsVar(string $varName, $jsVar, array $options = []): void
     {
