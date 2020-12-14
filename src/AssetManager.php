@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use RuntimeException;
+use Yiisoft\Assets\Exception\InvalidConfigException;
+
 use function array_key_exists;
 use function array_merge;
-
 use function array_shift;
 use function array_unshift;
 use function is_array;
 use function is_file;
-use RuntimeException;
-use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
@@ -43,6 +43,8 @@ final class AssetManager
     private array $cssFiles = [];
     private array $dummyBundles = [];
     private array $jsFiles = [];
+    private array $jsStrings = [];
+    private array $jsVar = [];
     private ?AssetConverterInterface $converter = null;
     private AssetPublisherInterface $publisher;
 
@@ -112,6 +114,26 @@ final class AssetManager
     public function getJsFiles(): array
     {
         return $this->jsFiles;
+    }
+
+    /**
+     * Return JS code blocks.
+     *
+     * @return array
+     */
+    public function getJsStrings(): array
+    {
+        return $this->jsStrings;
+    }
+
+    /**
+     * Return JS variables.
+     *
+     * @return array
+     */
+    public function getJsVar(): array
+    {
+        return $this->jsVar;
     }
 
     public function getPublisher(): AssetPublisherInterface
@@ -216,6 +238,61 @@ final class AssetManager
 
         $this->jsFiles[$key]['url'] = $url;
         $this->jsFiles[$key]['attributes'] = $options;
+    }
+
+    /**
+     * Registers a JavaScript code block.
+     *
+     * This method should be used for simple registration of JavaScript code blocks.
+     *
+     * @param string $jsString the JavaScript code block to be registered.
+     * @param array $options the HTML attributes for the script tag. The following options are specially handled and
+     * are not treated as HTML attributes:
+     *
+     * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
+     *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section. This is the default value.
+     * @param string|null $key the key that identifies the JS code block. If null, it will use $jsString as the key. If two JS code
+     * blocks are registered with the same key, the latter will overwrite the former.
+     */
+    public function registerJsString(string $jsString, array $options = [], string $key = null): void
+    {
+        $key = $key ?: $jsString;
+
+        if (!\array_key_exists('position', $options)) {
+            $options = array_merge(['position' => 3], $options);
+        }
+
+        $this->jsStrings[$key]['string'] = $jsString;
+        $this->jsStrings[$key]['attributes'] = $options;
+    }
+
+    /**
+     * Registers a JS variable.
+     *
+     * This method should be used for simple registration of JS files. If you want to use features of
+     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
+     * and {@see registerAssetBundle()} instead.
+     *
+     * @param string $varName the variable name
+     * @param array|string $jsVar the JS code block to be registered.
+     * @param array $options the HTML attributes for the script tag. The following options are specially handled and
+     * are not treated as HTML attributes:
+     *
+     * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section. This is the default value.
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
+     *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section
+     */
+    public function registerJsVar(string $varName, $jsVar, array $options = []): void
+    {
+        if (!\array_key_exists('position', $options)) {
+            $options = array_merge(['position' => 1], $options);
+        }
+
+        $this->jsVar[$varName]['variables'] = $jsVar;
+        $this->jsVar[$varName]['attributes'] = $options;
     }
 
     /**
@@ -428,6 +505,20 @@ final class AssetManager
             } elseif ($js !== null) {
                 $this->registerJsFile($this->publisher->getAssetUrl($bundle, $js), $bundle->jsOptions);
             }
+        }
+
+        foreach ($bundle->jsStrings as $key => $jsString) {
+            $key = is_int($key) ? $jsString : $key;
+            if (\is_array($jsString)) {
+                $string = array_shift($jsString);
+                $this->registerJsString($string, $jsString, $key);
+            } elseif ($jsString !== null) {
+                $this->registerJsString($jsString, $bundle->jsOptions, $key);
+            }
+        }
+
+        foreach ($bundle->jsVar as $key => $jsVar) {
+            $this->registerJsVar($key, $jsVar, $jsVar);
         }
 
         foreach ($bundle->css as $css) {
