@@ -6,6 +6,7 @@ namespace Yiisoft\Assets\Tests;
 
 use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetConverterInterface;
+use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
@@ -264,5 +265,57 @@ final class AssetManagerTest extends TestCase
 
             $this->assetManager->register([PositionAsset::class]);
         }
+    }
+
+    public function testLoadDummyBundle(): void
+    {
+        $jqueryBundle = new JqueryAsset();
+
+        $this->assetManager->setBundles(
+            [
+                JqueryAsset::class => false,
+            ]
+        );
+
+        $this->assertEmpty($this->assetManager->getAssetBundles());
+
+        $this->assetManager->register([JqueryAsset::class]);
+
+        $this->assertNotSame($jqueryBundle, $this->assetManager->getBundle(JqueryAsset::class));
+        $this->assertEmpty($this->assetManager->getCssFiles());
+        $this->assertEmpty($this->assetManager->getJsFiles());
+    }
+
+    public function testGetAssetBundleException(): void
+    {
+        $this->assetManager->setBundles(
+            [
+                JqueryAsset::class => 'noExist',
+            ]
+        );
+
+        $this->assertEmpty($this->assetManager->getAssetBundles());
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Invalid asset bundle configuration: Yiisoft\Assets\Tests\stubs\JqueryAsset');
+
+        $this->assetManager->register([JqueryAsset::class]);
+    }
+
+    public function testGetAssetBundleInstanceOfAssetBundle(): void
+    {
+        $jqueryBundle = new JqueryAsset();
+
+        $this->assetManager->setBundles(
+            [
+                JqueryAsset::class => $jqueryBundle,
+            ]
+        );
+
+        $this->assertEmpty($this->assetManager->getAssetBundles());
+
+        $this->assetManager->register([JqueryAsset::class]);
+
+        $this->assertSame($jqueryBundle, $this->assetManager->getBundle(JqueryAsset::class));
     }
 }

@@ -6,9 +6,9 @@ return [
     'yiisoft/asset' => [
         'assetConverter' => [
             'command' => [
-                'from' => 'sass',
+                'from' => 'scss',
                 'to' => 'css',
-                'command' => 'sass {options} {from} {to}',
+                'command' => '@npm/.bin/sass {options} {from} {to}',
             ],
             'forceConvert' => false,
         ],

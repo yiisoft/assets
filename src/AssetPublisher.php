@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use Exception;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Assets\Exception\InvalidConfigException;
+use Yiisoft\Files\FileHelper;
+
 use function array_merge;
 use function crc32;
 use function dirname;
-use Exception;
-
 use function file_exists;
 use function is_callable;
 use function is_dir;
@@ -16,9 +19,6 @@ use function is_file;
 use function sprintf;
 use function strncmp;
 use function symlink;
-use Yiisoft\Aliases\Aliases;
-use Yiisoft\Assets\Exception\InvalidConfigException;
-use Yiisoft\Files\FileHelper;
 
 /**
  * AssetPublisher is responsible for executing the publication of the assets from {@see sourcePath} to {@see basePath}.
@@ -104,8 +104,8 @@ final class AssetPublisher implements AssetPublisherInterface
     private bool $forceCopy = false;
 
     /**
-     * @var callable|null a callback that will be called to produce hash for asset directory generation. The signature of the
-     * callback should be as follows:
+     * @var callable|null a callback that will be called to produce hash for asset directory generation. The signature
+     * of the callback should be as follows:
      *
      * ```
      * function ($path)

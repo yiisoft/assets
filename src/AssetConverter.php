@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use Exception;
+use Psr\Log\LoggerInterface;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Files\FileHelper;
+
 use function array_key_exists;
 use function escapeshellarg;
-use Exception;
 use function fclose;
-
 use function proc_close;
 use function proc_open;
-use Psr\Log\LoggerInterface;
 use function stream_get_contents;
 use function strrpos;
 use function strtr;
-use Yiisoft\Aliases\Aliases;
-use Yiisoft\Files\FileHelper;
 
 /**
  * AssetConverter supports conversion of several popular script formats into JavaScript or CSS.
@@ -279,18 +279,17 @@ final class AssetConverter implements AssetConverterInterface
 
     private function buildConverterOptions(string $srcExt, array $options): string
     {
-        $command = '';
         $commandOptions = '';
 
         if (isset($options[$srcExt])) {
             if (array_key_exists('command', $options[$srcExt])) {
-                $command .= $options[$srcExt]['command'] . ' ';
+                $commandOptions .= $options[$srcExt]['command'] . ' ';
             }
 
             if (array_key_exists('path', $options[$srcExt])) {
                 $path = $this->aliases->get($options[$srcExt]['path']);
 
-                $commandOptions = strtr($command, [
+                $commandOptions = strtr($commandOptions, [
                     '{path}' => $path,
                 ]);
             }

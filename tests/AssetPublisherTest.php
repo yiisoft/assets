@@ -69,6 +69,8 @@ final class AssetPublisherTest extends TestCase
     {
         $urlJs = '//testme.css';
 
+        $this->publisher->setDirMode(0777);
+        $this->publisher->setFileMode(0777);
         $this->publisher->setAssetMap(
             [
                 'jquery.js' => $urlJs,
@@ -337,6 +339,20 @@ final class AssetPublisherTest extends TestCase
 
         $this->assertDirectoryExists(dirname($bundle->basePath . DIRECTORY_SEPARATOR . $bundle->js[0]));
         $this->assertDirectoryExists($bundle->basePath);
+    }
+
+    public function testSourcesPathEmptyException(): void
+    {
+        $bundle = new SourceAsset();
+
+        $bundle->sourcePath = '';
+
+        $message = 'The sourcePath must be defined in AssetBundle property public ?string $sourcePath = $path.';
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage($message);
+
+        $this->publisher->publish($bundle);
     }
 
     public function testSourcesPathException(): void
