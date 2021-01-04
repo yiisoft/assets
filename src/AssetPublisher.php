@@ -187,7 +187,7 @@ final class AssetPublisher implements AssetPublisherInterface
         }
 
         if (!is_file("$this->basePath/$assetPath")) {
-            throw new InvalidConfigException("Asset files not found: '$this->basePath/$assetPath.'");
+            throw new InvalidConfigException("Asset files not found: '$this->basePath/$assetPath'.");
         }
 
         if ($this->appendTimestamp  && ($timestamp = FileHelper::lastModifiedTime("$this->basePath/$assetPath")) > 0) {
