@@ -171,30 +171,34 @@ final class AssetPublisher implements AssetPublisherInterface
      */
     public function getAssetUrl(AssetBundle $bundle, string $assetPath): string
     {
+        $this->checkBundleData($bundle);
+
         $asset = AssetUtil::resolveAsset($bundle, $assetPath, $this->assetMap);
 
         if (!empty($asset)) {
             $assetPath = $asset;
         }
 
-        if (!$bundle->cdn) {
-            $this->checkBasePath($bundle->basePath);
-            $this->checkBaseUrl($bundle->baseUrl);
+        if ($bundle->cdn) {
+            return $this->baseUrl . '/' . $assetPath;
         }
 
         if (!AssetUtil::isRelative($assetPath) || strncmp($assetPath, '/', 1) === 0) {
             return $assetPath;
         }
 
-        if (!is_file("$this->basePath/$assetPath")) {
-            throw new InvalidConfigException("Asset files not found: '$this->basePath/$assetPath'.");
+        $path = $this->getBundleBasePath($bundle) . '/' . $assetPath;
+        $url = $this->getBundleBaseUrl($bundle) . '/' . $assetPath;
+
+        if (!is_file($path)) {
+            throw new InvalidConfigException("Asset files not found: '$path'.");
         }
 
-        if ($this->appendTimestamp  && ($timestamp = FileHelper::lastModifiedTime("$this->basePath/$assetPath")) > 0) {
-            return "$this->baseUrl/$assetPath?v=$timestamp";
+        if ($this->appendTimestamp && ($timestamp = FileHelper::lastModifiedTime("$path")) > 0) {
+            return $url . '?v=' . $timestamp;
         }
 
-        return "$this->baseUrl/$assetPath";
+        return $url;
     }
 
     /**
@@ -232,13 +236,12 @@ final class AssetPublisher implements AssetPublisherInterface
         $bundle->cssOptions = array_merge($bundle->cssOptions, $this->cssDefaultOptions);
         $bundle->jsOptions = array_merge($bundle->jsOptions, $this->jsDefaultOptions);
 
-        if (!$bundle->cdn) {
-            $this->checkBasePath($bundle->basePath);
-            $this->checkBaseUrl($bundle->baseUrl);
+        if ($bundle->cdn) {
+            return $bundle;
         }
 
         if (!empty($bundle->sourcePath)) {
-            [$bundle->basePath, $bundle->baseUrl] = ($this->publish($bundle));
+            [$bundle->basePath, $bundle->baseUrl] = $this->publish($bundle);
         }
 
         return $bundle;
@@ -285,17 +288,13 @@ final class AssetPublisher implements AssetPublisherInterface
             return $this->published[$bundle->sourcePath];
         }
 
-        $this->checkBasePath($bundle->basePath);
-        $this->checkBaseUrl($bundle->baseUrl);
+        $this->checkBundleData($bundle);
 
         if (!file_exists($this->aliases->get($bundle->sourcePath))) {
             throw new InvalidConfigException("The sourcePath to be published does not exist: $bundle->sourcePath");
         }
 
-        return $this->published[$bundle->sourcePath] = $this->publishDirectory(
-            $bundle->sourcePath,
-            $bundle->publishOptions
-        );
+        return $this->published[$bundle->sourcePath] = $this->publishBundleDirectory($bundle);
     }
 
     /**
@@ -469,45 +468,37 @@ final class AssetPublisher implements AssetPublisherInterface
         $this->linkAssets = $value;
     }
 
+    private function getBundleBasePath(AssetBundle $bundle): string
+    {
+        return $this->aliases->get(empty($bundle->basePath) ? $this->basePath : $bundle->basePath);
+    }
+
+    private function getBundleBaseUrl(AssetBundle $bundle): string
+    {
+        return $this->aliases->get($bundle->baseUrl === null ? $this->baseUrl : $bundle->baseUrl);
+    }
+
     /**
-     * Verify the {@see basePath} of AssetPublisher and AssetBundle is valid.
+     * Verify the {@see basePath} and the {@see baseUrl} of AssetPublisher and AssetBundle is valid.
      *
-     * @param string|null $basePath
+     * @param AssetBundle $bundle
      *
      * @throws InvalidConfigException
      */
-    private function checkBasePath(?string $basePath): void
+    private function checkBundleData(AssetBundle $bundle): void
     {
-        if (empty($this->basePath) && empty($basePath)) {
+        if (!$bundle->cdn && empty($this->basePath) && empty($bundle->basePath)) {
             throw new InvalidConfigException(
                 'basePath must be set in AssetPublisher->setBasePath($path) or ' .
                 'AssetBundle property public ?string $basePath = $path'
             );
         }
 
-        if (!empty($basePath)) {
-            $this->basePath = $this->aliases->get($basePath);
-        }
-    }
-
-    /**
-     * Verify the {@see baseUrl} of AssetPublisher and AssetBundle is valid.
-     *
-     * @param string|null $baseUrl
-     *
-     * @throws InvalidConfigException
-     */
-    private function checkBaseUrl(?string $baseUrl): void
-    {
-        if (!isset($this->baseUrl) && $baseUrl === null) {
+        if (!$bundle->cdn && !isset($this->baseUrl) && $bundle->baseUrl === null) {
             throw new InvalidConfigException(
                 'baseUrl must be set in AssetPublisher->setBaseUrl($path) or ' .
                 'AssetBundle property public ?string $baseUrl = $path'
             );
-        }
-
-        if ($baseUrl !== null) {
-            $this->baseUrl = $this->aliases->get($baseUrl);
         }
     }
 
@@ -531,23 +522,19 @@ final class AssetPublisher implements AssetPublisherInterface
     }
 
     /**
-     * Publishes a directory.
+     * Publishes a bundle directory.
      *
-     * @param string $src the asset directory to be published
-     * @param array $options the options to be applied when publishing a directory. The following options are
-     * supported:
-     *
-     * - only: patterns that the file paths should match if they want to be copied.
+     * @param AssetBundle $bundle
      *
      * @throws Exception if the asset to be published does not exist.
      *
      * @return array the path directory and the URL that the asset is published as.
      */
-    private function publishDirectory(string $src, array $options): array
+    private function publishBundleDirectory(AssetBundle $bundle): array
     {
-        $src = $this->aliases->get($src);
+        $src = $this->aliases->get($bundle->sourcePath);
         $dir = $this->hash($src);
-        $dstDir = $this->basePath . '/' . $dir;
+        $dstDir = $this->getBundleBasePath($bundle) . '/' . $dir;
 
         if ($this->linkAssets) {
             if (!is_dir($dstDir)) {
@@ -561,12 +548,12 @@ final class AssetPublisher implements AssetPublisherInterface
                 }
             }
         } elseif (
-            !empty($options['forceCopy']) ||
-            ($this->forceCopy && !isset($options['forceCopy'])) ||
+            !empty($bundle->publishOptions['forceCopy']) ||
+            ($this->forceCopy && !isset($bundle->publishOptions['forceCopy'])) ||
             !is_dir($dstDir)
         ) {
             $opts = array_merge(
-                $options,
+                $bundle->publishOptions,
                 [
                     'dirMode' => $this->dirMode,
                     'fileMode' => $this->fileMode,
@@ -577,6 +564,6 @@ final class AssetPublisher implements AssetPublisherInterface
             FileHelper::copyDirectory($src, $dstDir, $opts);
         }
 
-        return [$dstDir, $this->baseUrl . '/' . $dir];
+        return [$dstDir, $this->getBundleBaseUrl($bundle) . '/' . $dir];
     }
 }

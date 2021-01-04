@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
+use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
+use Yiisoft\Assets\Tests\stubs\WithoutBaseAsset;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Files\PathMatcher\PathMatcher;
 
-/**
- * AssetPublisherTest.
- */
 final class AssetPublisherTest extends TestCase
 {
     protected function tearDown(): void
@@ -405,5 +404,15 @@ final class AssetPublisherTest extends TestCase
         $this->assertDirectoryDoesNotExist($bundle->basePath);
 
         return $bundle;
+    }
+
+    public function testPublishWithAndWithoutBasePath(): void
+    {
+        $publisher = new AssetPublisher($this->aliases);
+        $publisher->publish(new SourceAsset());
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessageMatches('/^basePath must be set in AssetPublisher->setBasePath\(\$path\)/');
+        $publisher->publish(new WithoutBaseAsset());
     }
 }

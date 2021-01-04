@@ -95,24 +95,6 @@ final class AssetBundleTest extends TestCase
         $this->assetManager->register([RootAsset::class]);
     }
 
-    public function testBaseUrlEmptyStringChain(): void
-    {
-        $this->assetManager->setBundles(
-            [
-                RootAsset::class => [
-                    'depends' => [BaseAsset::class],
-                ],
-                BaseAsset::class => [
-                    'baseUrl' => null,
-                ],
-            ]
-        );
-
-        $this->assertEmpty($this->assetManager->getAssetBundles());
-
-        $this->assetManager->register([RootAsset::class]);
-    }
-
     public function testBaseUrlIsNotSetException(): void
     {
         $this->assetManager->setBundles(
