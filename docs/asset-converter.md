@@ -83,7 +83,7 @@ AssetConverterInterface::class => static function (\Psr\Container\ContainerInter
 or, if done via params.php:
 
 ```php
-'yiisoft/asset' => [
+'yiisoft/assets' => [
     'assetConverter' => [
         'command' => [
             'from' => 'scss',

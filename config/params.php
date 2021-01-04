@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-    'yiisoft/asset' => [
+    'yiisoft/assets' => [
         'assetConverter' => [
             'command' => [
                 'from' => 'scss',
