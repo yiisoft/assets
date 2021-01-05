@@ -401,7 +401,8 @@ final class AssetPublisherTest extends TestCase
             $this->assertFileEquals($publishedFile, $sourceFile);
         }
 
-        $this->assertTrue(FileHelper::unlink($bundle->basePath));
+        FileHelper::unlink($bundle->basePath);
+        $this->assertDirectoryDoesNotExist($bundle->basePath);
 
         return $bundle;
     }

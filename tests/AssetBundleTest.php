@@ -162,7 +162,7 @@ final class AssetBundleTest extends TestCase
         $this->assertEmpty($this->assetManager->getAssetBundles());
 
         $file = $bundle->js[0];
-        $message = "Asset files not found: '$bundle->basePath/$file.'";
+        $message = "Asset files not found: '$bundle->basePath/$file'.";
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
