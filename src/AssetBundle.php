@@ -29,8 +29,8 @@ class AssetBundle
     /**
      * @var string|null the base URL for the relative asset files listed in {@see js} and {@see css}.
      *
-     * If {@see {sourcePath} is set, this property will be *overwritten* by {@see {AssetManager} when it publishes the
-     * asset files from {@see {sourcePath}.
+     * If {@see sourcePath} is set, this property will be *overwritten* by {@see AssetManager} when it publishes the
+     * asset files from {@see sourcePath}.
      *
      * You can use either a URL or an alias of the URL.
      */
@@ -98,8 +98,8 @@ class AssetBundle
      *   `http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js` or
      *   `//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js`.
      * - a relative path representing a local asset (e.g. `js/main.js`). The actual file path of a local asset can be
-     *   determined by prefixing [[basePath]] to the relative path, and the actual URL of the asset can be determined
-     *   by prefixing [[baseUrl]] to the relative path.
+     *   determined by prefixing {@see basePath} to the relative path, and the actual URL of the asset can be determined
+     *   by prefixing {@see baseUrl} to the relative path.
      * - an array, with the first entry being the URL or relative path as described before, and a list of key => value
      *   pairs that will be used to overwrite {@see jsOptions} settings for this entry.
      *
@@ -108,7 +108,7 @@ class AssetBundle
     public array $js = [];
 
     /**
-     * @var array the options that will be passed to {@see Yiisoft\View\View::registerJsFile()} when registering the JS
+     * @var array the options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()} when registering the JS
      * files in this bundle.
      */
     public array $jsOptions = [];
