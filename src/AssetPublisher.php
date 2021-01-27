@@ -180,7 +180,9 @@ final class AssetPublisher implements AssetPublisherInterface
         }
 
         if ($bundle->cdn) {
-            return $this->baseUrl . '/' . $assetPath;
+            return $bundle->baseUrl === null
+                ? $assetPath
+                : $bundle->baseUrl . '/' . $assetPath;
         }
 
         if (!AssetUtil::isRelative($assetPath) || strncmp($assetPath, '/', 1) === 0) {

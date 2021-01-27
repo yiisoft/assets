@@ -7,6 +7,8 @@ namespace Yiisoft\Assets\Tests;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
+use Yiisoft\Assets\Tests\stubs\CdnAsset;
+use Yiisoft\Assets\Tests\stubs\CdnWithBaseUrlAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\stubs\WithoutBaseAsset;
@@ -414,5 +416,21 @@ final class AssetPublisherTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessageMatches('/^basePath must be set in AssetPublisher->setBasePath\(\$path\)/');
         $publisher->publish(new WithoutBaseAsset());
+    }
+
+    public function testCdn(): void
+    {
+        $publisher = new AssetPublisher($this->aliases);
+        $publisher->setBaseUrl('https://example.com/test');
+
+        $this->assertSame(
+            'https://example.com/main.css',
+            $publisher->getAssetUrl(new CdnAsset(), 'https://example.com/main.css')
+        );
+
+        $this->assertSame(
+            'https://example.com/base/main.css',
+            $publisher->getAssetUrl(new CdnWithBaseUrlAsset(), 'main.css')
+        );
     }
 }
