@@ -471,12 +471,12 @@ final class AssetPublisher implements AssetPublisherInterface
 
     private function getBundleBasePath(AssetBundle $bundle): string
     {
-        return $this->aliases->get(empty($bundle->basePath) ? $this->basePath : $bundle->basePath);
+        return $this->aliases->get((string) (empty($bundle->basePath) ? $this->basePath : $bundle->basePath));
     }
 
     private function getBundleBaseUrl(AssetBundle $bundle): string
     {
-        return $this->aliases->get($bundle->baseUrl === null ? $this->baseUrl : $bundle->baseUrl);
+        return $this->aliases->get((string) ($bundle->baseUrl === null ? $this->baseUrl : $bundle->baseUrl));
     }
 
     /**
@@ -533,7 +533,7 @@ final class AssetPublisher implements AssetPublisherInterface
      */
     private function publishBundleDirectory(AssetBundle $bundle): array
     {
-        $src = $this->aliases->get($bundle->sourcePath);
+        $src = $this->aliases->get((string) $bundle->sourcePath);
         $dir = $this->hash($src);
         $dstDir = $this->getBundleBasePath($bundle) . '/' . $dir;
 
