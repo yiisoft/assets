@@ -15,6 +15,12 @@ use Yiisoft\Assets\Tests\stubs\WithoutBaseAsset;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Files\PathMatcher\PathMatcher;
 
+use function dirname;
+use function crc32;
+use function is_file;
+use function is_link;
+use function sprintf;
+
 final class AssetPublisherTest extends TestCase
 {
     protected function tearDown(): void
@@ -24,7 +30,7 @@ final class AssetPublisherTest extends TestCase
         $this->removeAssets('@asset');
     }
 
-    public function testBaseAppendtimestamp(): void
+    public function testBaseAppendTimestamp(): void
     {
         $bundle = new BaseAsset();
 
@@ -240,7 +246,7 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
-        $path = (is_file($sourcePath) ? \dirname($sourcePath) : $sourcePath) .
+        $path = (is_file($sourcePath) ? dirname($sourcePath) : $sourcePath) .
             FileHelper::lastModifiedTime($sourcePath);
         $hash = sprintf('%x', crc32($path . '|' . $this->publisher->getLinkAssets()));
 
@@ -323,7 +329,7 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $bundle->publishOptions = [
-            'filter' => (new PathMatcher())->only('js/*'),
+            'filter' => (new PathMatcher())->only('**js/*'),
         ];
 
         [$bundle->basePath, $bundle->baseUrl] = $this->publisher->publish($bundle);

@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace Yiisoft\Assets\Tests;
 
 use Yiisoft\Assets\AssetConverter;
+use Yiisoft\Files\FileHelper;
 
-/**
- * AssetConverterTest.
- */
+use function file_get_contents;
+use function file_put_contents;
+use function time;
+use function touch;
+use function usleep;
+
 final class AssetConverterTest extends TestCase
 {
     /**
-     * @var string temporary files path
+     * @var string Temporary files path.
      */
     private string $tmpPath;
 
@@ -163,7 +167,7 @@ final class AssetConverterTest extends TestCase
             [
                 'scss' => [
                     'command' => '-I {path} --style compressed',
-                    'path' => '@root/tests/public/sourcepath/sass',
+                    'path' => '@sourcePath/sass',
                 ],
             ]
         );
@@ -177,8 +181,8 @@ final class AssetConverterTest extends TestCase
             $customCss
         );
 
-        unlink($this->aliases->get('@root/tests/public/sass/custom.css'));
-        unlink($this->aliases->get('@root/tests/public/sass/custom.css.map'));
+        FileHelper::unlink($this->aliases->get('@root/tests/public/sass/custom.css'));
+        FileHelper::unlink($this->aliases->get('@root/tests/public/sass/custom.css.map'));
     }
 
     public function testNotExistsConverter(): void

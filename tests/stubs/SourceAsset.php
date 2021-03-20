@@ -24,5 +24,5 @@ final class SourceAsset extends AssetBundle
         JqueryAsset::class,
     ];
 
-    public ?string $sourcePath = '@root/tests/public/sourcepath';
+    public ?string $sourcePath = '@sourcePath';
 }

@@ -14,6 +14,7 @@ use function array_shift;
 use function array_unshift;
 use function is_array;
 use function is_file;
+use function is_int;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
@@ -29,7 +30,7 @@ final class AssetManager
     private array $assetBundles = [];
 
     /**
-     * @var array list of asset bundle configurations. This property is provided to customize asset bundles.
+     * @var array List of asset bundle configurations. This property is provided to customize asset bundles.
      * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration specified here, the
      * configuration will be applied to the bundle.
      *
@@ -50,15 +51,16 @@ final class AssetManager
     private AssetPublisherInterface $publisher;
     private Aliases $aliases;
 
-    public function __construct(Aliases $aliases)
+    public function __construct(Aliases $aliases, AssetPublisherInterface $publisher)
     {
         $this->aliases = $aliases;
+        $this->publisher = $publisher;
     }
 
     /**
      * Registers the asset manager being used by this view object.
      *
-     * @return array the asset manager. Defaults to the "assetManager" application component.
+     * @return array The asset manager. Defaults to the "assetManager" application component.
      */
     public function getAssetBundles(): array
     {
@@ -68,14 +70,14 @@ final class AssetManager
     /**
      * Returns the named asset bundle.
      *
-     * This method will first look for the bundle in {@see bundles()}. If not found, it will treat `$name` as the class
-     * of the asset bundle and create a new instance of it.
+     * This method will first look for the bundle in {@see bundles}.
+     * If not found, it will treat `$name` as the class of the asset bundle and create a new instance of it.
      *
-     * @param string $name the class name of the asset bundle (without the leading backslash).
+     * @param string $name The class name of the asset bundle (without the leading backslash).
      *
-     * @throws InvalidConfigException
+     * @throws InvalidConfigException For invalid asset bundle configuration.
      *
-     * @return AssetBundle the asset bundle instance
+     * @return AssetBundle The asset bundle instance.
      */
     public function getBundle(string $name): AssetBundle
     {
@@ -114,7 +116,7 @@ final class AssetManager
     }
 
     /**
-     * Return config array JS AssetBundle.
+     * Returns config array JS AssetBundle.
      *
      * @return array
      */
@@ -124,7 +126,7 @@ final class AssetManager
     }
 
     /**
-     * Return JS code blocks.
+     * Returns JS code blocks.
      *
      * @return array
      */
@@ -134,7 +136,7 @@ final class AssetManager
     }
 
     /**
-     * Return JS variables.
+     * Returns JS variables.
      *
      * @return array
      */
@@ -151,40 +153,38 @@ final class AssetManager
     /**
      * This property is provided to customize asset bundles.
      *
-     * @param array $value
+     * @param array $bundles
      *
      * {@see bundles}
      */
-    public function setBundles(array $value): void
+    public function setBundles(array $bundles): void
     {
-        $this->bundles = $value;
+        $this->bundles = $bundles;
     }
 
     /**
-     * AssetConverter component.
+     * Sets the asset converter.
      *
-     * @param AssetConverterInterface $value the asset converter. This can be either an object implementing the
+     * @param AssetConverterInterface $converter The asset converter. This can be either an object implementing the
      * {@see AssetConverterInterface}, or a configuration array that can be used to create the asset converter object.
      */
-    public function setConverter(AssetConverterInterface $value): void
+    public function setConverter(AssetConverterInterface $converter): void
     {
-        $this->converter = $value;
+        $this->converter = $converter;
     }
 
     /**
-     * AssetPublisher component.
+     * Sets the asset publisher.
      *
-     * @param AssetPublisherInterface $value
-     *
-     * {@see publisher}
+     * @param AssetPublisherInterface $publisher
      */
-    public function setPublisher(AssetPublisherInterface $value): void
+    public function setPublisher(AssetPublisherInterface $publisher): void
     {
-        $this->publisher = $value;
+        $this->publisher = $publisher;
     }
 
     /**
-     * Generate the array configuration of the AssetBundles
+     * Generate the array configuration of the asset bundles {@see AssetBundle}.
      *
      * @param array $names
      * @param int|null $position
@@ -206,8 +206,8 @@ final class AssetManager
      * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
      * and {@see registerAssetBundle()} instead.
      *
-     * @param string $url the CSS file to be registered.
-     * @param array $options the HTML attributes for the link tag.
+     * @param string $url The CSS file to be registered.
+     * @param array $options The HTML attributes for the link tag.
      * @param string|null $key
      */
     public function registerCssFile(string $url, array $options = [], string $key = null): void
@@ -225,14 +225,14 @@ final class AssetManager
      * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
      * and {@see registerAssetBundle()} instead.
      *
-     * @param string $url the JS file to be registered.
-     * @param array $options the HTML attributes for the script tag. The following options are specially handled and
+     * @param string $url The JS file to be registered.
+     * @param array $options The HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
      *
      * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
-     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section
-     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
-     *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section. This is the default value.
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section
+     *     * {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section. This is the default value.
      * @param string|null $key
      */
     public function registerJsFile(string $url, array $options = [], string $key = null): void
@@ -252,22 +252,22 @@ final class AssetManager
      *
      * This method should be used for simple registration of JavaScript code blocks.
      *
-     * @param string $jsString the JavaScript code block to be registered.
-     * @param array $options the HTML attributes for the script tag. The following options are specially handled and
+     * @param string $jsString The JavaScript code block to be registered.
+     * @param array $options The HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
      *
      * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
-     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section
-     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
-     *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section. This is the default value.
-     * @param string|null $key the key that identifies the JS code block. If null, it will use $jsString as the key. If two JS code
-     * blocks are registered with the same key, the latter will overwrite the former.
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section.
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
+     *     * {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section. This is the default value.
+     * @param string|null $key The key that identifies the JS code block. If null, it will use $jsString as the key.
+     * If two JS code blocks are registered with the same key, the latter will overwrite the former.
      */
     public function registerJsString(string $jsString, array $options = [], string $key = null): void
     {
         $key = $key ?: $jsString;
 
-        if (!\array_key_exists('position', $options)) {
+        if (!array_key_exists('position', $options)) {
             $options = array_merge(['position' => 3], $options);
         }
 
@@ -294,7 +294,7 @@ final class AssetManager
      */
     public function registerJsVar(string $varName, $jsVar, array $options = []): void
     {
-        if (!\array_key_exists('position', $options)) {
+        if (!array_key_exists('position', $options)) {
             $options = array_merge(['position' => 1], $options);
         }
 
@@ -399,17 +399,16 @@ final class AssetManager
      *
      * All dependent asset bundles will be registered.
      *
-     * @param string $name the class name of the asset bundle (without the leading backslash)
-     * @param int|null $position if set, this forces a minimum position for javascript files. This will adjust depending
-     * assets javascript file position or fail if requirement can not be met. If this is null, asset
-     * bundles position settings will not be changed.
+     * @param string $name The class name of the asset bundle (without the leading backslash).
+     * @param int|null $position If set, this forces a minimum position for javascript files.
+     * This will adjust depending assets javascript file position or fail if requirement can not be met.
+     * If this is null, asset bundles position settings will not be changed.
      *
-     * {@see registerJsFile()} for more details on javascript position.
+     * {@see registerJsFile()} For more details on javascript position.
      *
-     * @throws RuntimeException if the asset bundle does not exist or a circular dependency
-     * is detected.
+     * @throws RuntimeException If the asset bundle does not exist or a circular dependency is detected.
      *
-     * @return AssetBundle the registered asset bundle instance.
+     * @return AssetBundle The registered asset bundle instance.
      */
     private function registerAssetBundle(string $name, int $position = null): AssetBundle
     {
@@ -454,7 +453,7 @@ final class AssetManager
     /**
      * Loads dummy bundle by name.
      *
-     * @param string $bundleName AssetBunle name
+     * @param string $bundleName The asset bundle name.
      *
      * @return AssetBundle
      */
@@ -473,7 +472,7 @@ final class AssetManager
     }
 
     /**
-     * Register assets from a named bundle and its dependencies
+     * Register assets from a named bundle and its dependencies.
      *
      * @param string $bundleName
      *
@@ -495,7 +494,7 @@ final class AssetManager
     }
 
     /**
-     * Registers asset files from a bundle considering dependencies
+     * Registers asset files from a bundle considering dependencies.
      *
      * @param AssetBundle $bundle
      */
@@ -518,7 +517,7 @@ final class AssetManager
 
         foreach ($bundle->jsStrings as $key => $jsString) {
             $key = is_int($key) ? $jsString : $key;
-            if (\is_array($jsString)) {
+            if (is_array($jsString)) {
                 $string = array_shift($jsString);
                 $this->registerJsString($string, $jsString, $key);
             } elseif ($jsString !== null) {

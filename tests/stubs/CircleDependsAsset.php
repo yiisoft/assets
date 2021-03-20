@@ -6,9 +6,9 @@ namespace Yiisoft\Assets\Tests\stubs;
 
 use Yiisoft\Assets\AssetBundle;
 
-class CircleDependsAsset extends AssetBundle
+final class CircleDependsAsset extends AssetBundle
 {
-    public ?string $basePath = '@root/tests/public/assets';
+    public ?string $basePath = '@asset';
 
     public ?string $baseUrl = '@assetUrl/js';
 
@@ -20,5 +20,5 @@ class CircleDependsAsset extends AssetBundle
         CircleAsset::class,
     ];
 
-    public ?string $sourcePath = '@root/tests/public/sourcepath';
+    public ?string $sourcePath = '@sourcePath';
 }

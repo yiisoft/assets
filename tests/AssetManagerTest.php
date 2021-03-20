@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
+use RuntimeException;
 use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\Exception\InvalidConfigException;
@@ -12,6 +13,9 @@ use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Files\FileHelper;
+
+use function crc32;
+use function sprintf;
 
 final class AssetManagerTest extends TestCase
 {
@@ -252,7 +256,7 @@ final class AssetManagerTest extends TestCase
             $message = "An asset bundle that depends on '$jqAsset' has a higher javascript file " .
             "position configured than '$jqAsset'.";
 
-            $this->expectException(\RuntimeException::class);
+            $this->expectException(RuntimeException::class);
             $this->expectExceptionMessage($message);
 
             $this->assetManager->register([JqueryAsset::class, PositionAsset::class]);
@@ -260,7 +264,7 @@ final class AssetManagerTest extends TestCase
             $message = "An asset bundle that depends on '$jqAsset' has a higher javascript file " .
                 "position configured than '$jqAsset'.";
 
-            $this->expectException(\RuntimeException::class);
+            $this->expectException(RuntimeException::class);
             $this->expectExceptionMessage($message);
 
             $this->assetManager->register([PositionAsset::class]);

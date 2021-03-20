@@ -14,24 +14,23 @@ interface AssetPublisherInterface
     /**
      * Returns the actual URL for the specified asset.
      *
-     * The actual URL is obtained by prepending either {@see AssetBundle::$baseUrl} or {@see AssetManager::$baseUrl} to
-     * the given asset path.
+     * The actual URL is obtained by prepending either {@see AssetBundle::$baseUrl} to the given asset path.
      *
-     * @param AssetBundle $bundle the asset bundle which the asset file belongs to.
-     * @param string $assetPath the asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
+     * @param AssetBundle $bundle The asset bundle which the asset file belongs to.
+     * @param string $assetPath The asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
      * {@see AssetBundle::$css}.
      *
      * @throws InvalidConfigException
      *
-     * @return string the actual URL for the specified asset.
+     * @return string The actual URL for the specified asset.
      */
     public function getAssetUrl(AssetBundle $bundle, string $assetPath): string;
 
     /**
      * Loads asset bundle class by name.
      *
-     * @param string $name bundle name.
-     * @param array $config bundle object configuration.
+     * @param string $name The bundle name.
+     * @param array $config The bundle object configuration.
      *
      * @throws InvalidConfigException
      *
@@ -42,8 +41,8 @@ interface AssetPublisherInterface
     /**
      * Publishes a file or a directory.
      *
-     * This method will copy the specified file or directory to {@see basePath} so that it can be accessed via the Web
-     * server.
+     * This method will copy the specified file or directory to {@see AssetBundle::$basePath}
+     * so that it can be accessed via the Web server.
      *
      * If the asset is a file, its file modification time will be checked to avoid unnecessary file copying.
      *
@@ -60,13 +59,13 @@ interface AssetPublisherInterface
      * and doing that in the application deployment phase, before system goes live. See more in the following
      * discussion: http://code.google.com/p/yii/issues/detail?id=2579
      *
-     * @param AssetBundle $bundle the asset (file or directory) to be read.
+     * @param AssetBundle $bundle The asset (file or directory) to be read.
      *
      * - only: array, list of patterns that the file paths should match if they want to be copied.
      *
-     * @throws InvalidConfigException if the asset to be published does not exist.
+     * @throws InvalidConfigException If the asset to be published does not exist.
      *
-     * @return array the path (directory or file path) and the URL that the asset is published as.
+     * @return array The path (directory or file path) and the URL that the asset is published as.
      */
     public function publish(AssetBundle $bundle): array;
 }
