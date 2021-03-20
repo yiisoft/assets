@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
+use RuntimeException;
 use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
@@ -15,9 +16,6 @@ use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\RootAsset;
 use Yiisoft\Assets\Tests\stubs\SimpleAsset;
 
-/**
- * AssetBundleTest.
- */
 final class AssetBundleTest extends TestCase
 {
     protected function tearDown(): void
@@ -158,7 +156,7 @@ final class AssetBundleTest extends TestCase
 
         $message = "A circular dependency is detected for bundle '$depends[0]'.";
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage($message);
 
         $this->assetManager->register([CircleAsset::class]);

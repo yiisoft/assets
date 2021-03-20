@@ -18,6 +18,13 @@ use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 
+use function closedir;
+use function dirname;
+use function is_dir;
+use function opendir;
+use function readdir;
+use function str_replace;
+
 abstract class TestCase extends BaseTestCase
 {
     protected Aliases $aliases;
@@ -78,7 +85,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Verify sources publish files assetbundle.
+     * Verify sources publish files asset bundle.
      *
      * @param string $type
      * @param AssetBundle $bundle
@@ -106,7 +113,7 @@ abstract class TestCase extends BaseTestCase
             '@assetUrl' => '/baseUrl',
             '@converter' => '@root/tests/public/assetconverter',
             '@npm' => '@root/node_modules',
-            '@testSourcePath' => '@root/tests/public/assetsources',
+            '@sourcePath' => '@root/tests/public/sourcepath',
         ]);
 
         $converter = new AssetConverter($aliases, $logger);
