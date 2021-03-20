@@ -21,14 +21,15 @@ use function strncmp;
 use function symlink;
 
 /**
- * AssetPublisher is responsible for executing the publication of the assets from {@see sourcePath} to {@see basePath}.
+ * AssetPublisher is responsible for executing the publication of the assets
+ * from {@see AssetBundle::sourcePath} to {@see AssetBundle::basePath}.
  */
 final class AssetPublisher implements AssetPublisherInterface
 {
     private Aliases $aliases;
 
     /**
-     * @var bool whether to append a timestamp to the URL of every published asset. When this is true, the URL of a
+     * @var bool Whether to append a timestamp to the URL of every published asset. When this is true, the URL of a
      * published asset may look like `/path/to/asset?v=timestamp`, where `timestamp` is the last modification time of
      * the published asset file. You normally would want to set this property to true when you have enabled HTTP caching
      * for assets, because it allows you to bust caching when the assets are updated.
@@ -36,11 +37,11 @@ final class AssetPublisher implements AssetPublisherInterface
     private bool $appendTimestamp = false;
 
     /**
-     * @var array mapping from source asset files (keys) to target asset files (values).
+     * @var array Mapping from source asset files (keys) to target asset files (values).
      *
      * This property is provided to support fixing incorrect asset file paths in some asset bundles. When an asset
-     * bundle is registered with a view, each relative asset file in its {@see AssetBundle::css|css} and
-     * {@see AssetBundle::js|js} arrays will be examined against this map. If any of the keys is found to be the last
+     * bundle is registered with a view, each relative asset file in its {@see AssetBundle::css} and
+     * {@see AssetBundle::js} arrays will be examined against this map. If any of the keys is found to be the last
      * part of an asset file (which is prefixed with {@see AssetBundle::sourcePath} if available), the corresponding
      * value will replace the asset and be registered with the view. For example, an asset file `my/path/to/jquery.js`
      * matches a key `jquery.js`.
@@ -60,43 +61,43 @@ final class AssetPublisher implements AssetPublisherInterface
     private array $assetMap = [];
 
     /**
-     * @var string|null the root directory storing the published asset files.
+     * @var string|null The root directory storing the published asset files.
      */
     private ?string $basePath = null;
 
     /**
-     * @var string|null the root directory storing the published asset files.
+     * @var string|null The root directory storing the published asset files.
      */
     private ?string $baseUrl = null;
 
     /**
-     * @var array the options that will be passed to {@see \Yiisoft\View\View::registerCssFile()} when registering the
+     * @var array The options that will be passed to {@see \Yiisoft\View\View::registerCssFile()} when registering the
      * CSS files all assets bundle.
      */
     private array $cssDefaultOptions = [];
 
     /**
-     * @var array the options that will be passed to {@see \Yiisoft\View\View::registerJsFile()} when registering the
+     * @var array The options that will be passed to {@see \Yiisoft\View\View::registerJsFile()} when registering the
      * JS files all assets bundle.
      */
     private array $jsDefaultOptions = [];
 
     /**
-     * @var int the permission to be set for newly generated asset directories. This value will be used by PHP chmod()
+     * @var int The permission to be set for newly generated asset directories. This value will be used by PHP chmod()
      * function. No umask will be applied. Defaults to 0775, meaning the directory is read-writable by owner
      * and group, but read-only for other users.
      */
     private int $dirMode = 0775;
 
     /**
-     * @var int the permission to be set for newly published asset files. This value will be used by PHP chmod()
+     * @var int The permission to be set for newly published asset files. This value will be used by PHP chmod()
      * function. No umask will be applied. If not set, the permission will be determined by the current
      * environment.
      */
     private int $fileMode = 0755;
 
     /**
-     * @var bool whether the directory being published should be copied even if it is found in the target directory.
+     * @var bool Whether the directory being published should be copied even if it is found in the target directory.
      * This option is used only when publishing a directory. You may want to set this to be `true` during the
      * development stage to make sure the published directory is always up-to-date. Do not set this to true
      * on production servers as it will significantly degrade the performance.
@@ -104,14 +105,14 @@ final class AssetPublisher implements AssetPublisherInterface
     private bool $forceCopy = false;
 
     /**
-     * @var callable|null a callback that will be called to produce hash for asset directory generation. The signature
+     * @var callable|null A callback that will be called to produce hash for asset directory generation. The signature
      * of the callback should be as follows:
      *
      * ```
      * function ($path)
      * ```
      *
-     * where `$path` is the asset path. Note that the `$path` can be either directory where the asset files reside or a
+     * Where `$path` is the asset path. Note that the `$path` can be either directory where the asset files reside or a
      * single file. For a CSS file that uses relative path in `url()`, the hash implementation should use the directory
      * path of the file instead of the file path to include the relative asset files in the copying.
      *
@@ -128,10 +129,9 @@ final class AssetPublisher implements AssetPublisherInterface
     private $hashCallback = null;
 
     /**
-     * @var bool whether to use symbolic link to publish asset files. Defaults to false, meaning asset files are copied
-     * to {@see basePath}. Using symbolic links has the benefit that the published assets will always be
-     * consistent with the source assets and there is no copy operation required. This is especially useful
-     * during development.
+     * @var bool Whether to use symbolic link to publish asset files. Defaults to false, meaning asset files are copied
+     * to {@see basePath}. Using symbolic links has the benefit that the published assets will always be consistent
+     * with the source assets and there is no copy operation required. This is especially useful during development.
      *
      * However, there are special requirements for hosting environments in order to use symbolic links. In particular,
      * symbolic links are supported only on Linux/Unix, and Windows Vista/2008 or greater.
@@ -146,7 +146,7 @@ final class AssetPublisher implements AssetPublisherInterface
     private bool $linkAssets = false;
 
     /**
-     * @var array Contain published AssetsBundle.
+     * @var array Contain published {@see AssetsBundle}.
      */
     private array $published = [];
 
@@ -158,16 +158,15 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Returns the actual URL for the specified asset.
      *
-     * The actual URL is obtained by prepending either {@see AssetBundle::$baseUrl} or {@see AssetManager::$baseUrl} to
-     * the given asset path.
+     * The actual URL is obtained by prepending either {@see AssetBundle::$baseUrl} to the given asset path.
      *
-     * @param AssetBundle $bundle the asset bundle which the asset file belongs to.
-     * @param string $assetPath the asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
+     * @param AssetBundle $bundle The asset bundle which the asset file belongs to.
+     * @param string $assetPath The asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
      * {@see AssetBundle::$css}.
      *
-     * @throws InvalidConfigException
+     * @throws InvalidConfigException If asset files are not found.
      *
-     * @return string the actual URL for the specified asset.
+     * @return string The actual URL for the specified asset.
      */
     public function getAssetUrl(AssetBundle $bundle, string $assetPath): string
     {
@@ -216,8 +215,8 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Loads asset bundle class by name.
      *
-     * @param string $name bundle name.
-     * @param array $config bundle object configuration.
+     * @param string $name The bundle name.
+     * @param array $config The bundle object configuration.
      *
      * @throws InvalidConfigException
      *
@@ -270,13 +269,13 @@ final class AssetPublisher implements AssetPublisherInterface
      * and doing that in the application deployment phase, before system goes live. See more in the following
      * discussion: http://code.google.com/p/yii/issues/detail?id=2579
      *
-     * @param AssetBundle $bundle the asset (file or directory) to be read.
+     * @param AssetBundle $bundle The asset (file or directory) to be read.
      *
      * - only: array, list of patterns that the file paths should match if they want to be copied.
      *
-     * @throws InvalidConfigException if the asset to be published does not exist.
+     * @throws InvalidConfigException If the asset to be published does not exist.
      *
-     * @return array the path (directory or file path) and the URL that the asset is published as.
+     * @return array The path (directory or file path) and the URL that the asset is published as.
      */
     public function publish(AssetBundle $bundle): array
     {
@@ -305,9 +304,9 @@ final class AssetPublisher implements AssetPublisherInterface
      * This method does not perform any publishing. It merely tells you if the file or directory is published, where it
      * will go.
      *
-     * @param string $sourcePath directory or file path being published.
+     * @param string $sourcePath The directory or file path being published.
      *
-     * @return string|null string the published file path. Null if the file or directory does not exist
+     * @return string|null The string the published file path. Null if the file or directory does not exist
      */
     public function getPublishedPath(string $sourcePath): ?string
     {
@@ -321,13 +320,13 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Returns the URL of a published file path.
      *
-     * This method does not perform any publishing. It merely tells you if the file path is published, what the URL will
-     * be to access it.
+     * This method does not perform any publishing. It merely tells you if the file path is published,
+     * what the URL will be to access it.
      *
-     * @param string $sourcePath directory or file path being published
+     * @param string $sourcePath The directory or file path being published.
      *
-     * @return string|null string the published URL for the file or directory. Null if the file or directory does not
-     * exist.
+     * @return string|null The string the published URL for the file or directory.
+     * Null if the file or directory does not exist.
      */
     public function getPublishedUrl(string $sourcePath): ?string
     {
@@ -508,9 +507,9 @@ final class AssetPublisher implements AssetPublisherInterface
      * Generate a CRC32 hash for the directory path. Collisions are higher than MD5 but generates a much smaller hash
      * string.
      *
-     * @param string $path string to be hashed.
+     * @param string $path The string to be hashed.
      *
-     * @return string hashed string.
+     * @return string The hashed string.
      */
     private function hash(string $path): string
     {
@@ -526,11 +525,11 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Publishes a bundle directory.
      *
-     * @param AssetBundle $bundle
+     * @param AssetBundle $bundle The asset bundle instance.
      *
-     * @throws Exception if the asset to be published does not exist.
+     * @throws Exception If the asset to be published does not exist.
      *
-     * @return array the path directory and the URL that the asset is published as.
+     * @return array The path directory and the URL that the asset is published as.
      */
     private function publishBundleDirectory(AssetBundle $bundle): array
     {

@@ -12,11 +12,11 @@ interface AssetConverterInterface
     /**
      * Converts a given asset file into a CSS or JS file.
      *
-     * @param string $asset the asset file path, relative to $basePath
-     * @param string $basePath the directory the $asset is relative to.
-     * @param array $optionsConverter it allows you to {@see AssetConverter::runCommand} options by AssetBundle.
+     * @param string $asset The asset file path, relative to $basePath.
+     * @param string $basePath The directory the $asset is relative to.
+     * @param array $optionsConverter It allows you to {@see AssetConverter::runCommand} options by {@see AssetBundle}.
      *
-     * @return string the converted asset file path, relative to $basePath.
+     * @return string The converted asset file path, relative to $basePath.
      */
     public function convert(string $asset, string $basePath, array $optionsConverter = []): string;
 }

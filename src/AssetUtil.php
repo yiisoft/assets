@@ -19,9 +19,9 @@ final class AssetUtil
      *
      * A relative URL does not have host info part.
      *
-     * @param string $url the URL to be checked
+     * @param string $url The URL to be checked.
      *
-     * @return bool whether the URL is relative
+     * @return bool Whether the URL is relative.
      */
     public static function isRelative(string $url): bool
     {
@@ -29,27 +29,31 @@ final class AssetUtil
     }
 
     /**
-     * @param AssetBundle $bundle
-     * @param string $pathAsset
-     * @param array $assetMap
+     * Resolves the actual URL for the specified asset.
      *
-     * @return string|null
+     * @param AssetBundle $bundle The asset bundle which the asset file belongs to.
+     * @param string $assetPath The asset path. This should be one of the assets listed
+     * in {@see AssetBundle::$js} or {@see AssetBundle::$css}.
+     * @param array $assetMap Mapping from source asset files (keys) to target asset files (values)
+     * {@see AssetPublisher::$assetMap}.
+     *
+     * @return string|null The actual URL for the specified asset, or null if there is no mapping.
      */
-    public static function resolveAsset(AssetBundle $bundle, string $pathAsset, array $assetMap): ?string
+    public static function resolveAsset(AssetBundle $bundle, string $assetPath, array $assetMap): ?string
     {
-        if (isset($assetMap[$pathAsset])) {
-            return $assetMap[$pathAsset];
+        if (isset($assetMap[$assetPath])) {
+            return $assetMap[$assetPath];
         }
 
-        if (!empty($bundle->sourcePath) && self::isRelative($pathAsset)) {
-            $pathAsset = $bundle->sourcePath . '/' . $pathAsset;
+        if (!empty($bundle->sourcePath) && self::isRelative($assetPath)) {
+            $assetPath = $bundle->sourcePath . '/' . $assetPath;
         }
 
-        $n = mb_strlen($pathAsset, 'utf-8');
+        $n = mb_strlen($assetPath, 'utf-8');
 
         foreach ($assetMap as $from => $to) {
             $n2 = mb_strlen($from, 'utf-8');
-            if ($n2 <= $n && substr_compare($pathAsset, $from, $n - $n2, $n2) === 0) {
+            if ($n2 <= $n && substr_compare($assetPath, $from, $n - $n2, $n2) === 0) {
                 return $to;
             }
         }

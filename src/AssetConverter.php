@@ -25,13 +25,11 @@ use function strtr;
  */
 final class AssetConverter implements AssetConverterInterface
 {
-    /**
-     * Aliases component
-     */
     private Aliases $aliases;
+    private LoggerInterface $logger;
 
     /**
-     * @var array the commands that are used to perform the asset conversion.
+     * @var array The commands that are used to perform the asset conversion.
      * The keys are the asset file extension names, and the values are the corresponding
      * target script types (either "css" or "js") and the commands used for the conversion.
      *
@@ -53,7 +51,7 @@ final class AssetConverter implements AssetConverterInterface
     ];
 
     /**
-     * @var bool whether the source asset file should be converted even if its result already exists.
+     * @var bool Whether the source asset file should be converted even if its result already exists.
      * You may want to set this to be `true` during the development stage to make sure the converted
      * assets are always up-to-date. Do not set this to true on production servers as it will
      * significantly degrade the performance.
@@ -61,7 +59,7 @@ final class AssetConverter implements AssetConverterInterface
     private bool $forceConvert = false;
 
     /**
-     * @var callable|null a PHP callback, which should be invoked to check whether asset conversion result is outdated.
+     * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is outdated.
      * It will be invoked only if conversion target file exists and its modification time is older then the one of
      * source file.
      * Callback should match following signature:
@@ -95,7 +93,6 @@ final class AssetConverter implements AssetConverterInterface
      * ```
      */
     private $isOutdatedCallback = null;
-    private LoggerInterface $logger;
 
     public function __construct(Aliases $aliases, LoggerInterface $logger)
     {
@@ -106,13 +103,13 @@ final class AssetConverter implements AssetConverterInterface
     /**
      * Converts a given asset file into a CSS or JS file.
      *
-     * @param string $asset the asset file path, relative to $basePath
-     * @param string $basePath the directory the $asset is relative to.
-     * @param array $optionsConverter additional options to pass to {@see AssetConverter::runCommand}
+     * @param string $asset The asset file path, relative to $basePath.
+     * @param string $basePath The directory the $asset is relative to.
+     * @param array $optionsConverter Additional options to pass to {@see AssetConverter::runCommand}.
      *
      * @throws Exception
      *
-     * @return string the converted asset file path, relative to $basePath.
+     * @return string The converted asset file path, relative to $basePath.
      */
     public function convert(string $asset, string $basePath, array $optionsConverter = []): string
     {
@@ -140,9 +137,9 @@ final class AssetConverter implements AssetConverterInterface
     /**
      * Allows you to set a command that is used to perform the asset conversion.
      *
-     * @param string $from file extension of the format converting from
-     * @param string $to file extension of the format converting to
-     * @param string $command command to execute for conversion
+     * @param string $from The file extension of the format converting from.
+     * @param string $to The file extension of the format converting to.
+     * @param string $command The command to execute for conversion.
      *
      * Example:
      *
@@ -176,13 +173,13 @@ final class AssetConverter implements AssetConverterInterface
     /**
      * Checks whether asset convert result is outdated, and thus should be reconverted.
      *
-     * @param string $basePath the directory the $asset is relative to.
-     * @param string $sourceFile the asset source file path, relative to [[$basePath]].
-     * @param string $targetFile the converted asset file path, relative to [[$basePath]].
-     * @param string $sourceExtension source asset file extension.
-     * @param string $targetExtension target asset file extension.
+     * @param string $basePath The directory the $asset is relative to.
+     * @param string $sourceFile The asset source file path, relative to [[$basePath]].
+     * @param string $targetFile The converted asset file path, relative to [[$basePath]].
+     * @param string $sourceExtension Source asset file extension.
+     * @param string $targetExtension Target asset file extension.
      *
-     * @return bool whether asset is outdated or not.
+     * @return bool Whether asset is outdated or not.
      */
     private function isOutdated(
         string $basePath,
@@ -217,14 +214,14 @@ final class AssetConverter implements AssetConverterInterface
     /**
      * Runs a command to convert asset files.
      *
-     * @param string $command the command to run. If prefixed with an `@` it will be treated as a
-     * [path alias](guide:concept-aliases).
-     * @param string $basePath asset base path and command working directory
-     * @param string $asset the name of the asset file
-     * @param string $result the name of the file to be generated by the converter command
+     * @param string $command The command to run. If prefixed with an `@` it will be treated as a
+     * {@see https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md}.
+     * @param string $basePath Asset base path and command working directory.
+     * @param string $asset The name of the asset file.
+     * @param string $result The name of the file to be generated by the converter command.
      * @param string|null $options
      *
-     * @return bool true on success, false on failure. Failures will be logged.
+     * @return bool True on success, false on failure. Failures will be logged.
      */
     private function runCommand(
         string $command,
