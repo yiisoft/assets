@@ -51,9 +51,10 @@ final class AssetManager
     private AssetPublisherInterface $publisher;
     private Aliases $aliases;
 
-    public function __construct(Aliases $aliases)
+    public function __construct(Aliases $aliases, AssetPublisherInterface $publisher)
     {
         $this->aliases = $aliases;
+        $this->publisher = $publisher;
     }
 
     /**

@@ -132,7 +132,7 @@ abstract class TestCase extends BaseTestCase
         $publisher->setForceCopy($params['yiisoft/assets']['assetPublisher']['forceCopy']);
         $publisher->setLinkAssets($params['yiisoft/assets']['assetPublisher']['linkAssets']);
 
-        $manager = new AssetManager($aliases);
+        $manager = new AssetManager($aliases, $publisher);
         $manager->setConverter($converter);
         $manager->setPublisher($publisher);
         $manager->setBundles($params['yiisoft/assets']['assetManager']['bundles']);
