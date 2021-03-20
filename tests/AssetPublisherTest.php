@@ -323,7 +323,7 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $bundle->publishOptions = [
-            'filter' => (new PathMatcher())->only('js/*'),
+            'filter' => (new PathMatcher())->only('**js/*'),
         ];
 
         [$bundle->basePath, $bundle->baseUrl] = $this->publisher->publish($bundle);
