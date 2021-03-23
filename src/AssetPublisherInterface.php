@@ -27,10 +27,10 @@ interface AssetPublisherInterface
     public function getAssetUrl(AssetBundle $bundle, string $assetPath): string;
 
     /**
-     * Loads asset bundle class by name.
+     * Loads asset bundle instance by name.
      *
-     * @param string $name The bundle name.
-     * @param array $config The bundle object configuration.
+     * @param string $name The asset bundle name.
+     * @param array $config The asset bundle instance configuration.
      *
      * @throws InvalidConfigException
      *

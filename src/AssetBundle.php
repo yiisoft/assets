@@ -7,15 +7,18 @@ namespace Yiisoft\Assets;
 /**
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
  *
- * Each asset bundle has a unique name that globally identifies it among all asset bundles used in an application. The
- * name is the [fully qualified class name](http://php.net/manual/en/language.namespaces.rules.php) of the class
- * representing it.
+ * Each asset bundle has a unique name that globally identifies it among all asset bundles used in an application.
  *
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
  */
-class AssetBundle
+final class AssetBundle
 {
+    /**
+     * @var string The asset bundle name.
+     */
+    private string $name;
+
     /**
      * @var string|null The Web-accessible directory that contains the asset files in this bundle.
      *
@@ -24,7 +27,7 @@ class AssetBundle
      *
      * You can use either a directory or an alias of the directory.
      */
-    public ?string $basePath = null;
+    public ?string $basePath;
 
     /**
      * @var string|null The base URL for the relative asset files listed in {@see js} and {@see css}.
@@ -34,12 +37,12 @@ class AssetBundle
      *
      * You can use either a URL or an alias of the URL.
      */
-    public ?string $baseUrl = null;
+    public ?string $baseUrl;
 
     /**
      * @var bool Indicates whether the AssetBundle uses CDN exclusively.
      */
-    public bool $cdn = false;
+    public bool $cdn;
 
     /**
      * @var array List of CSS files that this bundle contains. Each CSS file can be specified in one of the three
@@ -47,48 +50,38 @@ class AssetBundle
      *
      * Note that only a forward slash "/" should be used as directory separator.
      */
-    public array $css = [];
+    public array $css;
 
     /**
      * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
      * when registering the CSS files in this bundle.
      */
-    public array $cssOptions = [];
+    public array $cssOptions;
 
     /**
      * @var array The options line command from converter.
      *
      * Example: Dart SASS minify css.
      *
-     * public array $converterOptions = [
+     * 'converterOptions' = [
      *      'scss' => [
      *          'command' => '-I {path} --style compressed',
      *          'path' => '@root/tests/public/sourcepath/sass'
      *      ],
      * ];
      */
-    public array $converterOptions = [
-        'less' => null,
-        'scss' => null,
-        'sass' => null,
-        'styl' => null,
-        'coffee' => null,
-        'ts' => null,
-    ];
+    public array $converterOptions;
 
     /**
-     * @var array List of bundle class names that this bundle depends on.
+     * @var array List of asset bundle names that this bundle depends on.
      *
      * For example:
      *
      * ```php
-     * public $depends = [
-     *    \Yiisoft\Jquery\YiiAsset::class,
-     *    \Yiisoft\Bootstrap4\BootstrapAsset::class,
-     * ];
+     * 'depends' = ['yii', 'bootstrap5'];
      * ```
      */
-    public array $depends = [];
+    public array $depends;
 
     /**
      * @var array List of JavaScript files that this bundle contains.
@@ -106,29 +99,29 @@ class AssetBundle
      *
      * Note that only a forward slash "/" should be used as directory separator.
      */
-    public array $js = [];
+    public array $js;
 
     /**
      * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
      * when registering the JS files in this bundle.
      */
-    public array $jsOptions = [];
+    public array $jsOptions;
 
     /**
      * @var array JavaScript code blocks to be passed to {@see \Yiisoft\View\WebView::registerJs()}.
      */
-    public array $jsStrings = [];
+    public array $jsStrings;
 
     /**
      * @var array JavaScript variables to be passed to {@see \Yiisoft\View\WebView::registerJsVar()}.
      */
-    public array $jsVar = [];
+    public array $jsVar;
 
     /**
      * @var array The options to be passed to {@see AssetPublisher::publish()} when the asset bundle is being published.
      * This property is used only when {@see sourcePath} is set.
      */
-    public array $publishOptions = [];
+    public array $publishOptions;
 
     /**
      * @var string|null The directory that contains the source asset files for this asset bundle.
@@ -144,5 +137,39 @@ class AssetBundle
      *
      * {@see publishOptions}
      */
-    public ?string $sourcePath = null;
+    public ?string $sourcePath;
+
+    /**
+     * @param string $name The asset bundle name.
+     * @param array $config The asset bundle configuration.
+     */
+    public function __construct(string $name, array $config = [])
+    {
+        $this->name = $name;
+        $this->basePath = $config['basePath'] ?? null;
+        $this->baseUrl = $config['baseUrl'] ?? null;
+        $this->sourcePath = $config['sourcePath'] ?? null;
+        $this->cdn = $config['cdn'] ?? false;
+        $this->css = $config['css'] ?? [];
+        $this->cssOptions = $config['cssOptions'] ?? [];
+        $this->js = $config['js'] ?? [];
+        $this->jsOptions = $config['jsOptions'] ?? [];
+        $this->jsStrings = $config['jsStrings'] ?? [];
+        $this->jsVar = $config['jsVar'] ?? [];
+        $this->depends = $config['depends'] ?? [];
+        $this->publishOptions = $config['publishOptions'] ?? [];
+        $this->converterOptions = $config['converterOptions'] ?? [
+            'less' => null,
+            'scss' => null,
+            'sass' => null,
+            'styl' => null,
+            'coffee' => null,
+            'ts' => null,
+        ];
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
 }

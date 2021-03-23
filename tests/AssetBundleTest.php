@@ -6,15 +6,8 @@ namespace Yiisoft\Assets\Tests;
 
 use RuntimeException;
 use Yiisoft\Assets\AssetBundle;
+use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\Exception\InvalidConfigException;
-use Yiisoft\Assets\Tests\stubs\BaseAsset;
-use Yiisoft\Assets\Tests\stubs\BaseWrongAsset;
-use Yiisoft\Assets\Tests\stubs\CircleAsset;
-use Yiisoft\Assets\Tests\stubs\CircleDependsAsset;
-use Yiisoft\Assets\Tests\stubs\FileOptionsAsset;
-use Yiisoft\Assets\Tests\stubs\JqueryAsset;
-use Yiisoft\Assets\Tests\stubs\RootAsset;
-use Yiisoft\Assets\Tests\stubs\SimpleAsset;
 
 final class AssetBundleTest extends TestCase
 {
@@ -27,25 +20,25 @@ final class AssetBundleTest extends TestCase
 
     public function testBasePath(): void
     {
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getAssetBundles());
 
-        $this->assetManager->register([BaseAsset::class]);
+        $this->manager->register(['base']);
 
         $this->assertStringContainsString(
             '/baseUrl/css/basePath.css',
-            $this->assetManager->getCssFiles()['/baseUrl/css/basePath.css']['url']
+            $this->manager->getCssFiles()['/baseUrl/css/basePath.css']['url'],
         );
         $this->assertEquals(
             [
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
             ],
-            $this->assetManager->getCssFiles()['/baseUrl/css/basePath.css']['attributes']
+            $this->manager->getCssFiles()['/baseUrl/css/basePath.css']['attributes'],
         );
 
         $this->assertStringContainsString(
             '/baseUrl/js/basePath.js',
-            $this->assetManager->getJsFiles()['/baseUrl/js/basePath.js']['url']
+            $this->manager->getJsFiles()['/baseUrl/js/basePath.js']['url'],
         );
         $this->assertEquals(
             [
@@ -53,21 +46,20 @@ final class AssetBundleTest extends TestCase
                 'crossorigin' => 'anonymous',
                 'position' => 3,
             ],
-            $this->assetManager->getJsFiles()['/baseUrl/js/basePath.js']['attributes']
+            $this->manager->getJsFiles()['/baseUrl/js/basePath.js']['attributes'],
         );
     }
 
     public function testBasePathEmptyException(): void
     {
-        $this->assetManager->setBundles(
-            [
-                BaseAsset::class => [
-                    'basePath' => null,
-                ],
-            ]
-        );
+        $manager = new AssetManager($this->aliases, $this->publisher, [
+            'test' => [
+                'basePath' => null,
+                'sourcePath' => '@sourcePath',
+            ],
+        ]);
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($manager->getAssetBundles());
 
         $message = 'basePath must be set in AssetPublisher->setBasePath($path) or ' .
             'AssetBundle property public ?string $basePath = $path';
@@ -75,38 +67,36 @@ final class AssetBundleTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
 
-        $this->assetManager->register([BaseAsset::class]);
+        $manager->register(['test']);
     }
 
     public function testBaseUrlEmptyString(): void
     {
-        $this->assetManager->setBundles(
-            [
-                RootAsset::class => [
-                    'baseUrl' => '',
-                ],
-            ]
-        );
+        $manager = new AssetManager($this->aliases, $this->publisher, [
+            'test' => [
+                'baseUrl' => '',
+                'sourcePath' => '@sourcePath',
+            ],
+        ]);
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $manager->getPublisher()->setBasePath('@asset');
 
-        $this->assetManager->register([RootAsset::class]);
+        $this->assertEmpty($this->manager->getAssetBundles());
+
+        $manager->register(['test']);
     }
 
     public function testBaseUrlIsNotSetException(): void
     {
-        $this->assetManager->setBundles(
-            [
-                BaseAsset::class => [
-                    'basePath' => null,
-                    'baseUrl' => null,
-                ],
-            ]
-        );
+        $manager = new AssetManager($this->aliases, $this->publisher, [
+            'test' => [
+                'basePath' => '@asset',
+                'baseUrl' => null,
+                'sourcePath' => '@sourcePath',
+            ],
+        ]);
 
-        $this->assetManager->getPublisher()->setBasePath('@asset');
-
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($manager->getAssetBundles());
 
         $message = 'baseUrl must be set in AssetPublisher->setBaseUrl($path) or ' .
             'AssetBundle property public ?string $baseUrl = $path';
@@ -114,177 +104,173 @@ final class AssetBundleTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
 
-        $this->assetManager->register([BaseAsset::class]);
+        $manager->register(['test']);
     }
 
     public function testBasePathEmptyWithAssetManagerSetBasePath(): void
     {
-        $this->assetManager->getPublisher()->setBasePath('@asset');
+        $this->manager->getPublisher()->setBasePath('@asset');
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
-        $this->assertIsObject($this->assetManager->getBundle(BaseAsset::class));
+        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertInstanceOf(AssetBundle::class, $this->manager->getBundle('base'));
     }
 
     public function testBasePathEmptyBaseUrlEmptyWithAssetManagerSetBasePathSetBaseUrl(): void
     {
-        $this->assetManager->getPublisher()->setBasePath('@asset');
-        $this->assetManager->getPublisher()->setBaseUrl('@assetUrl');
+        $this->manager->getPublisher()->setBasePath('@asset');
+        $this->manager->getPublisher()->setBaseUrl('@assetUrl');
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
-
-        $this->assertIsObject($this->assetManager->getBundle(BaseAsset::class));
+        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertInstanceOf(AssetBundle::class, $this->manager->getBundle('base'));
     }
 
     public function testBasePathWrongException(): void
     {
-        $bundle = new BaseWrongAsset();
+        $bundle = $this->createBundle('baseWrong');
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getAssetBundles());
 
         $file = $bundle->js[0];
-        $message = "Asset files not found: '$bundle->basePath/$file'.";
+        $message = "Asset files not found: \"{$bundle->basePath}/{$file}\".";
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
 
-        $this->assetManager->register([BaseWrongAsset::class]);
+        $this->manager->register([$bundle->name()]);
     }
 
     public function testCircularDependency(): void
     {
-        $depends = (new CircleDependsAsset())->depends;
+        $depends = $this->createBundle('circleDepends')->depends;
 
-        $message = "A circular dependency is detected for bundle '$depends[0]'.";
+        $message = "A circular dependency is detected for bundle \"$depends[0]\".";
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage($message);
 
-        $this->assetManager->register([CircleAsset::class]);
+        $this->manager->register(['circle']);
     }
 
     public function testDuplicateAssetFile(): void
     {
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getAssetBundles());
 
-        $this->assetManager->register([JqueryAsset::class, SimpleAsset::class]);
+        $this->manager->register(['jquery', 'simple']);
 
-        $this->assertCount(3, $this->assetManager->getAssetBundles());
-        $this->assertArrayHasKey(SimpleAsset::class, $this->assetManager->getAssetBundles());
-        $this->assertInstanceOf(
-            AssetBundle::class,
-            $this->assetManager->getAssetBundles()[SimpleAsset::class]
-        );
+        $this->assertCount(3, $this->manager->getAssetBundles());
+        $this->assertArrayHasKey('simple', $this->manager->getAssetBundles());
+        $this->assertInstanceOf(AssetBundle::class, $this->manager->getAssetBundles()['simple']);
 
         $this->assertStringContainsString(
             '/js/jquery.js',
-            $this->assetManager->getJsFiles()['/js/jquery.js']['url']
+            $this->manager->getJsFiles()['/js/jquery.js']['url']
         );
         $this->assertEquals(
             [
                 'position' => 3,
             ],
-            $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
+            $this->manager->getJsFiles()['/js/jquery.js']['attributes']
         );
     }
 
     public function testJsString(): void
     {
-        $this->assetManager->register([BaseAsset::class]);
+        $this->manager->register(['base']);
 
         $this->assertEquals(
             'app1.start();',
-            $this->assetManager->getJsStrings()['uniqueName']['string']
+            $this->manager->getJsStrings()['uniqueName']['string'],
         );
         $this->assertEquals(
             'app2.start();',
-            $this->assetManager->getJsStrings()['app2.start();']['string']
+            $this->manager->getJsStrings()['app2.start();']['string'],
         );
         $this->assertEquals(
             1,
-            $this->assetManager->getJsStrings()['uniqueName2']['attributes']['position']
+            $this->manager->getJsStrings()['uniqueName2']['attributes']['position'],
         );
     }
 
     public function testJsVars(): void
     {
-        $this->assetManager->register([BaseAsset::class]);
+        $this->manager->register(['base']);
 
         $this->assertEquals(
             [
                 'option1' => 'value1',
             ],
-            $this->assetManager->getJsVar()['var1']['variables']
+            $this->manager->getJsVar()['var1']['variables'],
         );
         $this->assertEquals(
             [
                 'option2' => 'value2',
                 'option3' => 'value3',
             ],
-            $this->assetManager->getJsVar()['var2']['variables']
+            $this->manager->getJsVar()['var2']['variables'],
         );
         $this->assertEquals(
             3,
-            $this->assetManager->getJsVar()['var3']['attributes']['position']
+            $this->manager->getJsVar()['var3']['attributes']['position'],
         );
     }
 
     public function testFileOptionsAsset(): void
     {
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getAssetBundles());
 
-        $this->assetManager->register([FileOptionsAsset::class]);
+        $this->manager->register(['fileOptions']);
 
         $this->assertStringContainsString(
             '/baseUrl/css/default_options.css',
-            $this->assetManager->getCssFiles()['/baseUrl/css/default_options.css']['url']
+            $this->manager->getCssFiles()['/baseUrl/css/default_options.css']['url'],
         );
         $this->assertEquals(
             [
                 'media' => 'screen',
                 'hreflang' => 'en',
             ],
-            $this->assetManager->getCssFiles()['/baseUrl/css/default_options.css']['attributes']
+            $this->manager->getCssFiles()['/baseUrl/css/default_options.css']['attributes'],
         );
 
         $this->assertStringContainsString(
             '/baseUrl/css/tv.css',
-            $this->assetManager->getCssFiles()['/baseUrl/css/tv.css']['url']
+            $this->manager->getCssFiles()['/baseUrl/css/tv.css']['url'],
         );
         $this->assertEquals(
             [
                 'media' => 'tv',
                 'hreflang' => 'en',
             ],
-            $this->assetManager->getCssFiles()['/baseUrl/css/tv.css']['attributes']
+            $this->manager->getCssFiles()['/baseUrl/css/tv.css']['attributes'],
         );
 
         $this->assertStringContainsString(
             '/baseUrl/css/screen_and_print.css',
-            $this->assetManager->getCssFiles()['/baseUrl/css/screen_and_print.css']['url']
+            $this->manager->getCssFiles()['/baseUrl/css/screen_and_print.css']['url'],
         );
         $this->assertEquals(
             [
                 'media' => 'screen, print',
                 'hreflang' => 'en',
             ],
-            $this->assetManager->getCssFiles()['/baseUrl/css/screen_and_print.css']['attributes']
+            $this->manager->getCssFiles()['/baseUrl/css/screen_and_print.css']['attributes'],
         );
 
         $this->assertStringContainsString(
             '/baseUrl/js/normal.js',
-            $this->assetManager->getJsFiles()['/baseUrl/js/normal.js']['url']
+            $this->manager->getJsFiles()['/baseUrl/js/normal.js']['url'],
         );
         $this->assertEquals(
             [
                 'charset' => 'utf-8',
                 'position' => 3,
             ],
-            $this->assetManager->getJsFiles()['/baseUrl/js/normal.js']['attributes']
+            $this->manager->getJsFiles()['/baseUrl/js/normal.js']['attributes'],
         );
 
         $this->assertStringContainsString(
             '/baseUrl/js/defered.js',
-            $this->assetManager->getJsFiles()['/baseUrl/js/defered.js']['url']
+            $this->manager->getJsFiles()['/baseUrl/js/defered.js']['url'],
         );
         $this->assertEquals(
             [
@@ -292,7 +278,7 @@ final class AssetBundleTest extends TestCase
                 'defer' => true,
                 'position' => 3,
             ],
-            $this->assetManager->getJsFiles()['/baseUrl/js/defered.js']['attributes']
+            $this->manager->getJsFiles()['/baseUrl/js/defered.js']['attributes'],
         );
     }
 }
