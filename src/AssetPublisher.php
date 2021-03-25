@@ -71,14 +71,14 @@ final class AssetPublisher implements AssetPublisherInterface
     private ?string $baseUrl = null;
 
     /**
-     * @var array The options that will be passed to {@see \Yiisoft\View\View::registerCssFile()} when registering the
-     * CSS files all assets bundle.
+     * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
+     * when registering the CSS files all assets bundle.
      */
     private array $cssDefaultOptions = [];
 
     /**
-     * @var array The options that will be passed to {@see \Yiisoft\View\View::registerJsFile()} when registering the
-     * JS files all assets bundle.
+     * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
+     * when registering the JS files all assets bundle.
      */
     private array $jsDefaultOptions = [];
 
@@ -192,7 +192,7 @@ final class AssetPublisher implements AssetPublisherInterface
         $url = $this->getBundleBaseUrl($bundle) . '/' . $assetPath;
 
         if (!is_file($path)) {
-            throw new InvalidConfigException("Asset files not found: '$path'.");
+            throw new InvalidConfigException("Asset files not found: \"{$path}\".");
         }
 
         if ($this->appendTimestamp && ($timestamp = FileHelper::lastModifiedTime("$path")) > 0) {
@@ -215,12 +215,12 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Loads asset bundle class by name.
      *
-     * @param string $name The bundle name.
-     * @param array $config The bundle object configuration.
+     * @param string $name The asset bundle name.
+     * @param array $config The asset bundle instance configuration.
      *
-     * @throws InvalidConfigException
+     * @throws InvalidConfigException For invalid asset bundle configuration.
      *
-     * @return AssetBundle
+     * @return AssetBundle The asset bundle instance.
      */
     public function loadBundle(string $name, array $config = []): AssetBundle
     {
@@ -292,7 +292,7 @@ final class AssetPublisher implements AssetPublisherInterface
         $this->checkBundleData($bundle);
 
         if (!file_exists($this->aliases->get($bundle->sourcePath))) {
-            throw new InvalidConfigException("The sourcePath to be published does not exist: $bundle->sourcePath");
+            throw new InvalidConfigException("The sourcePath to be published does not exist: {$bundle->sourcePath}");
         }
 
         return $this->published[$bundle->sourcePath] = $this->publishBundleDirectory($bundle);

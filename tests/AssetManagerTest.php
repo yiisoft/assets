@@ -23,7 +23,7 @@ final class AssetManagerTest extends TestCase
     {
         $this->assertInstanceOf(
             AssetConverterInterface::class,
-            $this->assetManager->getConverter()
+            $this->manager->getConverter(),
         );
     }
 
@@ -34,24 +34,24 @@ final class AssetManagerTest extends TestCase
         $sourcePath = $this->aliases->get($bundle->sourcePath);
 
         $path = $sourcePath . FileHelper::lastModifiedTime($sourcePath);
-        $path = sprintf('%x', crc32($path . '|' . $this->assetManager->getPublisher()->getLinkAssets()));
+        $path = sprintf('%x', crc32($path . '|' . $this->manager->getPublisher()->getLinkAssets()));
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
-        $this->assetManager->register([SourceAsset::class]);
+        $this->assertEmpty($this->manager->getRegisteredBundles());
+        $this->manager->register([SourceAsset::class]);
 
         $this->assertEquals(
-            $this->assetManager->getPublisher()->getPublishedPath($bundle->sourcePath),
-            $this->aliases->get("@root/tests/public/assets/$path")
+            $this->manager->getPublisher()->getPublishedPath($bundle->sourcePath),
+            $this->aliases->get("@root/tests/public/assets/{$path}"),
         );
     }
 
     public function testGetPublishedPathWrong(): void
     {
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $this->assetManager->register([SourceAsset::class]);
+        $this->manager->register([SourceAsset::class]);
 
-        $this->assertNull($this->assetManager->getPublisher()->getPublishedPath('/wrong'));
+        $this->assertNull($this->manager->getPublisher()->getPublishedPath('/wrong'));
     }
 
     public function testGetPublishedUrl(): void
@@ -61,32 +61,32 @@ final class AssetManagerTest extends TestCase
         $sourcePath = $this->aliases->get($bundle->sourcePath);
 
         $path = $sourcePath . FileHelper::lastModifiedTime($sourcePath);
-        $path = sprintf('%x', crc32($path . '|' . $this->assetManager->getPublisher()->getLinkAssets()));
+        $path = sprintf('%x', crc32($path . '|' . $this->manager->getPublisher()->getLinkAssets()));
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $this->assetManager->register([SourceAsset::class]);
+        $this->manager->register([SourceAsset::class]);
 
         $this->assertEquals(
-            $this->assetManager->getPublisher()->getPublishedUrl($bundle->sourcePath),
-            "/baseUrl/$path"
+            $this->manager->getPublisher()->getPublishedUrl($bundle->sourcePath),
+            "/baseUrl/{$path}"
         );
     }
 
     public function testGetPublishedUrlWrong(): void
     {
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $this->assetManager->register([SourceAsset::class]);
+        $this->manager->register([SourceAsset::class]);
 
-        $this->assertNull($this->assetManager->getPublisher()->getPublishedUrl('/wrong'));
+        $this->assertNull($this->manager->getPublisher()->getPublishedUrl('/wrong'));
     }
 
     public function testAssetManagerSetBundles(): void
     {
         $urlJs = 'https://code.jquery.com/jquery-3.4.1.js';
 
-        $this->assetManager->setBundles(
+        $this->manager->setBundles(
             [
                 JqueryAsset::class => [
                     'sourcePath' => null, //no publish asset bundle
@@ -101,13 +101,13 @@ final class AssetManagerTest extends TestCase
             ]
         );
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $this->assetManager->register([JqueryAsset::class]);
+        $this->manager->register([JqueryAsset::class]);
 
         $this->assertStringContainsString(
             $urlJs,
-            $this->assetManager->getJsFiles()[$urlJs]['url']
+            $this->manager->getJsFiles()[$urlJs]['url'],
         );
         $this->assertEquals(
             [
@@ -115,7 +115,7 @@ final class AssetManagerTest extends TestCase
                 'crossorigin' => 'anonymous',
                 'position' => 3,
             ],
-            $this->assetManager->getJsFiles()[$urlJs]['attributes']
+            $this->manager->getJsFiles()[$urlJs]['attributes'],
         );
     }
 
@@ -142,7 +142,7 @@ final class AssetManagerTest extends TestCase
      */
     public function testPositionDependency(int $pos, bool $jqAlreadyRegistered): void
     {
-        $this->assetManager->setBundles([
+        $this->manager->setBundles([
             PositionAsset::class => [
                 'jsOptions' => [
                     'position' => $pos,
@@ -150,76 +150,40 @@ final class AssetManagerTest extends TestCase
             ],
         ]);
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         if ($jqAlreadyRegistered) {
-            $this->assetManager->register([JqueryAsset::class, PositionAsset::class]);
+            $this->manager->register([JqueryAsset::class, PositionAsset::class]);
         } else {
-            $this->assetManager->register([PositionAsset::class]);
+            $this->manager->register([PositionAsset::class]);
         }
 
-        $this->assertCount(3, $this->assetManager->getAssetBundles());
-        $this->assertArrayHasKey(PositionAsset::class, $this->assetManager->getAssetBundles());
-        $this->assertArrayHasKey(JqueryAsset::class, $this->assetManager->getAssetBundles());
-        $this->assertArrayHasKey(Level3Asset::class, $this->assetManager->getAssetBundles());
+        $this->assertCount(3, $this->manager->getRegisteredBundles());
+        $this->assertArrayHasKey(PositionAsset::class, $this->manager->getRegisteredBundles());
+        $this->assertArrayHasKey(JqueryAsset::class, $this->manager->getRegisteredBundles());
+        $this->assertArrayHasKey(Level3Asset::class, $this->manager->getRegisteredBundles());
 
-        $this->assertInstanceOf(
-            AssetBundle::class,
-            $this->assetManager->getAssetBundles()[PositionAsset::class]
-        );
-        $this->assertInstanceOf(
-            AssetBundle::class,
-            $this->assetManager->getAssetBundles()[JqueryAsset::class]
-        );
-        $this->assertInstanceOf(
-            AssetBundle::class,
-            $this->assetManager->getAssetBundles()[Level3Asset::class]
-        );
+        $this->assertInstanceOf(AssetBundle::class, $this->manager->getRegisteredBundles()[PositionAsset::class]);
+        $this->assertInstanceOf(AssetBundle::class, $this->manager->getRegisteredBundles()[JqueryAsset::class]);
+        $this->assertInstanceOf(AssetBundle::class, $this->manager->getRegisteredBundles()[Level3Asset::class]);
 
-        $this->assertArrayHasKey(
-            'position',
-            $this->assetManager->getAssetBundles()[PositionAsset::class]->jsOptions
-        );
-        $this->assertEquals(
-            $pos,
-            $this->assetManager->getAssetBundles()[PositionAsset::class]->jsOptions['position']
-        );
-        $this->assertArrayHasKey(
-            'position',
-            $this->assetManager->getAssetBundles()[JqueryAsset::class]->jsOptions
-        );
+        $this->assertArrayHasKey('position', $this->manager->getRegisteredBundles()[PositionAsset::class]->jsOptions);
+        $this->assertEquals($pos, $this->manager->getRegisteredBundles()[PositionAsset::class]->jsOptions['position']);
 
-        $this->assertEquals(
-            $pos,
-            $this->assetManager->getAssetBundles()[JqueryAsset::class]->jsOptions['position']
-        );
-        $this->assertArrayHasKey(
-            'position',
-            $this->assetManager->getAssetBundles()[Level3Asset::class]->jsOptions
-        );
-        $this->assertEquals(
-            $pos,
-            $this->assetManager->getAssetBundles()[Level3Asset::class]->jsOptions['position']
-        );
+        $this->assertArrayHasKey('position', $this->manager->getRegisteredBundles()[JqueryAsset::class]->jsOptions);
+        $this->assertEquals($pos, $this->manager->getRegisteredBundles()[JqueryAsset::class]->jsOptions['position']);
 
-        $this->assertEquals(
-            [
-                'position' => $pos,
-            ],
-            $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
-        );
-        $this->assertEquals(
-            [
-                'position' => $pos,
-            ],
-            $this->assetManager->getJsFiles()['/files/jsFile.js']['attributes']
-        );
+        $this->assertArrayHasKey('position', $this->manager->getRegisteredBundles()[Level3Asset::class]->jsOptions);
+        $this->assertEquals($pos, $this->manager->getRegisteredBundles()[Level3Asset::class]->jsOptions['position']);
+
+        $this->assertEquals(['position' => $pos], $this->manager->getJsFiles()['/js/jquery.js']['attributes']);
+        $this->assertEquals(['position' => $pos], $this->manager->getJsFiles()['/files/jsFile.js']['attributes']);
     }
 
     /**
      * @return array
      */
-    public function positionProvider2(): array
+    public function positionProviderConflict(): array
     {
         return [
             [1, true],
@@ -230,7 +194,7 @@ final class AssetManagerTest extends TestCase
     }
 
     /**
-     * @dataProvider positionProvider2
+     * @dataProvider positionProviderConflict
      *
      * @param int $pos
      * @param bool $jqAlreadyRegistered
@@ -239,7 +203,7 @@ final class AssetManagerTest extends TestCase
     {
         $jqAsset = JqueryAsset::class;
 
-        $this->assetManager->setBundles([
+        $this->manager->setBundles([
             PositionAsset::class => [
                 'jsOptions' => [
                     'position' => $pos - 1,
@@ -252,22 +216,19 @@ final class AssetManagerTest extends TestCase
             ],
         ]);
 
+        $message = "An asset bundle that depends on \"{$jqAsset}\" has a higher"
+            . " javascript file position configured than \"{$jqAsset}\".";
+
         if ($jqAlreadyRegistered) {
-            $message = "An asset bundle that depends on '$jqAsset' has a higher javascript file " .
-            "position configured than '$jqAsset'.";
-
             $this->expectException(RuntimeException::class);
             $this->expectExceptionMessage($message);
 
-            $this->assetManager->register([JqueryAsset::class, PositionAsset::class]);
+            $this->manager->register([JqueryAsset::class, PositionAsset::class]);
         } else {
-            $message = "An asset bundle that depends on '$jqAsset' has a higher javascript file " .
-                "position configured than '$jqAsset'.";
-
             $this->expectException(RuntimeException::class);
             $this->expectExceptionMessage($message);
 
-            $this->assetManager->register([PositionAsset::class]);
+            $this->manager->register([PositionAsset::class]);
         }
     }
 
@@ -275,51 +236,53 @@ final class AssetManagerTest extends TestCase
     {
         $jqueryBundle = new JqueryAsset();
 
-        $this->assetManager->setBundles(
+        $this->manager->setBundles(
             [
                 JqueryAsset::class => false,
             ]
         );
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $this->assetManager->register([JqueryAsset::class]);
+        $this->manager->register([JqueryAsset::class]);
 
-        $this->assertNotSame($jqueryBundle, $this->assetManager->getBundle(JqueryAsset::class));
-        $this->assertEmpty($this->assetManager->getCssFiles());
-        $this->assertEmpty($this->assetManager->getJsFiles());
+        $this->assertNotSame($jqueryBundle, $this->manager->getBundle(JqueryAsset::class));
+        $this->assertEmpty($this->manager->getCssFiles());
+        $this->assertEmpty($this->manager->getJsFiles());
     }
 
     public function testGetAssetBundleException(): void
     {
-        $this->assetManager->setBundles(
+        $jqueryBundle = JqueryAsset::class;
+
+        $this->manager->setBundles(
             [
                 JqueryAsset::class => 'noExist',
-            ]
+            ],
         );
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage('Invalid asset bundle configuration: Yiisoft\Assets\Tests\stubs\JqueryAsset');
+        $this->expectExceptionMessage("Invalid configuration of the \"{$jqueryBundle}\" asset bundle.");
 
-        $this->assetManager->register([JqueryAsset::class]);
+        $this->manager->register([JqueryAsset::class]);
     }
 
     public function testGetAssetBundleInstanceOfAssetBundle(): void
     {
         $jqueryBundle = new JqueryAsset();
 
-        $this->assetManager->setBundles(
+        $this->manager->setBundles(
             [
                 JqueryAsset::class => $jqueryBundle,
-            ]
+            ],
         );
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $this->assetManager->register([JqueryAsset::class]);
+        $this->manager->register([JqueryAsset::class]);
 
-        $this->assertSame($jqueryBundle, $this->assetManager->getBundle(JqueryAsset::class));
+        $this->assertSame($jqueryBundle, $this->manager->getBundle(JqueryAsset::class));
     }
 }

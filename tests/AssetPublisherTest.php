@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
+use ReflectionObject;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
@@ -20,6 +21,7 @@ use function crc32;
 use function is_file;
 use function is_link;
 use function sprintf;
+use function ucfirst;
 
 final class AssetPublisherTest extends TestCase
 {
@@ -40,27 +42,27 @@ final class AssetPublisherTest extends TestCase
         $timestampJs = FileHelper::lastModifiedTime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
         $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->publisher->setAppendTimestamp(true);
 
-        $this->assetManager->register([BaseAsset::class]);
+        $this->manager->register([BaseAsset::class]);
 
         $this->assertStringContainsString(
             $urlCss,
-            $this->assetManager->getCssFiles()[$urlCss]['url']
+            $this->manager->getCssFiles()[$urlCss]['url']
         );
         $this->assertEquals(
             [
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
             ],
-            $this->assetManager->getCssFiles()[$urlCss]['attributes']
+            $this->manager->getCssFiles()[$urlCss]['attributes'],
         );
 
         $this->assertStringContainsString(
             $urlJs,
-            $this->assetManager->getJsFiles()[$urlJs]['url']
+            $this->manager->getJsFiles()[$urlJs]['url'],
         );
         $this->assertEquals(
             [
@@ -68,7 +70,7 @@ final class AssetPublisherTest extends TestCase
                 'crossorigin' => 'anonymous',
                 'position' => 3,
             ],
-            $this->assetManager->getJsFiles()[$urlJs]['attributes']
+            $this->manager->getJsFiles()[$urlJs]['attributes'],
         );
     }
 
@@ -84,19 +86,19 @@ final class AssetPublisherTest extends TestCase
             ]
         );
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $this->assetManager->register([JqueryAsset::class]);
+        $this->manager->register([JqueryAsset::class]);
 
         $this->assertStringContainsString(
             $urlJs,
-            $this->assetManager->getJsFiles()[$urlJs]['url']
+            $this->manager->getJsFiles()[$urlJs]['url'],
         );
         $this->assertEquals(
             [
                 'position' => 3,
             ],
-            $this->assetManager->getJsFiles()[$urlJs]['attributes']
+            $this->manager->getJsFiles()[$urlJs]['attributes'],
         );
     }
 
@@ -225,19 +227,19 @@ final class AssetPublisherTest extends TestCase
         }
 
         $this->aliases->set('@assetUrl', $webAlias);
-
         $path = $this->aliases->get($path);
-
         $this->publisher->setAppendTimestamp($appendTimestamp);
 
-        $method = 'register' . ucfirst($type) . 'File';
-
-        $this->assetManager->$method($path, [], null);
+        $reflection = new ReflectionObject($this->manager);
+        $method = $reflection->getMethod('register' . ucfirst($type) . 'File');
+        $method->setAccessible(true);
+        $method->invokeArgs($this->manager, [$path, [], null]);
+        $method->setAccessible(false);
 
         $this->assertStringContainsString(
             $expected,
-            $type === 'css' ? $this->assetManager->getCssFiles()[$expected]['url']
-                : $this->assetManager->getJsFiles()[$expected]['url']
+            $type === 'css' ? $this->manager->getCssFiles()[$expected]['url']
+                : $this->manager->getJsFiles()[$expected]['url'],
         );
     }
 
@@ -258,27 +260,27 @@ final class AssetPublisherTest extends TestCase
             'position' => 2,
         ]);
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $this->assetManager->register([SourceAsset::class]);
+        $this->manager->register([SourceAsset::class]);
 
         $this->assertEquals(
             [
                 'media' => 'none',
             ],
-            $this->assetManager->getCssFiles()["/baseUrl/$hash/css/stub.css"]['attributes']
+            $this->manager->getCssFiles()["/baseUrl/$hash/css/stub.css"]['attributes'],
         );
         $this->assertEquals(
             [
                 'position' => 2,
             ],
-            $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
+            $this->manager->getJsFiles()['/js/jquery.js']['attributes'],
         );
         $this->assertEquals(
             [
                 'position' => 2,
             ],
-            $this->assetManager->getJsFiles()["/baseUrl/$hash/js/stub.js"]['attributes']
+            $this->manager->getJsFiles()["/baseUrl/$hash/js/stub.js"]['attributes'],
         );
     }
 
@@ -288,39 +290,39 @@ final class AssetPublisherTest extends TestCase
             return 'HashCallback';
         });
 
-        $this->assertEmpty($this->assetManager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $this->assetManager->register([SourceAsset::class]);
+        $this->manager->register([SourceAsset::class]);
 
         $this->assertStringContainsString(
             '/baseUrl/HashCallback/css/stub.css',
-            $this->assetManager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['url']
+            $this->manager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['url'],
         );
         $this->assertEquals(
             [],
-            $this->assetManager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['attributes']
+            $this->manager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['attributes'],
         );
 
         $this->assertStringContainsString(
             '/js/jquery.js',
-            $this->assetManager->getJsFiles()['/js/jquery.js']['url']
+            $this->manager->getJsFiles()['/js/jquery.js']['url'],
         );
         $this->assertEquals(
             [
                 'position' => 3,
             ],
-            $this->assetManager->getJsFiles()['/js/jquery.js']['attributes']
+            $this->manager->getJsFiles()['/js/jquery.js']['attributes'],
         );
 
         $this->assertStringContainsString(
             '/baseUrl/HashCallback/js/stub.js',
-            $this->assetManager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['url']
+            $this->manager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['url'],
         );
         $this->assertEquals(
             [
                 'position' => 3,
             ],
-            $this->assetManager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['attributes']
+            $this->manager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['attributes'],
         );
     }
 
@@ -426,17 +428,16 @@ final class AssetPublisherTest extends TestCase
 
     public function testCdn(): void
     {
-        $publisher = new AssetPublisher($this->aliases);
-        $publisher->setBaseUrl('https://example.com/test');
+        $this->publisher->setBaseUrl('https://example.com/test');
 
         $this->assertSame(
             'https://example.com/main.css',
-            $publisher->getAssetUrl(new CdnAsset(), 'https://example.com/main.css')
+            $this->publisher->getAssetUrl(new CdnAsset(), 'https://example.com/main.css'),
         );
 
         $this->assertSame(
             'https://example.com/base/main.css',
-            $publisher->getAssetUrl(new CdnWithBaseUrlAsset(), 'main.css')
+            $this->publisher->getAssetUrl(new CdnWithBaseUrlAsset(), 'main.css'),
         );
     }
 }

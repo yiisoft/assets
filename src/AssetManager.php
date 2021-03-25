@@ -22,28 +22,25 @@ use function is_int;
 final class AssetManager
 {
     /**
-     * @var array AssetBundle[] list of the registered asset bundles. The keys are the bundle names, and the values
-     * are the registered {@see AssetBundle} objects.
+     * @var array AssetBundle[] list of the registered asset bundles.
+     * The keys are the bundle names, and the values are the registered {@see AssetBundle} objects.
      *
      * {@see registerAssetBundle()}
      */
-    private array $assetBundles = [];
+    private array $registeredBundles = [];
 
     /**
-     * @var array List of asset bundle configurations. This property is provided to customize asset bundles.
-     * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration specified here, the
-     * configuration will be applied to the bundle.
+     * @var array The asset bundle configurations. This property is provided to customize asset bundles.
+     * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration
+     * specified here, the configuration will be applied to the bundle.
      *
-     * The array keys are the asset bundle names, which typically are asset bundle class names without leading
-     * backslash. The array values are the corresponding configurations. If a value is false, it means the corresponding
-     * asset bundle is disabled and {@see getBundle()} should return null.
-     *
-     * If this property is false, it means the whole asset bundle feature is disabled and {@see {getBundle()} will
-     * always return null.
+     * The array keys are the asset class bundle names (without leading backslash).
+     * If a value is false, it means the corresponding asset bundle is disabled and {@see getBundle()}
+     * should return an instance of the specified asset bundle with empty property values.
      */
     private array $bundles = [];
-    private array $cssFiles = [];
     private array $dummyBundles = [];
+    private array $cssFiles = [];
     private array $jsFiles = [];
     private array $jsStrings = [];
     private array $jsVar = [];
@@ -58,13 +55,13 @@ final class AssetManager
     }
 
     /**
-     * Registers the asset manager being used by this view object.
+     * Returns the registered asset bundles.
      *
-     * @return array The asset manager. Defaults to the "assetManager" application component.
+     * @return array The registered asset bundles {@see registeredBundles}.
      */
-    public function getAssetBundles(): array
+    public function getRegisteredBundles(): array
     {
-        return $this->assetBundles;
+        return $this->registeredBundles;
     }
 
     /**
@@ -82,7 +79,7 @@ final class AssetManager
     public function getBundle(string $name): AssetBundle
     {
         if (!isset($this->bundles[$name])) {
-            return $this->bundles[$name] = $this->publisher->loadBundle($name, []);
+            return $this->bundles[$name] = $this->publisher->loadBundle($name);
         }
 
         if ($this->bundles[$name] instanceof AssetBundle) {
@@ -94,15 +91,20 @@ final class AssetManager
         }
 
         if ($this->bundles[$name] === false) {
-            return $this->loadDummyBundle($name);
+            return $this->dummyBundles[$name] ??= $this->publisher->loadBundle($name, (array) (new AssetBundle()));
         }
 
-        throw new InvalidConfigException("Invalid asset bundle configuration: $name");
+        throw new InvalidConfigException("Invalid configuration of the \"{$name}\" asset bundle.");
     }
 
     public function getConverter(): ?AssetConverterInterface
     {
         return $this->converter;
+    }
+
+    public function getPublisher(): AssetPublisherInterface
+    {
+        return $this->publisher;
     }
 
     /**
@@ -145,17 +147,17 @@ final class AssetManager
         return $this->jsVar;
     }
 
-    public function getPublisher(): AssetPublisherInterface
-    {
-        return $this->publisher;
-    }
-
     /**
-     * This property is provided to customize asset bundles.
+     * Set the asset bundle configurations.
      *
-     * @param array $bundles
+     * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration
+     * specified here, the configuration will be applied to the bundle.
      *
-     * {@see bundles}
+     * The array keys are the asset class bundle names (without leading backslash).
+     * If a value is false, it means the corresponding asset bundle is disabled and {@see getBundle()}
+     * should return an instance of the specified asset bundle with empty property values.
+     *
+     * @param array $bundles The asset bundle configurations.
      */
     public function setBundles(array $bundles): void
     {
@@ -174,19 +176,9 @@ final class AssetManager
     }
 
     /**
-     * Sets the asset publisher.
-     *
-     * @param AssetPublisherInterface $publisher
-     */
-    public function setPublisher(AssetPublisherInterface $publisher): void
-    {
-        $this->publisher = $publisher;
-    }
-
-    /**
      * Generate the array configuration of the asset bundles {@see AssetBundle}.
      *
-     * @param array $names
+     * @param string[] $names
      * @param int|null $position
      *
      * @throws InvalidConfigException
@@ -202,15 +194,11 @@ final class AssetManager
     /**
      * Registers a CSS file.
      *
-     * This method should be used for simple registration of CSS files. If you want to use features of
-     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
-     * and {@see registerAssetBundle()} instead.
-     *
      * @param string $url The CSS file to be registered.
      * @param array $options The HTML attributes for the link tag.
-     * @param string|null $key
+     * @param string|null $key The key that identifies the CSS file.
      */
-    public function registerCssFile(string $url, array $options = [], string $key = null): void
+    private function registerCssFile(string $url, array $options = [], string $key = null): void
     {
         $key = $key ?: $url;
 
@@ -221,21 +209,17 @@ final class AssetManager
     /**
      * Registers a JS file.
      *
-     * This method should be used for simple registration of JS files. If you want to use features of
-     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
-     * and {@see registerAssetBundle()} instead.
-     *
      * @param string $url The JS file to be registered.
      * @param array $options The HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
      *
      * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
-     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section
-     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section.
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
      *     * {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section. This is the default value.
-     * @param string|null $key
+     * @param string|null $key The key that identifies the JS file.
      */
-    public function registerJsFile(string $url, array $options = [], string $key = null): void
+    private function registerJsFile(string $url, array $options = [], string $key = null): void
     {
         $key = $key ?: $url;
 
@@ -250,8 +234,6 @@ final class AssetManager
     /**
      * Registers a JavaScript code block.
      *
-     * This method should be used for simple registration of JavaScript code blocks.
-     *
      * @param string $jsString The JavaScript code block to be registered.
      * @param array $options The HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
@@ -263,7 +245,7 @@ final class AssetManager
      * @param string|null $key The key that identifies the JS code block. If null, it will use $jsString as the key.
      * If two JS code blocks are registered with the same key, the latter will overwrite the former.
      */
-    public function registerJsString(string $jsString, array $options = [], string $key = null): void
+    private function registerJsString(string $jsString, array $options = [], string $key = null): void
     {
         $key = $key ?: $jsString;
 
@@ -278,21 +260,17 @@ final class AssetManager
     /**
      * Registers a JS variable.
      *
-     * This method should be used for simple registration of JS files. If you want to use features of
-     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
-     * and {@see registerAssetBundle()} instead.
-     *
-     * @param string $varName the variable name
-     * @param array|string $jsVar the JS code block to be registered.
-     * @param array $options the HTML attributes for the script tag. The following options are specially handled and
+     * @param string $varName The variable name.
+     * @param array|string $jsVar The JS code block to be registered.
+     * @param array $options The HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
      *
      * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
-     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section. This is the default value.
-     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
-     *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section. This is the default value.
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
+     *     * {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section.
      */
-    public function registerJsVar(string $varName, $jsVar, array $options = []): void
+    private function registerJsVar(string $varName, $jsVar, array $options = []): void
     {
         if (!array_key_exists('position', $options)) {
             $options = array_merge(['position' => 1], $options);
@@ -306,17 +284,15 @@ final class AssetManager
      * Converter SASS, SCSS, Stylus and other formats to CSS.
      *
      * @param AssetBundle $bundle
-     *
-     * @return AssetBundle
      */
-    private function convertCss(AssetBundle $bundle): AssetBundle
+    private function convertCss(AssetBundle $bundle): void
     {
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
                 $file = array_shift($css);
                 if (AssetUtil::isRelative($file)) {
                     $css = array_merge($bundle->cssOptions, $css);
-                    $baseFile = $this->aliases->get("$bundle->basePath/$file");
+                    $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
                         /**
                          * @psalm-suppress PossiblyNullArgument
@@ -325,14 +301,14 @@ final class AssetManager
                         array_unshift($css, $this->converter->convert(
                             $file,
                             $bundle->basePath,
-                            $bundle->converterOptions
+                            $bundle->converterOptions,
                         ));
 
                         $bundle->css[$i] = $css;
                     }
                 }
             } elseif (AssetUtil::isRelative($css)) {
-                $baseCss = $this->aliases->get("$bundle->basePath/$css");
+                $baseCss = $this->aliases->get("{$bundle->basePath}/{$css}");
                 if (is_file("$baseCss")) {
                     /**
                      * @psalm-suppress PossiblyNullArgument
@@ -346,25 +322,21 @@ final class AssetManager
                 }
             }
         }
-
-        return $bundle;
     }
 
     /**
      * Convert files from TypeScript and other formats into JavaScript.
      *
      * @param AssetBundle $bundle
-     *
-     * @return AssetBundle
      */
-    private function convertJs(AssetBundle $bundle): AssetBundle
+    private function convertJs(AssetBundle $bundle): void
     {
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
                 $file = array_shift($js);
                 if (AssetUtil::isRelative($file)) {
                     $js = array_merge($bundle->jsOptions, $js);
-                    $baseFile = $this->aliases->get("$bundle->basePath/$file");
+                    $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
                         /**
                          * @psalm-suppress PossiblyNullArgument
@@ -380,7 +352,7 @@ final class AssetManager
                     }
                 }
             } elseif (AssetUtil::isRelative($js)) {
-                $baseJs = $this->aliases->get("$bundle->basePath/$js");
+                $baseJs = $this->aliases->get("{$bundle->basePath}/{$js}");
                 if (is_file($baseJs)) {
                     /**
                      * @psalm-suppress PossiblyNullArgument
@@ -390,8 +362,6 @@ final class AssetManager
                 }
             }
         }
-
-        return $bundle;
     }
 
     /**
@@ -407,15 +377,13 @@ final class AssetManager
      * {@see registerJsFile()} For more details on javascript position.
      *
      * @throws RuntimeException If the asset bundle does not exist or a circular dependency is detected.
-     *
-     * @return AssetBundle The registered asset bundle instance.
      */
-    private function registerAssetBundle(string $name, int $position = null): AssetBundle
+    private function registerAssetBundle(string $name, int $position = null): void
     {
-        if (!isset($this->assetBundles[$name])) {
+        if (!isset($this->registeredBundles[$name])) {
             $bundle = $this->getBundle($name);
 
-            $this->assetBundles[$name] = false;
+            $this->registeredBundles[$name] = false;
 
             $pos = $bundle->jsOptions['position'] ?? null;
 
@@ -423,11 +391,11 @@ final class AssetManager
                 $this->registerAssetBundle($dep, $pos);
             }
 
-            $this->assetBundles[$name] = $bundle;
-        } elseif ($this->assetBundles[$name] === false) {
-            throw new RuntimeException("A circular dependency is detected for bundle '$name'.");
+            $this->registeredBundles[$name] = $bundle;
+        } elseif ($this->registeredBundles[$name] === false) {
+            throw new RuntimeException("A circular dependency is detected for bundle \"{$name}\".");
         } else {
-            $bundle = $this->assetBundles[$name];
+            $bundle = $this->registeredBundles[$name];
         }
 
         if ($position !== null) {
@@ -437,8 +405,8 @@ final class AssetManager
                 $bundle->jsOptions['position'] = $pos = $position;
             } elseif ($pos > $position) {
                 throw new RuntimeException(
-                    "An asset bundle that depends on '$name' has a higher javascript file " .
-                    "position configured than '$name'."
+                    "An asset bundle that depends on \"{$name}\" has a higher JavaScript file " .
+                    "position configured than \"{$name}\"."
                 );
             }
 
@@ -447,28 +415,6 @@ final class AssetManager
                 $this->registerAssetBundle($dep, $pos);
             }
         }
-        return $bundle;
-    }
-
-    /**
-     * Loads dummy bundle by name.
-     *
-     * @param string $bundleName The asset bundle name.
-     *
-     * @return AssetBundle
-     */
-    private function loadDummyBundle(string $bundleName): AssetBundle
-    {
-        if (!isset($this->dummyBundles[$bundleName])) {
-            $this->dummyBundles[$bundleName] = $this->publisher->loadBundle($bundleName, [
-                'sourcePath' => null,
-                'js' => [],
-                'css' => [],
-                'depends' => [],
-            ]);
-        }
-
-        return $this->dummyBundles[$bundleName];
     }
 
     /**
@@ -480,11 +426,11 @@ final class AssetManager
      */
     private function registerFiles(string $bundleName): void
     {
-        if (!isset($this->assetBundles[$bundleName])) {
+        if (!isset($this->registeredBundles[$bundleName])) {
             return;
         }
 
-        $bundle = $this->assetBundles[$bundleName];
+        $bundle = $this->registeredBundles[$bundleName];
 
         foreach ($bundle->depends as $dep) {
             $this->registerFiles($dep);

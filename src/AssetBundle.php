@@ -7,9 +7,9 @@ namespace Yiisoft\Assets;
 /**
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
  *
- * Each asset bundle has a unique name that globally identifies it among all asset bundles used in an application. The
- * name is the [fully qualified class name](http://php.net/manual/en/language.namespaces.rules.php) of the class
- * representing it.
+ * Each asset bundle has a unique name that globally identifies it among all asset bundles used in an application.
+ * The name is the fully qualified class name {@see https://www.php.net/manual/en/language.namespaces.rules.php}
+ * of the class representing it.
  *
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
@@ -77,15 +77,15 @@ class AssetBundle
     ];
 
     /**
-     * @var array List of bundle class names that this bundle depends on.
+     * @var array List of asset bundle class names that this bundle depends on.
      *
      * For example:
      *
      * ```php
-     * public $depends = [
-     *    \Yiisoft\Jquery\YiiAsset::class,
-     *    \Yiisoft\Bootstrap4\BootstrapAsset::class,
-     * ];
+     * public array $depends = [
+     *     Yiisoft\Yii\Bootstrap5\Assets\BootstrapAsset:class,
+     *     Yiisoft\Yii\Bulma\Asset\BulmaAsset:class,
+     * ]:
      * ```
      */
     public array $depends = [];
