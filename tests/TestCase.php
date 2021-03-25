@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Assets\Tests;
 
 use Exception;
-use PHPUnit\Framework\TestCase as BaseTestCase;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetBundle;
@@ -25,12 +23,12 @@ use function opendir;
 use function readdir;
 use function str_replace;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected Aliases $aliases;
-    protected AssetManager $assetManager;
+    protected AssetManager $manager;
+    protected AssetConverter $converter;
     protected AssetPublisher $publisher;
-    protected LoggerInterface $logger;
 
     protected function setUp(): void
     {
@@ -39,8 +37,8 @@ abstract class TestCase extends BaseTestCase
         $container = $this->createContainer();
 
         $this->aliases = $container->get(Aliases::class);
-        $this->assetManager = $container->get(AssetManager::class);
-        $this->logger = $container->get(LoggerInterface::class);
+        $this->manager = $container->get(AssetManager::class);
+        $this->converter = $container->get(AssetConverterInterface::class);
         $this->publisher = $container->get(AssetPublisherInterface::class);
 
         $this->removeAssets('@asset');
@@ -106,7 +104,6 @@ abstract class TestCase extends BaseTestCase
     private function createContainer(): SimpleContainer
     {
         $params = require dirname(__DIR__) . '/config/params.php';
-        $logger = new NullLogger();
         $aliases = new Aliases([
             '@root' => dirname(__DIR__),
             '@asset' => '@root/tests/public/assets',
@@ -116,7 +113,7 @@ abstract class TestCase extends BaseTestCase
             '@sourcePath' => '@root/tests/public/sourcepath',
         ]);
 
-        $converter = new AssetConverter($aliases, $logger);
+        $converter = new AssetConverter($aliases, new NullLogger());
         $converter->setCommand(
             $params['yiisoft/assets']['assetConverter']['command']['from'],
             $params['yiisoft/assets']['assetConverter']['command']['to'],
@@ -134,16 +131,14 @@ abstract class TestCase extends BaseTestCase
 
         $manager = new AssetManager($aliases, $publisher);
         $manager->setConverter($converter);
-        $manager->setPublisher($publisher);
         $manager->setBundles($params['yiisoft/assets']['assetManager']['bundles']);
         $manager->register($params['yiisoft/assets']['assetManager']['register']);
 
         return new SimpleContainer([
             Aliases::class => $aliases,
-            LoggerInterface::class => $logger,
+            AssetManager::class => $manager,
             AssetConverterInterface::class => $converter,
             AssetPublisherInterface::class => $publisher,
-            AssetManager::class => $manager,
         ]);
     }
 }

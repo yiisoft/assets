@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
-use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Files\FileHelper;
 
 use function file_get_contents;
@@ -46,11 +45,9 @@ final class AssetConverterTest extends TestCase
             EOF
         );
 
-        $converter = new AssetConverter($this->aliases, $this->logger);
+        $this->converter->setCommand('php', 'txt', 'php {from} > {to}');
 
-        $converter->setCommand('php', 'txt', 'php {from} > {to}');
-
-        $this->assertEquals('test.txt', $converter->convert('test.php', $this->tmpPath));
+        $this->assertEquals('test.txt', $this->converter->convert('test.php', $this->tmpPath));
         $this->assertFileExists($this->tmpPath . '/test.txt', 'Failed asserting that asset output file exists.');
         $this->assertStringEqualsFile($this->tmpPath . '/test.txt', "Hello World!\nHello Yii!");
     }
@@ -70,19 +67,16 @@ final class AssetConverterTest extends TestCase
             EOF
         );
 
-        $converter = new AssetConverter($this->aliases, $this->logger);
-
-        $converter->setCommand('php', 'txt', 'php {from} > {to}');
-
-        $converter->convert('test.php', $this->tmpPath);
+        $this->converter->setCommand('php', 'txt', 'php {from} > {to}');
+        $this->converter->convert('test.php', $this->tmpPath);
         $initialConvertTime = file_get_contents($this->tmpPath . '/test.txt');
 
         usleep(1);
-        $converter->convert('test.php', $this->tmpPath);
+        $this->converter->convert('test.php', $this->tmpPath);
         $this->assertStringEqualsFile($this->tmpPath . '/test.txt', $initialConvertTime);
 
         touch($srcFilename, time() + 1000);
-        $converter->convert('test.php', $this->tmpPath);
+        $this->converter->convert('test.php', $this->tmpPath);
         $this->assertNotEquals($initialConvertTime, file_get_contents($this->tmpPath . '/test.txt'));
     }
 
@@ -100,20 +94,18 @@ final class AssetConverterTest extends TestCase
             EOF
         );
 
-        $converter = new AssetConverter($this->aliases, $this->logger);
+        $this->converter->setCommand('php', 'txt', 'php {from} > {to}');
 
-        $converter->setCommand('php', 'txt', 'php {from} > {to}');
-
-        $converter->convert('test.php', $this->tmpPath);
+        $this->converter->convert('test.php', $this->tmpPath);
         $initialConvertTime = file_get_contents($this->tmpPath . '/test.txt');
 
         usleep(1);
-        $converter->convert('test.php', $this->tmpPath);
+        $this->converter->convert('test.php', $this->tmpPath);
 
         $this->assertStringEqualsFile($this->tmpPath . '/test.txt', $initialConvertTime);
 
-        $converter->setForceConvert(true);
-        $converter->convert('test.php', $this->tmpPath);
+        $this->converter->setForceConvert(true);
+        $this->converter->convert('test.php', $this->tmpPath);
 
         $this->assertNotEquals($initialConvertTime, file_get_contents($this->tmpPath . '/test.txt'));
     }
@@ -133,35 +125,27 @@ final class AssetConverterTest extends TestCase
             EOF
         );
 
-        $converter = new AssetConverter($this->aliases, $this->logger);
+        $this->converter->setCommand('php', 'txt', 'php {from} > {to}');
 
-        $converter->setCommand('php', 'txt', 'php {from} > {to}');
-
-        $converter->convert('test.php', $this->tmpPath);
+        $this->converter->convert('test.php', $this->tmpPath);
         $initialConvertTime = file_get_contents($this->tmpPath . '/test.txt');
 
-        $converter->setIsOutdatedCallback(static function () {
-            return false;
-        });
+        $this->converter->setIsOutdatedCallback(static fn () => false);
 
-        $converter->convert('test.php', $this->tmpPath);
+        $this->converter->convert('test.php', $this->tmpPath);
         $this->assertStringEqualsFile($this->tmpPath . '/test.txt', $initialConvertTime);
 
-        $converter->setIsOutdatedCallback(static function () {
-            return true;
-        });
+        $this->converter->setIsOutdatedCallback(static fn () => true);
 
-        $converter->convert('test.php', $this->tmpPath);
+        $this->converter->convert('test.php', $this->tmpPath);
         $this->assertNotEquals($initialConvertTime, file_get_contents($this->tmpPath . '/test.txt'));
     }
 
     public function testSassCli(): void
     {
-        $converter = new AssetConverter($this->aliases, $this->logger);
+        $this->converter->setCommand('scss', 'css', '@npm/.bin/sass {options} {from} {to}');
 
-        $converter->setCommand('scss', 'css', '@npm/.bin/sass {options} {from} {to}');
-
-        $converter->convert(
+        $this->converter->convert(
             'custom.scss',
             $this->aliases->get('@root/tests/public/sass'),
             [
@@ -187,11 +171,9 @@ final class AssetConverterTest extends TestCase
 
     public function testNotExistsConverter(): void
     {
-        $converter = (new AssetConverter($this->aliases, $this->logger));
+        $this->converter->setCommand('scss', 'css', 'not-exist/sass');
 
-        $converter->setCommand('scss', 'css', 'not-exist/sass');
-
-        $converter->convert(
+        $this->converter->convert(
             'custom.scss',
             $this->aliases->get('@root/tests/public/sass'),
         );
