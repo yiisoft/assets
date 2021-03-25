@@ -148,9 +148,16 @@ final class AssetManager
     }
 
     /**
-     * Provides to customize asset bundles.
+     * Set the asset bundle configurations.
      *
-     * @param array $bundles The asset bundle configurations {@see bundles}.
+     * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration
+     * specified here, the configuration will be applied to the bundle.
+     *
+     * The array keys are the asset class bundle names (without leading backslash).
+     * If a value is false, it means the corresponding asset bundle is disabled and {@see getBundle()}
+     * should return an instance of the specified asset bundle with empty property values.
+     *
+     * @param array $bundles The asset bundle configurations.
      */
     public function setBundles(array $bundles): void
     {
@@ -398,7 +405,7 @@ final class AssetManager
                 $bundle->jsOptions['position'] = $pos = $position;
             } elseif ($pos > $position) {
                 throw new RuntimeException(
-                    "An asset bundle that depends on \"{$name}\" has a higher javascript file " .
+                    "An asset bundle that depends on \"{$name}\" has a higher JavaScript file " .
                     "position configured than \"{$name}\"."
                 );
             }
