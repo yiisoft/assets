@@ -42,7 +42,7 @@ final class AssetPublisherTest extends TestCase
         $timestampJs = FileHelper::lastModifiedTime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
         $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->publisher->setAppendTimestamp(true);
 
@@ -86,7 +86,7 @@ final class AssetPublisherTest extends TestCase
             ]
         );
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->manager->register([JqueryAsset::class]);
 
@@ -260,7 +260,7 @@ final class AssetPublisherTest extends TestCase
             'position' => 2,
         ]);
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->manager->register([SourceAsset::class]);
 
@@ -290,7 +290,7 @@ final class AssetPublisherTest extends TestCase
             return 'HashCallback';
         });
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->manager->register([SourceAsset::class]);
 

@@ -27,7 +27,7 @@ final class AssetManager
      *
      * {@see registerAssetBundle()}
      */
-    private array $assetBundles = [];
+    private array $registeredBundles = [];
 
     /**
      * @var array The asset bundle configurations. This property is provided to customize asset bundles.
@@ -55,13 +55,13 @@ final class AssetManager
     }
 
     /**
-     * Returns the registered assets.
+     * Returns the registered asset bundles.
      *
-     * @return array The registered assets.
+     * @return array The registered asset bundles {@see registeredBundles}.
      */
-    public function getAssetBundles(): array
+    public function getRegisteredBundles(): array
     {
-        return $this->assetBundles;
+        return $this->registeredBundles;
     }
 
     /**
@@ -171,7 +171,7 @@ final class AssetManager
     /**
      * Generate the array configuration of the asset bundles {@see AssetBundle}.
      *
-     * @param array $names
+     * @param string[] $names
      * @param int|null $position
      *
      * @throws InvalidConfigException
@@ -387,10 +387,10 @@ final class AssetManager
      */
     private function registerAssetBundle(string $name, int $position = null): void
     {
-        if (!isset($this->assetBundles[$name])) {
+        if (!isset($this->registeredBundles[$name])) {
             $bundle = $this->getBundle($name);
 
-            $this->assetBundles[$name] = false;
+            $this->registeredBundles[$name] = false;
 
             $pos = $bundle->jsOptions['position'] ?? null;
 
@@ -398,11 +398,11 @@ final class AssetManager
                 $this->registerAssetBundle($dep, $pos);
             }
 
-            $this->assetBundles[$name] = $bundle;
-        } elseif ($this->assetBundles[$name] === false) {
+            $this->registeredBundles[$name] = $bundle;
+        } elseif ($this->registeredBundles[$name] === false) {
             throw new RuntimeException("A circular dependency is detected for bundle \"{$name}\".");
         } else {
-            $bundle = $this->assetBundles[$name];
+            $bundle = $this->registeredBundles[$name];
         }
 
         if ($position !== null) {
@@ -433,11 +433,11 @@ final class AssetManager
      */
     private function registerFiles(string $bundleName): void
     {
-        if (!isset($this->assetBundles[$bundleName])) {
+        if (!isset($this->registeredBundles[$bundleName])) {
             return;
         }
 
-        $bundle = $this->assetBundles[$bundleName];
+        $bundle = $this->registeredBundles[$bundleName];
 
         foreach ($bundle->depends as $dep) {
             $this->registerFiles($dep);

@@ -27,7 +27,7 @@ final class AssetBundleTest extends TestCase
 
     public function testBasePath(): void
     {
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->manager->register([BaseAsset::class]);
 
@@ -67,7 +67,7 @@ final class AssetBundleTest extends TestCase
             ]
         );
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $message = 'basePath must be set in AssetPublisher->setBasePath($path) or ' .
             'AssetBundle property public ?string $basePath = $path';
@@ -88,7 +88,7 @@ final class AssetBundleTest extends TestCase
             ]
         );
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->manager->register([RootAsset::class]);
     }
@@ -106,7 +106,7 @@ final class AssetBundleTest extends TestCase
 
         $this->manager->getPublisher()->setBasePath('@asset');
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $message = 'baseUrl must be set in AssetPublisher->setBaseUrl($path) or ' .
             'AssetBundle property public ?string $baseUrl = $path';
@@ -121,7 +121,7 @@ final class AssetBundleTest extends TestCase
     {
         $this->manager->getPublisher()->setBasePath('@asset');
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
         $this->assertIsObject($this->manager->getBundle(BaseAsset::class));
         $this->assertInstanceOf(BaseAsset::class, $this->manager->getBundle(BaseAsset::class));
     }
@@ -131,7 +131,7 @@ final class AssetBundleTest extends TestCase
         $this->manager->getPublisher()->setBasePath('@asset');
         $this->manager->getPublisher()->setBaseUrl('@assetUrl');
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
         $this->assertIsObject($this->manager->getBundle(BaseAsset::class));
         $this->assertInstanceOf(BaseAsset::class, $this->manager->getBundle(BaseAsset::class));
     }
@@ -140,7 +140,7 @@ final class AssetBundleTest extends TestCase
     {
         $bundle = new BaseWrongAsset();
 
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $file = $bundle->js[0];
         $message = "Asset files not found: \"{$bundle->basePath}/{$file}\".";
@@ -165,13 +165,13 @@ final class AssetBundleTest extends TestCase
 
     public function testDuplicateAssetFile(): void
     {
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->manager->register([JqueryAsset::class, SimpleAsset::class]);
 
-        $this->assertCount(3, $this->manager->getAssetBundles());
-        $this->assertArrayHasKey(SimpleAsset::class, $this->manager->getAssetBundles());
-        $this->assertInstanceOf(AssetBundle::class, $this->manager->getAssetBundles()[SimpleAsset::class]);
+        $this->assertCount(3, $this->manager->getRegisteredBundles());
+        $this->assertArrayHasKey(SimpleAsset::class, $this->manager->getRegisteredBundles());
+        $this->assertInstanceOf(AssetBundle::class, $this->manager->getRegisteredBundles()[SimpleAsset::class]);
 
         $this->assertStringContainsString(
             '/js/jquery.js',
@@ -228,7 +228,7 @@ final class AssetBundleTest extends TestCase
 
     public function testFileOptionsAsset(): void
     {
-        $this->assertEmpty($this->manager->getAssetBundles());
+        $this->assertEmpty($this->manager->getRegisteredBundles());
 
         $this->manager->register([FileOptionsAsset::class]);
 
