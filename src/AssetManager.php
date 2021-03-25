@@ -187,13 +187,9 @@ final class AssetManager
     /**
      * Registers a CSS file.
      *
-     * This method should be used for simple registration of CSS files. If you want to use features of
-     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
-     * and {@see registerAssetBundle()} instead.
-     *
      * @param string $url The CSS file to be registered.
      * @param array $options The HTML attributes for the link tag.
-     * @param string|null $key
+     * @param string|null $key The key that identifies the CSS file.
      */
     private function registerCssFile(string $url, array $options = [], string $key = null): void
     {
@@ -206,19 +202,15 @@ final class AssetManager
     /**
      * Registers a JS file.
      *
-     * This method should be used for simple registration of JS files. If you want to use features of
-     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
-     * and {@see registerAssetBundle()} instead.
-     *
      * @param string $url The JS file to be registered.
      * @param array $options The HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
      *
      * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
-     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section
-     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section.
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
      *     * {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section. This is the default value.
-     * @param string|null $key
+     * @param string|null $key The key that identifies the JS file.
      */
     private function registerJsFile(string $url, array $options = [], string $key = null): void
     {
@@ -234,8 +226,6 @@ final class AssetManager
 
     /**
      * Registers a JavaScript code block.
-     *
-     * This method should be used for simple registration of JavaScript code blocks.
      *
      * @param string $jsString The JavaScript code block to be registered.
      * @param array $options The HTML attributes for the script tag. The following options are specially handled and
@@ -263,19 +253,15 @@ final class AssetManager
     /**
      * Registers a JS variable.
      *
-     * This method should be used for simple registration of JS files. If you want to use features of
-     * {@see AssetManager} like appending timestamps to the URL and file publishing options, use {@see AssetBundle}
-     * and {@see registerAssetBundle()} instead.
-     *
      * @param string $varName The variable name.
      * @param array|string $jsVar The JS code block to be registered.
      * @param array $options The HTML attributes for the script tag. The following options are specially handled and
      * are not treated as HTML attributes:
      *
      * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
-     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} in the head section. This is the default value.
-     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} at the beginning of the body section
-     *     * {@see \Yiisoft\View\WebView::POSITION_END} at the end of the body section
+     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section. This is the default value.
+     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
+     *     * {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section.
      */
     private function registerJsVar(string $varName, $jsVar, array $options = []): void
     {
