@@ -229,12 +229,7 @@ final class AssetPublisherTest extends TestCase
         $this->aliases->set('@assetUrl', $webAlias);
         $path = $this->aliases->get($path);
         $this->publisher->setAppendTimestamp($appendTimestamp);
-
-        $reflection = new ReflectionObject($this->manager);
-        $method = $reflection->getMethod('register' . ucfirst($type) . 'File');
-        $method->setAccessible(true);
-        $method->invokeArgs($this->manager, [$path, [], null]);
-        $method->setAccessible(false);
+        $this->invokeMethod($this->manager, 'register' . ucfirst($type) . 'File', [$path, [], null]);
 
         $this->assertStringContainsString(
             $expected,

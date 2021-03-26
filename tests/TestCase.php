@@ -6,6 +6,8 @@ namespace Yiisoft\Assets\Tests;
 
 use Exception;
 use Psr\Log\NullLogger;
+use ReflectionException;
+use ReflectionObject;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetConverter;
@@ -101,6 +103,27 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertDirectoryExists($bundle->basePath . DIRECTORY_SEPARATOR . $type);
     }
 
+    /**
+     * Invokes a inaccessible method.
+     *
+     * @param object $object
+     * @param string $method
+     * @param array $args
+     *
+     * @throws ReflectionException
+     *
+     * @return mixed
+     */
+    protected function invokeMethod(object $object, string $method, array $args = [])
+    {
+        $reflection = new ReflectionObject($object);
+        $method = $reflection->getMethod($method);
+        $method->setAccessible(true);
+        $result = $method->invokeArgs($object, $args);
+        $method->setAccessible(false);
+        return $result;
+    }
+
     private function createContainer(): SimpleContainer
     {
         $params = require dirname(__DIR__) . '/config/params.php';
@@ -109,6 +132,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             '@asset' => '@root/tests/public/assets',
             '@assetUrl' => '/baseUrl',
             '@converter' => '@root/tests/public/assetconverter',
+            '@exporter' => '@root/tests/public/assetexporter',
             '@npm' => '@root/node_modules',
             '@sourcePath' => '@root/tests/public/sourcepath',
         ]);
