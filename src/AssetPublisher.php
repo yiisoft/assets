@@ -224,15 +224,7 @@ final class AssetPublisher implements AssetPublisherInterface
      */
     public function loadBundle(string $name, array $config = []): AssetBundle
     {
-        /**
-         * @var AssetBundle $bundle
-         * @psalm-var class-string $name
-         */
-        $bundle = new $name();
-
-        foreach ($config as $property => $value) {
-            $bundle->$property = $value;
-        }
+        $bundle = AssetUtil::createAsset($name, $config);
 
         $bundle->cssOptions = array_merge($bundle->cssOptions, $this->cssDefaultOptions);
         $bundle->jsOptions = array_merge($bundle->jsOptions, $this->jsDefaultOptions);
