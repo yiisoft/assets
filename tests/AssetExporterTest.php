@@ -153,6 +153,28 @@ final class AssetExporterTest extends TestCase
         $this->assertStringContainsString($sourcePath, $json);
     }
 
+    public function testExportWithoutUseClassNamesAsKeysInConfiguration(): void
+    {
+        $exporter = $this->createAssetExporter([
+            'first' => ['cdn' => true, 'js' => ['https://example.com/first.js']],
+            'second' => ['cdn' => true, 'js' => ['https://example.com/second.js'], 'depends' => ['first', 'third']],
+        ]);
+
+        $first = new AssetBundle();
+        $first->cdn = true;
+        $first->js = ['https://example.com/first.js'];
+
+        $second = new AssetBundle();
+        $second->cdn = true;
+        $second->js = ['https://example.com/second.js'];
+        $second->depends = ['first', 'third'];
+
+        $third = new AssetBundle();
+        $json = $this->encode(['first' => $first, 'second' => $second, 'third' => $third]);
+
+        $this->assertSame($json, $exporter->exportToJson());
+    }
+
     private function createAssetExporter(array $bundles = null): AssetExporter
     {
         return new AssetExporter($bundles ?? [PositionAsset::class => null], $this->aliases);
