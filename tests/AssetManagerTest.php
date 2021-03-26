@@ -217,7 +217,7 @@ final class AssetManagerTest extends TestCase
         ]);
 
         $message = "An asset bundle that depends on \"{$jqAsset}\" has a higher"
-            . " javascript file position configured than \"{$jqAsset}\".";
+            . " JavaScript file position configured than \"{$jqAsset}\".";
 
         if ($jqAlreadyRegistered) {
             $this->expectException(RuntimeException::class);
