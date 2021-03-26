@@ -191,6 +191,7 @@ final class AssetExporter
      * - {@see AssetBundle::sourcePath}
      *
      * @param AssetBundle $bundle The asset bundle instance to resolving path aliases.
+     *
      * @return AssetBundle The asset bundle instance with resolved paths.
      */
     private function resolvePathAliases(AssetBundle $bundle): AssetBundle

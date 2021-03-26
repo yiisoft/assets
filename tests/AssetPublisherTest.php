@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
-use ReflectionObject;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
