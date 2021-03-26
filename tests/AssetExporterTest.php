@@ -12,8 +12,8 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
-
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
+
 use function array_keys;
 use function dirname;
 use function file_get_contents;
@@ -21,6 +21,7 @@ use function json_decode;
 use function json_encode;
 use function implode;
 use function is_subclass_of;
+use function str_replace;
 
 final class AssetExporterTest extends TestCase
 {
@@ -143,9 +144,13 @@ final class AssetExporterTest extends TestCase
         $sourceBundle = new SourceAsset();
         $json = $exporter->exportToJson();
 
-        $this->assertStringContainsString($this->aliases->get($sourceBundle->basePath), $json);
+        // For OS Windows
+        $basePath = str_replace('\\', '\\\\', $this->aliases->get($sourceBundle->basePath));
+        $sourcePath = str_replace('\\', '\\\\', $this->aliases->get($sourceBundle->sourcePath));
+
+        $this->assertStringContainsString($basePath, $json);
         $this->assertStringContainsString($this->aliases->get($sourceBundle->baseUrl), $json);
-        $this->assertStringContainsString($this->aliases->get($sourceBundle->sourcePath), $json);
+        $this->assertStringContainsString($sourcePath, $json);
     }
 
     private function createAssetExporter(array $bundles = null): AssetExporter
