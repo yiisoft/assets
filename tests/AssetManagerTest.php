@@ -16,6 +16,7 @@ use Yiisoft\Files\FileHelper;
 
 use function crc32;
 use function sprintf;
+use function ucfirst;
 
 final class AssetManagerTest extends TestCase
 {
@@ -284,5 +285,141 @@ final class AssetManagerTest extends TestCase
         $this->manager->register([JqueryAsset::class]);
 
         $this->assertSame($jqueryBundle, $this->manager->getBundle(JqueryAsset::class));
+    }
+
+    /**
+     * @return array
+     */
+    public function registerFileDataProvider(): array
+    {
+        return [
+            // Custom alias repeats in the asset URL
+            [
+                'css', '@assetUrl/assetSources/repeat/css/stub.css', false,
+                '/repeat/assetSources/repeat/css/stub.css',
+                '/repeat',
+            ],
+            [
+                'js', '@assetUrl/assetSources/repeat/js/jquery.js', false,
+                '/repeat/assetSources/repeat/js/jquery.js',
+                '/repeat',
+            ],
+            // JS files registration
+            [
+                'js', '@assetUrl/assetSources/js/missing-file.js', true,
+                '/baseUrl/assetSources/js/missing-file.js',
+            ],
+            [
+                'js', '@assetUrl/assetSources/js/jquery.js', false,
+                '/baseUrl/assetSources/js/jquery.js',
+            ],
+            [
+                'js', 'http://example.com/assetSources/js/jquery.js', false,
+                'http://example.com/assetSources/js/jquery.js',
+            ],
+            [
+                'js', '//example.com/assetSources/js/jquery.js', false,
+                '//example.com/assetSources/js/jquery.js',
+            ],
+            [
+                'js', 'assetSources/js/jquery.js', false,
+                'assetSources/js/jquery.js',
+            ],
+            [
+                'js', '/assetSources/js/jquery.js', false,
+                '/assetSources/js/jquery.js',
+            ],
+            // CSS file registration
+            [
+                'css', '@assetUrl/assetSources/css/missing-file.css', true,
+                '/baseUrl/assetSources/css/missing-file.css',
+            ],
+            [
+                'css', '@assetUrl/assetSources/css/stub.css', false,
+                '/baseUrl/assetSources/css/stub.css',
+            ],
+            [
+                'css', 'http://example.com/assetSources/css/stub.css', false,
+                'http://example.com/assetSources/css/stub.css',
+            ],
+            [
+                'css', '//example.com/assetSources/css/stub.css', false,
+                '//example.com/assetSources/css/stub.css',
+            ],
+            [
+                'css', 'assetSources/css/stub.css', false,
+                'assetSources/css/stub.css',
+            ],
+            [
+                'css', '/assetSources/css/stub.css', false,
+                '/assetSources/css/stub.css',
+            ],
+            // Custom `@assetUrl` aliases
+            [
+                'js', '@assetUrl/assetSources/js/missing-file1.js', true,
+                '/backend/assetSources/js/missing-file1.js',
+                '/backend',
+            ],
+            [
+                'js', 'http://full-url.example.com/backend/assetSources/js/missing-file.js', true,
+                'http://full-url.example.com/backend/assetSources/js/missing-file.js',
+                '/backend',
+            ],
+            [
+                'css', '//backend/backend/assetSources/js/missing-file.js', true,
+                '//backend/backend/assetSources/js/missing-file.js',
+                '/backend',
+            ],
+            [
+                'css', '@assetUrl/assetSources/css/stub.css', false,
+                '/en/blog/backend/assetSources/css/stub.css',
+                '/en/blog/backend',
+            ],
+            // UTF-8 chars
+            [
+                'css', '@assetUrl/assetSources/css/stub.css', false,
+                '/рус/сайт/assetSources/css/stub.css',
+                '/рус/сайт',
+            ],
+            [
+                'js', '@assetUrl/assetSources/js/jquery.js', false,
+                '/汉语/漢語/assetSources/js/jquery.js',
+                '/汉语/漢語',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider registerFileDataProvider
+     *
+     * @param string $type either `js` or `css`
+     * @param string $path
+     * @param bool $appendTimestamp
+     * @param string $expected
+     * @param string|null $webAlias
+     */
+    public function testRegisterFileAppendTimestamp(
+        string $type,
+        string $path,
+        bool $appendTimestamp,
+        string $expected,
+        ?string $webAlias = null
+    ): void {
+        $originalAlias = $this->aliases->get('@assetUrl');
+
+        if ($webAlias === null) {
+            $webAlias = $originalAlias;
+        }
+
+        $this->aliases->set('@assetUrl', $webAlias);
+        $path = $this->aliases->get($path);
+        $this->loader->setAppendTimestamp($appendTimestamp);
+        $this->invokeMethod($this->manager, 'register' . ucfirst($type) . 'File', [$path, [], null]);
+
+        $this->assertStringContainsString(
+            $expected,
+            $type === 'css' ? $this->manager->getCssFiles()[$expected]['url']
+                : $this->manager->getJsFiles()[$expected]['url'],
+        );
     }
 }

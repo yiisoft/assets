@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
-use ReflectionObject;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\Exception\InvalidConfigException;
-use Yiisoft\Assets\Tests\stubs\BaseAsset;
-use Yiisoft\Assets\Tests\stubs\CdnAsset;
-use Yiisoft\Assets\Tests\stubs\CdnWithBaseUrlAsset;
-use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\stubs\WithoutBaseAsset;
 use Yiisoft\Files\FileHelper;
@@ -21,7 +16,6 @@ use function crc32;
 use function is_file;
 use function is_link;
 use function sprintf;
-use function ucfirst;
 
 final class AssetPublisherTest extends TestCase
 {
@@ -32,218 +26,7 @@ final class AssetPublisherTest extends TestCase
         $this->removeAssets('@asset');
     }
 
-    public function testBaseAppendTimestamp(): void
-    {
-        $bundle = new BaseAsset();
-
-        $timestampCss = FileHelper::lastModifiedTime($this->aliases->get($bundle->basePath) . '/' . $bundle->css[0]);
-        $urlCss = "/baseUrl/css/basePath.css?v=$timestampCss";
-
-        $timestampJs = FileHelper::lastModifiedTime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
-        $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
-
-        $this->assertEmpty($this->manager->getRegisteredBundles());
-
-        $this->publisher->setAppendTimestamp(true);
-
-        $this->manager->register([BaseAsset::class]);
-
-        $this->assertStringContainsString(
-            $urlCss,
-            $this->manager->getCssFiles()[$urlCss]['url']
-        );
-        $this->assertEquals(
-            [
-                'integrity' => 'integrity-hash',
-                'crossorigin' => 'anonymous',
-            ],
-            $this->manager->getCssFiles()[$urlCss]['attributes'],
-        );
-
-        $this->assertStringContainsString(
-            $urlJs,
-            $this->manager->getJsFiles()[$urlJs]['url'],
-        );
-        $this->assertEquals(
-            [
-                'integrity' => 'integrity-hash',
-                'crossorigin' => 'anonymous',
-                'position' => 3,
-            ],
-            $this->manager->getJsFiles()[$urlJs]['attributes'],
-        );
-    }
-
-    public function testPublisherSetAssetMap(): void
-    {
-        $urlJs = '//testme.css';
-
-        $this->publisher->setDirMode(0777);
-        $this->publisher->setFileMode(0777);
-        $this->publisher->setAssetMap(
-            [
-                'jquery.js' => $urlJs,
-            ]
-        );
-
-        $this->assertEmpty($this->manager->getRegisteredBundles());
-
-        $this->manager->register([JqueryAsset::class]);
-
-        $this->assertStringContainsString(
-            $urlJs,
-            $this->manager->getJsFiles()[$urlJs]['url'],
-        );
-        $this->assertEquals(
-            [
-                'position' => 3,
-            ],
-            $this->manager->getJsFiles()[$urlJs]['attributes'],
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function registerFileDataProvider(): array
-    {
-        return [
-            // Custom alias repeats in the asset URL
-            [
-                'css', '@assetUrl/assetSources/repeat/css/stub.css', false,
-                '/repeat/assetSources/repeat/css/stub.css',
-                '/repeat',
-            ],
-            [
-                'js', '@assetUrl/assetSources/repeat/js/jquery.js', false,
-                '/repeat/assetSources/repeat/js/jquery.js',
-                '/repeat',
-            ],
-            // JS files registration
-            [
-                'js', '@assetUrl/assetSources/js/missing-file.js', true,
-                '/baseUrl/assetSources/js/missing-file.js',
-            ],
-            [
-                'js', '@assetUrl/assetSources/js/jquery.js', false,
-                '/baseUrl/assetSources/js/jquery.js',
-            ],
-            [
-                'js', 'http://example.com/assetSources/js/jquery.js', false,
-                'http://example.com/assetSources/js/jquery.js',
-            ],
-            [
-                'js', '//example.com/assetSources/js/jquery.js', false,
-                '//example.com/assetSources/js/jquery.js',
-            ],
-            [
-                'js', 'assetSources/js/jquery.js', false,
-                'assetSources/js/jquery.js',
-            ],
-            [
-                'js', '/assetSources/js/jquery.js', false,
-                '/assetSources/js/jquery.js',
-            ],
-            // CSS file registration
-            [
-                'css', '@assetUrl/assetSources/css/missing-file.css', true,
-                '/baseUrl/assetSources/css/missing-file.css',
-            ],
-            [
-                'css', '@assetUrl/assetSources/css/stub.css', false,
-                '/baseUrl/assetSources/css/stub.css',
-            ],
-            [
-                'css', 'http://example.com/assetSources/css/stub.css', false,
-                'http://example.com/assetSources/css/stub.css',
-            ],
-            [
-                'css', '//example.com/assetSources/css/stub.css', false,
-                '//example.com/assetSources/css/stub.css',
-            ],
-            [
-                'css', 'assetSources/css/stub.css', false,
-                'assetSources/css/stub.css',
-            ],
-            [
-                'css', '/assetSources/css/stub.css', false,
-                '/assetSources/css/stub.css',
-            ],
-            // Custom `@assetUrl` aliases
-            [
-                'js', '@assetUrl/assetSources/js/missing-file1.js', true,
-                '/backend/assetSources/js/missing-file1.js',
-                '/backend',
-            ],
-            [
-                'js', 'http://full-url.example.com/backend/assetSources/js/missing-file.js', true,
-                'http://full-url.example.com/backend/assetSources/js/missing-file.js',
-                '/backend',
-            ],
-            [
-                'css', '//backend/backend/assetSources/js/missing-file.js', true,
-                '//backend/backend/assetSources/js/missing-file.js',
-                '/backend',
-            ],
-            [
-                'css', '@assetUrl/assetSources/css/stub.css', false,
-                '/en/blog/backend/assetSources/css/stub.css',
-                '/en/blog/backend',
-            ],
-            // UTF-8 chars
-            [
-                'css', '@assetUrl/assetSources/css/stub.css', false,
-                '/рус/сайт/assetSources/css/stub.css',
-                '/рус/сайт',
-            ],
-            [
-                'js', '@assetUrl/assetSources/js/jquery.js', false,
-                '/汉语/漢語/assetSources/js/jquery.js',
-                '/汉语/漢語',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider registerFileDataProvider
-     *
-     * @param string $type either `js` or `css`
-     * @param string $path
-     * @param bool $appendTimestamp
-     * @param string $expected
-     * @param string|null $webAlias
-     */
-    public function testRegisterFileAppendTimestamp(
-        string $type,
-        string $path,
-        bool $appendTimestamp,
-        string $expected,
-        ?string $webAlias = null
-    ): void {
-        $originalAlias = $this->aliases->get('@assetUrl');
-
-        if ($webAlias === null) {
-            $webAlias = $originalAlias;
-        }
-
-        $this->aliases->set('@assetUrl', $webAlias);
-        $path = $this->aliases->get($path);
-        $this->publisher->setAppendTimestamp($appendTimestamp);
-
-        $reflection = new ReflectionObject($this->manager);
-        $method = $reflection->getMethod('register' . ucfirst($type) . 'File');
-        $method->setAccessible(true);
-        $method->invokeArgs($this->manager, [$path, [], null]);
-        $method->setAccessible(false);
-
-        $this->assertStringContainsString(
-            $expected,
-            $type === 'css' ? $this->manager->getCssFiles()[$expected]['url']
-                : $this->manager->getJsFiles()[$expected]['url'],
-        );
-    }
-
-    public function testSourcesCssJsDefaultOptions(): void
+    public function testDefaultHashAndSourcesCssJsDefaultOptions(): void
     {
         $bundle = new SourceAsset();
 
@@ -252,11 +35,11 @@ final class AssetPublisherTest extends TestCase
             FileHelper::lastModifiedTime($sourcePath);
         $hash = sprintf('%x', crc32($path . '|' . $this->publisher->getLinkAssets()));
 
-        $this->publisher->setCssDefaultOptions([
+        $this->loader->setCssDefaultOptions([
             'media' => 'none',
         ]);
 
-        $this->publisher->setJsDefaultOptions([
+        $this->loader->setJsDefaultOptions([
             'position' => 2,
         ]);
 
@@ -268,7 +51,7 @@ final class AssetPublisherTest extends TestCase
             [
                 'media' => 'none',
             ],
-            $this->manager->getCssFiles()["/baseUrl/$hash/css/stub.css"]['attributes'],
+            $this->manager->getCssFiles()["/baseUrl/{$hash}/css/stub.css"]['attributes'],
         );
         $this->assertEquals(
             [
@@ -280,7 +63,7 @@ final class AssetPublisherTest extends TestCase
             [
                 'position' => 2,
             ],
-            $this->manager->getJsFiles()["/baseUrl/$hash/js/stub.js"]['attributes'],
+            $this->manager->getJsFiles()["/baseUrl/{$hash}/js/stub.js"]['attributes'],
         );
     }
 
@@ -422,22 +205,10 @@ final class AssetPublisherTest extends TestCase
         $publisher->publish(new SourceAsset());
 
         $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessageMatches('/^basePath must be set in AssetPublisher->setBasePath\(\$path\)/');
+        $this->expectExceptionMessage(
+            'The basePath must be defined in AssetBundle property public ?string $basePath = $path.',
+        );
+
         $publisher->publish(new WithoutBaseAsset());
-    }
-
-    public function testCdn(): void
-    {
-        $this->publisher->setBaseUrl('https://example.com/test');
-
-        $this->assertSame(
-            'https://example.com/main.css',
-            $this->publisher->getAssetUrl(new CdnAsset(), 'https://example.com/main.css'),
-        );
-
-        $this->assertSame(
-            'https://example.com/base/main.css',
-            $this->publisher->getAssetUrl(new CdnWithBaseUrlAsset(), 'main.css'),
-        );
     }
 }

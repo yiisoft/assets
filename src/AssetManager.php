@@ -45,13 +45,14 @@ final class AssetManager
     private array $jsStrings = [];
     private array $jsVar = [];
     private ?AssetConverterInterface $converter = null;
-    private AssetPublisherInterface $publisher;
+    private ?AssetPublisherInterface $publisher = null;
+    private AssetLoaderInterface $loader;
     private Aliases $aliases;
 
-    public function __construct(Aliases $aliases, AssetPublisherInterface $publisher)
+    public function __construct(Aliases $aliases, AssetLoaderInterface $loader)
     {
         $this->aliases = $aliases;
-        $this->publisher = $publisher;
+        $this->loader = $loader;
     }
 
     /**
@@ -78,23 +79,29 @@ final class AssetManager
      */
     public function getBundle(string $name): AssetBundle
     {
-        if (!isset($this->bundles[$name])) {
-            return $this->bundles[$name] = $this->publisher->loadBundle($name);
-        }
-
-        if ($this->bundles[$name] instanceof AssetBundle) {
+        if (isset($this->bundles[$name]) && $this->bundles[$name] instanceof AssetBundle) {
             return $this->bundles[$name];
         }
 
-        if (is_array($this->bundles[$name])) {
-            return $this->bundles[$name] = $this->publisher->loadBundle($name, $this->bundles[$name]);
+        $bundle = $this->bundles[$name] ?? $this->loader->loadBundle($name);
+
+        if ($bundle === false) {
+            return $this->dummyBundles[$name] ??= $this->loader->loadBundle($name, (array) (new AssetBundle()));
         }
 
-        if ($this->bundles[$name] === false) {
-            return $this->dummyBundles[$name] ??= $this->publisher->loadBundle($name, (array) (new AssetBundle()));
+        if (is_array($bundle)) {
+            $bundle = $this->loader->loadBundle($name, $this->bundles[$name]);
         }
 
-        throw new InvalidConfigException("Invalid configuration of the \"{$name}\" asset bundle.");
+        if (!($bundle instanceof AssetBundle)) {
+            throw new InvalidConfigException("Invalid configuration of the \"{$name}\" asset bundle.");
+        }
+
+        if ($this->publisher !== null && !empty($bundle->sourcePath)) {
+            [$bundle->basePath, $bundle->baseUrl] = $this->publisher->publish($bundle);
+        }
+
+        return $this->bundles[$name] = $bundle;
     }
 
     public function getConverter(): ?AssetConverterInterface
@@ -102,7 +109,12 @@ final class AssetManager
         return $this->converter;
     }
 
-    public function getPublisher(): AssetPublisherInterface
+    public function getLoader(): AssetLoaderInterface
+    {
+        return $this->loader;
+    }
+
+    public function getPublisher(): ?AssetPublisherInterface
     {
         return $this->publisher;
     }
@@ -173,6 +185,16 @@ final class AssetManager
     public function setConverter(AssetConverterInterface $converter): void
     {
         $this->converter = $converter;
+    }
+
+    /**
+     * Sets the asset publisher.
+     *
+     * @param AssetPublisherInterface $publisher
+     */
+    public function setPublisher(AssetPublisherInterface $publisher): void
+    {
+        $this->publisher = $publisher;
     }
 
     /**
@@ -455,9 +477,9 @@ final class AssetManager
             if (is_array($js)) {
                 $file = array_shift($js);
                 $options = array_merge($bundle->jsOptions, $js);
-                $this->registerJsFile($this->publisher->getAssetUrl($bundle, $file), $options);
+                $this->registerJsFile($this->loader->getAssetUrl($bundle, $file), $options);
             } elseif ($js !== null) {
-                $this->registerJsFile($this->publisher->getAssetUrl($bundle, $js), $bundle->jsOptions);
+                $this->registerJsFile($this->loader->getAssetUrl($bundle, $js), $bundle->jsOptions);
             }
         }
 
@@ -479,9 +501,9 @@ final class AssetManager
             if (is_array($css)) {
                 $file = array_shift($css);
                 $options = array_merge($bundle->cssOptions, $css);
-                $this->registerCssFile($this->publisher->getAssetUrl($bundle, $file), $options);
+                $this->registerCssFile($this->loader->getAssetUrl($bundle, $file), $options);
             } elseif ($css !== null) {
-                $this->registerCssFile($this->publisher->getAssetUrl($bundle, $css), $bundle->cssOptions);
+                $this->registerCssFile($this->loader->getAssetUrl($bundle, $css), $bundle->cssOptions);
             }
         }
     }

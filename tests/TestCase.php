@@ -6,10 +6,14 @@ namespace Yiisoft\Assets\Tests;
 
 use Exception;
 use Psr\Log\NullLogger;
+use ReflectionException;
+use ReflectionObject;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Assets\AssetConverterInterface;
+use Yiisoft\Assets\AssetLoader;
+use Yiisoft\Assets\AssetLoaderInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\AssetPublisherInterface;
@@ -27,6 +31,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected Aliases $aliases;
     protected AssetManager $manager;
+    protected AssetLoader $loader;
     protected AssetConverter $converter;
     protected AssetPublisher $publisher;
 
@@ -38,6 +43,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->aliases = $container->get(Aliases::class);
         $this->manager = $container->get(AssetManager::class);
+        $this->loader = $container->get(AssetLoaderInterface::class);
         $this->converter = $container->get(AssetConverterInterface::class);
         $this->publisher = $container->get(AssetPublisherInterface::class);
 
@@ -101,6 +107,27 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->assertDirectoryExists($bundle->basePath . DIRECTORY_SEPARATOR . $type);
     }
 
+    /**
+     * Invokes a inaccessible method.
+     *
+     * @param object $object
+     * @param string $method
+     * @param array $args
+     *
+     * @throws ReflectionException
+     *
+     * @return mixed
+     */
+    protected function invokeMethod(object $object, string $method, array $args = [])
+    {
+        $reflection = new ReflectionObject($object);
+        $method = $reflection->getMethod($method);
+        $method->setAccessible(true);
+        $result = $method->invokeArgs($object, $args);
+        $method->setAccessible(false);
+        return $result;
+    }
+
     private function createContainer(): SimpleContainer
     {
         $params = require dirname(__DIR__) . '/config/params.php';
@@ -109,6 +136,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             '@asset' => '@root/tests/public/assets',
             '@assetUrl' => '/baseUrl',
             '@converter' => '@root/tests/public/assetconverter',
+            '@exporter' => '@root/tests/public/assetexporter',
             '@npm' => '@root/node_modules',
             '@sourcePath' => '@root/tests/public/sourcepath',
         ]);
@@ -121,22 +149,26 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         );
         $converter->setForceConvert($params['yiisoft/assets']['assetConverter']['forceConvert']);
 
+        $loader = new AssetLoader($aliases);
+        $loader->setAppendTimestamp($params['yiisoft/assets']['assetLoader']['appendTimestamp']);
+        $loader->setAssetMap($params['yiisoft/assets']['assetLoader']['assetMap']);
+        $loader->setBasePath($params['yiisoft/assets']['assetLoader']['basePath']);
+        $loader->setBaseUrl($params['yiisoft/assets']['assetLoader']['baseUrl']);
+
         $publisher = new AssetPublisher($aliases);
-        $publisher->setAppendTimestamp($params['yiisoft/assets']['assetPublisher']['appendTimestamp']);
-        $publisher->setAssetMap($params['yiisoft/assets']['assetPublisher']['assetMap']);
-        $publisher->setBasePath($params['yiisoft/assets']['assetPublisher']['basePath']);
-        $publisher->setBaseUrl($params['yiisoft/assets']['assetPublisher']['baseUrl']);
         $publisher->setForceCopy($params['yiisoft/assets']['assetPublisher']['forceCopy']);
         $publisher->setLinkAssets($params['yiisoft/assets']['assetPublisher']['linkAssets']);
 
-        $manager = new AssetManager($aliases, $publisher);
+        $manager = new AssetManager($aliases, $loader);
         $manager->setConverter($converter);
+        $manager->setPublisher($publisher);
         $manager->setBundles($params['yiisoft/assets']['assetManager']['bundles']);
         $manager->register($params['yiisoft/assets']['assetManager']['register']);
 
         return new SimpleContainer([
             Aliases::class => $aliases,
             AssetManager::class => $manager,
+            AssetLoaderInterface::class => $loader,
             AssetConverterInterface::class => $converter,
             AssetPublisherInterface::class => $publisher,
         ]);

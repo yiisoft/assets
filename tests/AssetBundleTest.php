@@ -69,8 +69,8 @@ final class AssetBundleTest extends TestCase
 
         $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $message = 'basePath must be set in AssetPublisher->setBasePath($path) or ' .
-            'AssetBundle property public ?string $basePath = $path';
+        $message = 'basePath must be set in AssetLoader->setBasePath($path)'
+            . ' or AssetBundle property public ?string $basePath = $path';
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
@@ -104,12 +104,12 @@ final class AssetBundleTest extends TestCase
             ]
         );
 
-        $this->manager->getPublisher()->setBasePath('@asset');
+        $this->manager->getLoader()->setBasePath('@asset');
 
         $this->assertEmpty($this->manager->getRegisteredBundles());
 
-        $message = 'baseUrl must be set in AssetPublisher->setBaseUrl($path) or ' .
-            'AssetBundle property public ?string $baseUrl = $path';
+        $message = 'baseUrl must be set in AssetLoader->setBaseUrl($path)'
+            . ' or AssetBundle property public ?string $baseUrl = $path';
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
@@ -119,7 +119,7 @@ final class AssetBundleTest extends TestCase
 
     public function testBasePathEmptyWithAssetManagerSetBasePath(): void
     {
-        $this->manager->getPublisher()->setBasePath('@asset');
+        $this->manager->getLoader()->setBasePath('@asset');
 
         $this->assertEmpty($this->manager->getRegisteredBundles());
         $this->assertIsObject($this->manager->getBundle(BaseAsset::class));
@@ -128,8 +128,8 @@ final class AssetBundleTest extends TestCase
 
     public function testBasePathEmptyBaseUrlEmptyWithAssetManagerSetBasePathSetBaseUrl(): void
     {
-        $this->manager->getPublisher()->setBasePath('@asset');
-        $this->manager->getPublisher()->setBaseUrl('@assetUrl');
+        $this->manager->getLoader()->setBasePath('@asset');
+        $this->manager->getLoader()->setBaseUrl('@assetUrl');
 
         $this->assertEmpty($this->manager->getRegisteredBundles());
         $this->assertIsObject($this->manager->getBundle(BaseAsset::class));
