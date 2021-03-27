@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetLoader;
@@ -40,9 +41,13 @@ return [
 
     AssetManager::class => [
         '__class' => AssetManager::class,
+        '__construct' => [
+            Reference::to(Aliases::class),
+            Reference::to(AssetLoaderInterface::class),
+            $params['yiisoft/assets']['assetManager']['allowedBundleNames'],
+            $params['yiisoft/assets']['assetManager']['customizedBundles'],
+        ],
         'setPublisher()' => [Reference::to(AssetPublisherInterface::class)],
         'setConverter()' => [Reference::to(AssetConverterInterface::class)],
-        'setBundles()' => [$params['yiisoft/assets']['assetManager']['bundles']],
-        'register()' => [$params['yiisoft/assets']['assetManager']['register']],
     ],
 ];

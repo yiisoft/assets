@@ -14,7 +14,7 @@ use function strncmp;
 
 /**
  * AssetLoader is responsible for executing the loading of the assets
- * from {@see AssetBundle::$sourcePath} to {@see AssetBundle::$basePath}.
+ * from {@see AssetBundle::$basePath} to {@see AssetBundle::$baseUrl}.
  */
 final class AssetLoader implements AssetLoaderInterface
 {
@@ -143,7 +143,7 @@ final class AssetLoader implements AssetLoaderInterface
      *
      * @param bool $value
      *
-     * @see $appendTimestamp
+     * {@see $appendTimestamp}
      */
     public function setAppendTimestamp(bool $value): void
     {
@@ -155,7 +155,7 @@ final class AssetLoader implements AssetLoaderInterface
      *
      * @param array<string, string> $value
      *
-     * @see $assetMap
+     * {@see $assetMap}
      */
     public function setAssetMap(array $value): void
     {
@@ -167,7 +167,7 @@ final class AssetLoader implements AssetLoaderInterface
      *
      * @param string|null $value
      *
-     * @see $basePath
+     * {@see $basePath}
      */
     public function setBasePath(?string $value): void
     {
@@ -179,7 +179,7 @@ final class AssetLoader implements AssetLoaderInterface
      *
      * @param string|null $value
      *
-     * @see $baseUrl
+     * {@see $baseUrl}
      */
     public function setBaseUrl(?string $value): void
     {
@@ -191,7 +191,7 @@ final class AssetLoader implements AssetLoaderInterface
      *
      * @param array $value
      *
-     * @see $cssDefaultOptions
+     * {@see $cssDefaultOptions}
      */
     public function setCssDefaultOptions(array $value): void
     {
@@ -203,7 +203,7 @@ final class AssetLoader implements AssetLoaderInterface
      *
      * @param array $value
      *
-     * @see $jsDefaultOptions
+     * {@see $jsDefaultOptions}
      */
     public function setJsDefaultOptions(array $value): void
     {

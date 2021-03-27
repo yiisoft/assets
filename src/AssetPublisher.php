@@ -75,8 +75,9 @@ final class AssetPublisher implements AssetPublisherInterface
 
     /**
      * @var bool Whether to use symbolic link to publish asset files. Defaults to false, meaning asset files are copied
-     * to {@see basePath}. Using symbolic links has the benefit that the published assets will always be consistent
-     * with the source assets and there is no copy operation required. This is especially useful during development.
+     * to {@see AssetBundle::$basePath}. Using symbolic links has the benefit that the published assets will always
+     * be consistent with the source assets and there is no copy operation required.
+     * This is especially useful during development.
      *
      * However, there are special requirements for hosting environments in order to use symbolic links. In particular,
      * symbolic links are supported only on Linux/Unix, and Windows Vista/2008 or greater.
@@ -185,7 +186,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param int $value
      *
-     * {@see dirMode}
+     * {@see $dirMode}
      */
     public function setDirMode(int $value): void
     {
@@ -197,7 +198,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param int $value
      *
-     * {@see fileMode}
+     * {@see $fileMode}
      */
     public function setFileMode(int $value): void
     {
@@ -209,7 +210,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param bool $value
      *
-     * {@see forceCopy}
+     * {@see $forceCopy}
      */
     public function setForceCopy(bool $value): void
     {
@@ -221,7 +222,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param callable $value
      *
-     * {@see hashCallback}
+     * {@see $hashCallback}
      */
     public function setHashCallback(callable $value): void
     {
@@ -233,7 +234,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @param bool $value
      *
-     * {@see linkAssets}
+     * {@see $linkAssets}
      */
     public function setLinkAssets(bool $value): void
     {

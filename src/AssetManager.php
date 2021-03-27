@@ -22,12 +22,14 @@ use function is_int;
 final class AssetManager
 {
     /**
-     * @var array AssetBundle[] list of the registered asset bundles.
-     * The keys are the bundle names, and the values are the registered {@see AssetBundle} objects.
+     * @var string[] List of names of allowed asset bundles.
+     * If the array is empty, then any asset bundles are allowed. Default to empty array.
      *
-     * {@see registerAssetBundle()}
+     * If the names of allowed resource bundles were specified, they will be registered {@see register()}
+     * when the instance is created, and it will no longer be possible to register asset bundles.
+     * Also, you can get bundles using the method, only those that were specified as allowed.
      */
-    private array $registeredBundles = [];
+    private array $allowedBundleNames;
 
     /**
      * @var array The asset bundle configurations. This property is provided to customize asset bundles.
@@ -38,7 +40,17 @@ final class AssetManager
      * If a value is false, it means the corresponding asset bundle is disabled and {@see getBundle()}
      * should return an instance of the specified asset bundle with empty property values.
      */
-    private array $bundles = [];
+    private array $customizedBundles;
+
+    /**
+     * @var array AssetBundle[] list of the registered asset bundles.
+     * The keys are the bundle names, and the values are the registered {@see AssetBundle} objects.
+     *
+     * {@see registerAssetBundle()}
+     */
+    private array $registeredBundles = [];
+
+    private array $loadedBundles = [];
     private array $dummyBundles = [];
     private array $cssFiles = [];
     private array $jsFiles = [];
@@ -49,27 +61,33 @@ final class AssetManager
     private AssetLoaderInterface $loader;
     private Aliases $aliases;
 
-    public function __construct(Aliases $aliases, AssetLoaderInterface $loader)
-    {
+    /**
+     * @param Aliases $aliases The aliases instance.
+     * @param AssetLoaderInterface $loader The loader instance.
+     * @param array $allowedBundleNames List of names of allowed asset bundles {@see $allowedBundleNames}.
+     * @param array $customizedBundles The asset bundle configurations {@see $customizedBundles}.
+     */
+    public function __construct(
+        Aliases $aliases,
+        AssetLoaderInterface $loader,
+        array $allowedBundleNames = [],
+        array $customizedBundles = []
+    ) {
         $this->aliases = $aliases;
         $this->loader = $loader;
+        $this->allowedBundleNames = $allowedBundleNames;
+        $this->customizedBundles = $customizedBundles;
+        $this->register($this->allowedBundleNames);
     }
 
     /**
-     * Returns the registered asset bundles.
+     * Returns a cloned named asset bundle.
      *
-     * @return array The registered asset bundles {@see registeredBundles}.
-     */
-    public function getRegisteredBundles(): array
-    {
-        return $this->registeredBundles;
-    }
-
-    /**
-     * Returns the named asset bundle.
-     *
-     * This method will first look for the bundle in {@see bundles}.
+     * This method will first look for the bundle in {@see $customizedBundles}.
      * If not found, it will treat `$name` as the class of the asset bundle and create a new instance of it.
+     * If `$name` is not a class name, an {@see AssetBundle} instance will be created.
+     *
+     * Cloning is used to prevent an asset bundle instance from being modified in a non-context of the asset manager.
      *
      * @param string $name The class name of the asset bundle (without the leading backslash).
      *
@@ -79,29 +97,14 @@ final class AssetManager
      */
     public function getBundle(string $name): AssetBundle
     {
-        if (isset($this->bundles[$name]) && $this->bundles[$name] instanceof AssetBundle) {
-            return $this->bundles[$name];
+        if (!empty($this->allowedBundleNames) && !isset($this->registeredBundles[$name])) {
+            throw new RuntimeException("The \"{$name}\" asset bundle is not allowed.");
         }
 
-        $bundle = $this->bundles[$name] ?? $this->loader->loadBundle($name);
+        $bundle = $this->loadBundle($name);
+        $bundle = $this->publishBundle($bundle);
 
-        if ($bundle === false) {
-            return $this->dummyBundles[$name] ??= $this->loader->loadBundle($name, (array) (new AssetBundle()));
-        }
-
-        if (is_array($bundle)) {
-            $bundle = $this->loader->loadBundle($name, $this->bundles[$name]);
-        }
-
-        if (!($bundle instanceof AssetBundle)) {
-            throw new InvalidConfigException("Invalid configuration of the \"{$name}\" asset bundle.");
-        }
-
-        if ($this->publisher !== null && !empty($bundle->sourcePath)) {
-            [$bundle->basePath, $bundle->baseUrl] = $this->publisher->publish($bundle);
-        }
-
-        return $this->bundles[$name] = $bundle;
+        return clone $bundle;
     }
 
     public function getConverter(): ?AssetConverterInterface
@@ -160,23 +163,6 @@ final class AssetManager
     }
 
     /**
-     * Set the asset bundle configurations.
-     *
-     * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration
-     * specified here, the configuration will be applied to the bundle.
-     *
-     * The array keys are the asset class bundle names (without leading backslash).
-     * If a value is false, it means the corresponding asset bundle is disabled and {@see getBundle()}
-     * should return an instance of the specified asset bundle with empty property values.
-     *
-     * @param array $bundles The asset bundle configurations.
-     */
-    public function setBundles(array $bundles): void
-    {
-        $this->bundles = $bundles;
-    }
-
-    /**
      * Sets the asset converter.
      *
      * @param AssetConverterInterface $converter The asset converter. This can be either an object implementing the
@@ -198,19 +184,36 @@ final class AssetManager
     }
 
     /**
-     * Generate the array configuration of the asset bundles {@see AssetBundle}.
+     * Generates the array configuration of the asset bundles {@see $registeredBundles}.
      *
      * @param string[] $names
      * @param int|null $position
      *
      * @throws InvalidConfigException
+     * @throws RuntimeException
      */
     public function register(array $names, ?int $position = null): void
     {
+        if (!empty($this->allowedBundleNames) && !empty($this->registeredBundles)) {
+            throw new RuntimeException('The allowed asset bundles are already registered and cannot be re-registered.');
+        }
+
         foreach ($names as $name) {
             $this->registerAssetBundle($name, $position);
             $this->registerFiles($name);
         }
+    }
+
+    /**
+     * Returns whether the asset bundle is registered.
+     *
+     * @param string $name The class name of the asset bundle (without the leading backslash).
+     *
+     * @return bool Whether the asset bundle is registered.
+     */
+    public function isRegisteredBundle(string $name): bool
+    {
+        return isset($this->registeredBundles[$name]);
     }
 
     /**
@@ -403,7 +406,7 @@ final class AssetManager
     private function registerAssetBundle(string $name, int $position = null): void
     {
         if (!isset($this->registeredBundles[$name])) {
-            $bundle = $this->getBundle($name);
+            $bundle = $this->publishBundle($this->loadBundle($name));
 
             $this->registeredBundles[$name] = false;
 
@@ -442,9 +445,9 @@ final class AssetManager
     /**
      * Register assets from a named bundle and its dependencies.
      *
-     * @param string $bundleName
+     * @param string $bundleName The asset bundle name.
      *
-     * @throws InvalidConfigException
+     * @throws InvalidConfigException If asset files are not found.
      */
     private function registerFiles(string $bundleName): void
     {
@@ -465,6 +468,8 @@ final class AssetManager
      * Registers asset files from a bundle considering dependencies.
      *
      * @param AssetBundle $bundle
+     *
+     * @throws InvalidConfigException If asset files are not found.
      */
     private function registerAssetFiles(AssetBundle $bundle): void
     {
@@ -506,5 +511,57 @@ final class AssetManager
                 $this->registerCssFile($this->loader->getAssetUrl($bundle, $css), $bundle->cssOptions);
             }
         }
+    }
+
+    /**
+     * Loads an asset bundle class by name.
+     *
+     * @param string $name The asset bundle name.
+     *
+     * @throws InvalidConfigException For invalid asset bundle configuration.
+     *
+     * @return AssetBundle The asset bundle instance.
+     */
+    private function loadBundle(string $name): AssetBundle
+    {
+        if (isset($this->loadedBundles[$name])) {
+            return $this->loadedBundles[$name];
+        }
+
+        if (!isset($this->customizedBundles[$name])) {
+            return $this->loadedBundles[$name] = $this->loader->loadBundle($name);
+        }
+
+        if ($this->customizedBundles[$name] instanceof AssetBundle) {
+            return $this->loadedBundles[$name] = $this->customizedBundles[$name];
+        }
+
+        if (is_array($this->customizedBundles[$name])) {
+            return $this->loadedBundles[$name] = $this->loader->loadBundle($name, $this->customizedBundles[$name]);
+        }
+
+        if ($this->customizedBundles[$name] === false) {
+            return $this->dummyBundles[$name] ??= $this->loader->loadBundle($name, (array) (new AssetBundle()));
+        }
+
+        throw new InvalidConfigException("Invalid configuration of the \"{$name}\" asset bundle.");
+    }
+
+    /**
+     * Publishes a asset bundle.
+     *
+     * @param AssetBundle $bundle The asset bundle to publish.
+     *
+     * @throws InvalidConfigException If the asset or the asset file paths to be published does not exist.
+     *
+     * @return AssetBundle The published asset bundle.
+     */
+    private function publishBundle(AssetBundle $bundle): AssetBundle
+    {
+        if (!$bundle->cdn && $this->publisher !== null && !empty($bundle->sourcePath)) {
+            [$bundle->basePath, $bundle->baseUrl] = $this->publisher->publish($bundle);
+        }
+
+        return $bundle;
     }
 }

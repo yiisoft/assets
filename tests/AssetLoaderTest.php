@@ -36,7 +36,7 @@ final class AssetLoaderTest extends TestCase
         $timestampJs = FileHelper::lastModifiedTime($this->aliases->get($bundle->basePath) . '/' . $bundle->js[0]);
         $urlJs = "/baseUrl/js/basePath.js?v=$timestampJs";
 
-        $this->assertEmpty($manager->getRegisteredBundles());
+        $this->assertEmpty($this->getRegisteredBundles($manager));
 
         $this->loader->setAppendTimestamp(true);
 
@@ -69,7 +69,7 @@ final class AssetLoaderTest extends TestCase
 
         $this->loader->setAssetMap(['jquery.js' => $urlJs]);
 
-        $this->assertEmpty($manager->getRegisteredBundles());
+        $this->assertEmpty($this->getRegisteredBundles($manager));
 
         $manager->register([JqueryAsset::class]);
 

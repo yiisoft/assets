@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Exception;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Files\FileHelper;
@@ -100,17 +99,6 @@ final class AssetConverter implements AssetConverterInterface
         $this->logger = $logger;
     }
 
-    /**
-     * Converts a given asset file into a CSS or JS file.
-     *
-     * @param string $asset The asset file path, relative to $basePath.
-     * @param string $basePath The directory the $asset is relative to.
-     * @param array $optionsConverter Additional options to pass to {@see AssetConverter::runCommand}.
-     *
-     * @throws Exception
-     *
-     * @return string The converted asset file path, relative to $basePath.
-     */
     public function convert(string $asset, string $basePath, array $optionsConverter = []): string
     {
         $pos = strrpos($asset, '.');

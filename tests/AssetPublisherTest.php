@@ -43,7 +43,7 @@ final class AssetPublisherTest extends TestCase
             'position' => 2,
         ]);
 
-        $this->assertEmpty($this->manager->getRegisteredBundles());
+        $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
         $this->manager->register([SourceAsset::class]);
 
@@ -73,7 +73,7 @@ final class AssetPublisherTest extends TestCase
             return 'HashCallback';
         });
 
-        $this->assertEmpty($this->manager->getRegisteredBundles());
+        $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
         $this->manager->register([SourceAsset::class]);
 

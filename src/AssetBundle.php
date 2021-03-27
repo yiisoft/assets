@@ -19,18 +19,18 @@ class AssetBundle
     /**
      * @var string|null The Web-accessible directory that contains the asset files in this bundle.
      *
-     * If {@see sourcePath} is set, this property will be *overwritten* by {@see AssetManager} when it publishes the
-     * asset files from {@see sourcePath}.
+     * If {@see $sourcePath} is set, this property will be *overwritten* by {@see AssetManager} when it publishes the
+     * asset files from {@see $sourcePath}.
      *
      * You can use either a directory or an alias of the directory.
      */
     public ?string $basePath = null;
 
     /**
-     * @var string|null The base URL for the relative asset files listed in {@see js} and {@see css}.
+     * @var string|null The base URL for the relative asset files listed in {@see $js} and {@see $css}.
      *
-     * If {@see sourcePath} is set, this property will be *overwritten* by {@see AssetManager} when it publishes the
-     * asset files from {@see sourcePath}.
+     * If {@see $sourcePath} is set, this property will be *overwritten* by {@see AssetManager} when it publishes the
+     * asset files from {@see $sourcePath}.
      *
      * You can use either a URL or an alias of the URL.
      */
@@ -43,7 +43,7 @@ class AssetBundle
 
     /**
      * @var array List of CSS files that this bundle contains. Each CSS file can be specified in one of the three
-     * formats as explained in {@see js}.
+     * formats as explained in {@see $js}.
      *
      * Note that only a forward slash "/" should be used as directory separator.
      */
@@ -99,10 +99,10 @@ class AssetBundle
      *   `http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js` or
      *   `//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js`.
      * - a relative path representing a local asset (e.g. `js/main.js`). The actual file path of a local asset can be
-     *   determined by prefixing {@see basePath} to the relative path, and the actual URL of the asset can be determined
-     *   by prefixing {@see baseUrl} to the relative path.
+     *   determined by prefixing {@see $basePath} to the relative path, and the actual URL of the asset can be
+     *   determined by prefixing {@see $baseUrl} to the relative path.
      * - an array, with the first entry being the URL or relative path as described before, and a list of key => value
-     *   pairs that will be used to overwrite {@see jsOptions} settings for this entry.
+     *   pairs that will be used to overwrite {@see $jsOptions} settings for this entry.
      *
      * Note that only a forward slash "/" should be used as directory separator.
      */
@@ -126,7 +126,7 @@ class AssetBundle
 
     /**
      * @var array The options to be passed to {@see AssetPublisher::publish()} when the asset bundle is being published.
-     * This property is used only when {@see sourcePath} is set.
+     * This property is used only when {@see $sourcePath} is set.
      */
     public array $publishOptions = [];
 
@@ -138,11 +138,11 @@ class AssetBundle
      * By setting this property, {@see AssetManager} will publish the source asset files to a Web-accessible
      * directory automatically when the asset bundle is registered on a page.
      *
-     * If you do not set this property, it means the source asset files are located under {@see basePath}.
+     * If you do not set this property, it means the source asset files are located under {@see $basePath}.
      *
      * You can use either a directory or an alias of the directory.
      *
-     * {@see publishOptions}
+     * {@see $publishOptions}
      */
     public ?string $sourcePath = null;
 }

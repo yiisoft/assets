@@ -23,8 +23,8 @@ return [
             'linkAssets' => false,
         ],
         'assetManager' => [
-            'bundles' => [],
-            'register' => [],
+            'allowedBundleNames' => [],
+            'customizedBundles' => [],
         ],
     ],
 ];

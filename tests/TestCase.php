@@ -6,6 +6,7 @@ namespace Yiisoft\Assets\Tests;
 
 use Exception;
 use Psr\Log\NullLogger;
+use ReflectionClass;
 use ReflectionException;
 use ReflectionObject;
 use Yiisoft\Aliases\Aliases;
@@ -48,6 +49,23 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->publisher = $container->get(AssetPublisherInterface::class);
 
         $this->removeAssets('@asset');
+    }
+
+    /**
+     * Returns the registered asset bundles.
+     *
+     * @param AssetManager $manager
+     *
+     * @return array The registered asset bundles {@see AssetManager::$registeredBundles}.
+     */
+    protected function getRegisteredBundles(AssetManager $manager): array
+    {
+        $reflection = new ReflectionClass($manager);
+        $property = $reflection->getProperty('registeredBundles');
+        $property->setAccessible(true);
+        $registeredBundles = $property->getValue($manager);
+        $property->setAccessible(false);
+        return $registeredBundles;
     }
 
     /**
@@ -159,11 +177,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $publisher->setForceCopy($params['yiisoft/assets']['assetPublisher']['forceCopy']);
         $publisher->setLinkAssets($params['yiisoft/assets']['assetPublisher']['linkAssets']);
 
-        $manager = new AssetManager($aliases, $loader);
+        $manager = new AssetManager(
+            $aliases,
+            $loader,
+            $params['yiisoft/assets']['assetManager']['allowedBundleNames'],
+            $params['yiisoft/assets']['assetManager']['customizedBundles'],
+        );
         $manager->setConverter($converter);
         $manager->setPublisher($publisher);
-        $manager->setBundles($params['yiisoft/assets']['assetManager']['bundles']);
-        $manager->register($params['yiisoft/assets']['assetManager']['register']);
 
         return new SimpleContainer([
             Aliases::class => $aliases,

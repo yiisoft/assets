@@ -27,7 +27,7 @@ interface AssetLoaderInterface
     public function getAssetUrl(AssetBundle $bundle, string $assetPath): string;
 
     /**
-     * Loads asset bundle class by name.
+     * Loads an asset bundle class by name.
      *
      * @param string $name The asset bundle name.
      * @param array $config The asset bundle instance configuration.
