@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use Yiisoft\Aliases\Aliases;
+
 use function is_subclass_of;
 use function mb_strlen;
 use function strncmp;
@@ -70,6 +72,35 @@ final class AssetUtil
         }
 
         return null;
+    }
+
+    /**
+     * Resolve path aliases for {@see AssetBundle} properties:
+     *
+     * - {@see AssetBundle::basePath}
+     * - {@see AssetBundle::baseUrl}
+     * - {@see AssetBundle::sourcePath}
+     *
+     * @param AssetBundle $bundle The asset bundle instance to resolving path aliases.
+     * @param Aliases $aliases The aliases instance to resolving path aliases.
+     *
+     * @return AssetBundle The asset bundle instance with resolved paths.
+     */
+    public static function resolvePathAliases(AssetBundle $bundle, Aliases $aliases): AssetBundle
+    {
+        if ($bundle->basePath !== null) {
+            $bundle->basePath = $aliases->get($bundle->basePath);
+        }
+
+        if ($bundle->baseUrl !== null) {
+            $bundle->baseUrl = $aliases->get($bundle->baseUrl);
+        }
+
+        if ($bundle->sourcePath !== null) {
+            $bundle->sourcePath = $aliases->get($bundle->sourcePath);
+        }
+
+        return $bundle;
     }
 
     /**

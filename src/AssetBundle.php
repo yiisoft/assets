@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use JsonSerializable;
+
 /**
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
  *
@@ -14,7 +16,7 @@ namespace Yiisoft\Assets;
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
  */
-class AssetBundle
+class AssetBundle implements JsonSerializable
 {
     /**
      * @var string|null The Web-accessible directory that contains the asset files in this bundle.
@@ -145,4 +147,9 @@ class AssetBundle
      * {@see $publishOptions}
      */
     public ?string $sourcePath = null;
+
+    public function jsonSerialize(): array
+    {
+        return (array) $this;
+    }
 }

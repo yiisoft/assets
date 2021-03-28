@@ -12,6 +12,7 @@ use function array_key_exists;
 use function array_merge;
 use function array_shift;
 use function array_unshift;
+use function in_array;
 use function is_array;
 use function is_file;
 use function is_int;
@@ -25,9 +26,9 @@ final class AssetManager
      * @var string[] List of names of allowed asset bundles.
      * If the array is empty, then any asset bundles are allowed. Default to empty array.
      *
-     * If the names of allowed resource bundles were specified, they will be registered {@see register()}
-     * when the instance is created, and it will no longer be possible to register asset bundles.
-     * Also, you can get bundles using the method, only those that were specified as allowed.
+     * If the names of allowed asset bundles were specified, only these asset bundles or their dependencies can be
+     * registered {@see register()} and received {@see getBundle ()}. Also, specifying names allows to export
+     * {@see export()} asset bundles automatically without first registering them manually.
      */
     private array $allowedBundleNames;
 
@@ -77,7 +78,6 @@ final class AssetManager
         $this->loader = $loader;
         $this->allowedBundleNames = $allowedBundleNames;
         $this->customizedBundles = $customizedBundles;
-        $this->register($this->allowedBundleNames);
     }
 
     /**
@@ -97,8 +97,8 @@ final class AssetManager
      */
     public function getBundle(string $name): AssetBundle
     {
-        if (!empty($this->allowedBundleNames) && !isset($this->registeredBundles[$name])) {
-            throw new RuntimeException("The \"{$name}\" asset bundle is not allowed.");
+        if (!empty($this->allowedBundleNames)) {
+            $this->checkAllowedBundleName($name);
         }
 
         $bundle = $this->loadBundle($name);
@@ -184,6 +184,31 @@ final class AssetManager
     }
 
     /**
+     * Exports registered asset bundles {@see $registeredBundles}.
+     *
+     * When using the allowed asset bundles {@see $allowedBundleNames}, the export result will always be the same,
+     * since the asset bundles are registered before the export. If do not use the allowed asset bundles mode,
+     * must register {@see register()} all the required asset bundles before exporting.
+     *
+     * @param AssetExporterInterface $exporter The exporter instance.
+     *
+     * @throws InvalidConfigException If an error occurs during registration when using allowed asset bundles.
+     * @throws RuntimeException If no asset bundles were registered or an error occurred during the export.
+     */
+    public function export(AssetExporterInterface $exporter): void
+    {
+        if (!empty($this->allowedBundleNames)) {
+            $this->register($this->allowedBundleNames);
+        }
+
+        if (empty($this->registeredBundles)) {
+            throw new RuntimeException('Not a single asset bundle was registered.');
+        }
+
+        $exporter->export($this->registeredBundles);
+    }
+
+    /**
      * Generates the array configuration of the asset bundles {@see $registeredBundles}.
      *
      * @param string[] $names
@@ -194,8 +219,10 @@ final class AssetManager
      */
     public function register(array $names, ?int $position = null): void
     {
-        if (!empty($this->allowedBundleNames) && !empty($this->registeredBundles)) {
-            throw new RuntimeException('The allowed asset bundles are already registered and cannot be re-registered.');
+        if (!empty($this->allowedBundleNames)) {
+            foreach ($names as $name) {
+                $this->checkAllowedBundleName($name);
+            }
         }
 
         foreach ($names as $name) {
@@ -401,6 +428,7 @@ final class AssetManager
      *
      * {@see registerJsFile()} For more details on javascript position.
      *
+     * @throws InvalidConfigException If the asset or the asset file paths to be published does not exist.
      * @throws RuntimeException If the asset bundle does not exist or a circular dependency is detected.
      */
     private function registerAssetBundle(string $name, int $position = null): void
@@ -563,5 +591,49 @@ final class AssetManager
         }
 
         return $bundle;
+    }
+
+    /**
+     * Checks whether asset bundle are allowed by name {@see $allowedBundleNames}.
+     *
+     * @param string $name The asset bundle name to check.
+     *
+     * @throws InvalidConfigException For invalid asset bundle configuration.
+     * @throws RuntimeException If The asset bundle name is not allowed.
+     */
+    public function checkAllowedBundleName(string $name): void
+    {
+        if (isset($this->loadedBundles[$name]) || in_array($name, $this->allowedBundleNames, true)) {
+            return;
+        }
+
+        foreach ($this->allowedBundleNames as $bundleName) {
+            if ($this->isAllowedBundleDependencies($name, $this->loadBundle($bundleName))) {
+                return;
+            }
+        }
+
+        throw new RuntimeException("The \"{$name}\" asset bundle is not allowed.");
+    }
+
+    /**
+     * Recursively checks whether the asset bundle name is allowed in dependencies.
+     *
+     * @param string $name The asset bundle name to check.
+     * @param AssetBundle $bundle The asset bundle to check.
+     *
+     * @throws InvalidConfigException For invalid asset bundle configuration.
+     *
+     * @return bool Whether the asset bundle name is allowed in dependencies.
+     */
+    private function isAllowedBundleDependencies(string $name, AssetBundle $bundle): bool
+    {
+        foreach ($bundle->depends as $depend) {
+            if ($name === $depend || $this->isAllowedBundleDependencies($name, $this->loadBundle($depend))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

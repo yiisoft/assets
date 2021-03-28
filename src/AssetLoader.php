@@ -22,9 +22,9 @@ final class AssetLoader implements AssetLoaderInterface
 
     /**
      * @var bool Whether to append a timestamp to the URL of every published asset. When this is true, the URL of a
-     * published asset may look like `/path/to/asset?v=timestamp`, where `timestamp` is the last modification time of
-     * the published asset file. You normally would want to set this property to true when you have enabled HTTP caching
-     * for assets, because it allows you to bust caching when the assets are updated.
+     * published asset may look like `/path/to/asset?v=timestamp`, where `timestamp` is the last modification time
+     * of the published asset file. You normally would want to set this property to true when you have enabled
+     * HTTP caching for assets, because it allows you to bust caching when the assets are updated.
      */
     private bool $appendTimestamp = false;
 

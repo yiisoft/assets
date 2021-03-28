@@ -49,5 +49,6 @@ return [
         ],
         'setPublisher()' => [Reference::to(AssetPublisherInterface::class)],
         'setConverter()' => [Reference::to(AssetConverterInterface::class)],
+        'register()' => [$params['yiisoft/assets']['assetManager']['register']],
     ],
 ];

@@ -185,6 +185,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         );
         $manager->setConverter($converter);
         $manager->setPublisher($publisher);
+        $manager->register($params['yiisoft/assets']['assetManager']['register']);
 
         return new SimpleContainer([
             Aliases::class => $aliases,

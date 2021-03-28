@@ -25,6 +25,7 @@ return [
         'assetManager' => [
             'allowedBundleNames' => [],
             'customizedBundles' => [],
+            'register' => [],
         ],
     ],
 ];

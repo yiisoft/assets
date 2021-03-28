@@ -9,6 +9,7 @@ use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\Exception\InvalidConfigException;
+use Yiisoft\Assets\Exporter\AssetJsonExporter;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
@@ -420,7 +421,7 @@ final class AssetManagerTest extends TestCase
         );
     }
 
-    public function testRegisterInConstructorWithAllowedBundlesWithCustomizedBundles(): void
+    public function testRegisterWithAllowedBundlesWithCustomizedBundles(): void
     {
 
         $manager = new AssetManager($this->aliases, $this->loader, [CdnAsset::class], [
@@ -428,37 +429,45 @@ final class AssetManagerTest extends TestCase
                 'js' => [],
             ],
         ]);
+        $manager->register([CdnAsset::class]);
 
         $this->assertTrue($manager->isRegisteredBundle(CdnAsset::class));
         $this->assertCount(1, $this->getRegisteredBundles($manager));
         $this->assertEmpty($manager->getBundle(CdnAsset::class)->depends);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('The allowed asset bundles are already registered and cannot be re-registered.');
+        $this->expectExceptionMessage('The "' . PositionAsset::class  . '" asset bundle is not allowed.');
 
-        $manager->register([CdnAsset::class]);
+        $manager->register([PositionAsset::class]);
     }
 
-    public function testRegisterInConstructorWithAllowedBundlesWithDependencies(): void
+    public function testRegisterWithAllowedBundlesWithDependencies(): void
     {
 
-        $manager = new AssetManager($this->aliases, $this->loader, [PositionAsset::class]);
+        $manager = new AssetManager($this->aliases, $this->loader, [JqueryAsset::class]);
         $manager->setPublisher($this->publisher);
+        $manager->register([JqueryAsset::class]);
 
-        $this->assertTrue($manager->isRegisteredBundle(PositionAsset::class));
         $this->assertTrue($manager->isRegisteredBundle(JqueryAsset::class));
         $this->assertTrue($manager->isRegisteredBundle(Level3Asset::class));
 
-        $this->assertInstanceOf(PositionAsset::class, $manager->getBundle(PositionAsset::class));
         $this->assertInstanceOf(JqueryAsset::class, $manager->getBundle(JqueryAsset::class));
         $this->assertInstanceOf(Level3Asset::class, $manager->getBundle(Level3Asset::class));
 
-        $this->assertCount(3, $this->getRegisteredBundles($manager));
-        $this->assertFalse($manager->isRegisteredBundle(CdnAsset::class));
+        $this->assertCount(2, $this->getRegisteredBundles($manager));
+        $this->assertFalse($manager->isRegisteredBundle(PositionAsset::class));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('The "' . CdnAsset::class  . '" asset bundle is not allowed.');
+        $this->expectExceptionMessage('The "' . PositionAsset::class  . '" asset bundle is not allowed.');
 
-        $manager->getBundle(CdnAsset::class);
+        $manager->getBundle(PositionAsset::class);
+    }
+
+    public function testExportWithoutRegisterWithoutAllowedBundles(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Not a single asset bundle was registered.');
+
+        $this->manager->export(new AssetJsonExporter($this->aliases->get('@asset/test.json')));
     }
 }
