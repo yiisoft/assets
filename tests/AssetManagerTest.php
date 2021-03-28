@@ -423,7 +423,6 @@ final class AssetManagerTest extends TestCase
 
     public function testRegisterWithAllowedBundlesWithCustomizedBundles(): void
     {
-
         $manager = new AssetManager($this->aliases, $this->loader, [CdnAsset::class], [
             CdnAsset::class => [
                 'js' => [],
@@ -436,14 +435,13 @@ final class AssetManagerTest extends TestCase
         $this->assertEmpty($manager->getBundle(CdnAsset::class)->depends);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('The "' . PositionAsset::class  . '" asset bundle is not allowed.');
+        $this->expectExceptionMessage('The "' . PositionAsset::class . '" asset bundle is not allowed.');
 
         $manager->register([PositionAsset::class]);
     }
 
     public function testRegisterWithAllowedBundlesWithDependencies(): void
     {
-
         $manager = new AssetManager($this->aliases, $this->loader, [JqueryAsset::class]);
         $manager->setPublisher($this->publisher);
         $manager->register([JqueryAsset::class]);
@@ -458,7 +456,7 @@ final class AssetManagerTest extends TestCase
         $this->assertFalse($manager->isRegisteredBundle(PositionAsset::class));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('The "' . PositionAsset::class  . '" asset bundle is not allowed.');
+        $this->expectExceptionMessage('The "' . PositionAsset::class . '" asset bundle is not allowed.');
 
         $manager->getBundle(PositionAsset::class);
     }
