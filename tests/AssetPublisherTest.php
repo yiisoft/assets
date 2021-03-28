@@ -138,8 +138,33 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $bundle->sourcePath = '';
-
         $message = 'The sourcePath must be defined in AssetBundle property public ?string $sourcePath = $path.';
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage($message);
+
+        $this->publisher->publish($bundle);
+    }
+
+    public function testBasePathEmptyException(): void
+    {
+        $bundle = new SourceAsset();
+
+        $bundle->basePath = '';
+        $message = 'The basePath must be defined in AssetBundle property public ?string $basePath = $path.';
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage($message);
+
+        $this->publisher->publish($bundle);
+    }
+
+    public function testBaseUrlNullException(): void
+    {
+        $bundle = new SourceAsset();
+
+        $bundle->baseUrl = null;
+        $message = 'The baseUrl must be defined in AssetBundle property public ?string $baseUrl = $path.';
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
@@ -179,6 +204,8 @@ final class AssetPublisherTest extends TestCase
     private function verifySourcesPublishedBySymlink(): SourceAsset
     {
         $bundle = new SourceAsset();
+        $this->publisher->setDirMode(0775);
+        $this->publisher->setFileMode(0775);
 
         [$bundle->basePath, $bundle->baseUrl] = $this->publisher->publish($bundle);
 

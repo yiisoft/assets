@@ -11,6 +11,7 @@ use Yiisoft\Assets\Exporter\AssetJsonExporter;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
+use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\TestCase;
 use Yiisoft\Json\Json;
 
@@ -37,6 +38,33 @@ final class AssetJsonExporterTest extends TestCase
 
         $this->manager->register([PositionAsset::class]);
         $this->manager->export(new AssetJsonExporter($targetFile));
+
+        $this->assertFileExists($targetFile);
+        $this->assertSame($expected, file_get_contents($targetFile));
+    }
+
+    public function testExportWithoutRegisterWithAllowedAndCustomizedBundles(): void
+    {
+        $targetFile = $this->aliases->get('@exporter/test.json');
+        $config = [
+            'basePath' => '@root/tests/public/jquery',
+            'baseUrl' => '/js',
+            'js' => ['jquery.js'],
+            'css' => [],
+            'sourcePath' => '',
+        ];
+        $sourceBundle = AssetUtil::createAsset(SourceAsset::class, $config);
+        $manager = new AssetManager($this->aliases, $this->loader, [SourceAsset::class], [
+            SourceAsset::class => $config,
+        ]);
+        $manager->setPublisher($this->publisher);
+        $expected = Json::encode([
+            SourceAsset::class => AssetUtil::resolvePathAliases($sourceBundle, $this->aliases),
+            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
+            Level3Asset::class => AssetUtil::resolvePathAliases(new Level3Asset(), $this->aliases),
+        ]);
+
+        $manager->export(new AssetJsonExporter($targetFile));
 
         $this->assertFileExists($targetFile);
         $this->assertSame($expected, file_get_contents($targetFile));
