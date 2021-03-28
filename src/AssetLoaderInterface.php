@@ -7,14 +7,15 @@ namespace Yiisoft\Assets;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
- * The AssetLoaderInterface must be implemented by asset loader classes.
+ * The AssetLoaderInterface must be implemented by asset loader classes. The job of such class is executing the loading
+ * of the assets from {@see AssetBundle::$basePath} to {@see AssetBundle::$baseUrl}.
  */
 interface AssetLoaderInterface
 {
     /**
      * Returns the actual URL for the specified asset.
      *
-     * The actual URL is obtained by prepending either {@see AssetBundle::$baseUrl} to the given asset path.
+     * The actual URL is obtained by prepending {@see AssetBundle::$baseUrl} to the given asset path.
      *
      * @param AssetBundle $bundle The asset bundle which the asset file belongs to.
      * @param string $assetPath The asset path. This should be one of the assets listed in {@see AssetBundle::$js} or
