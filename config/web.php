@@ -41,7 +41,7 @@ return [
 
     AssetManager::class => [
         '__class' => AssetManager::class,
-        '__construct' => [
+        '__construct()' => [
             Reference::to(Aliases::class),
             Reference::to(AssetLoaderInterface::class),
             $params['yiisoft/assets']['assetManager']['allowedBundleNames'],
