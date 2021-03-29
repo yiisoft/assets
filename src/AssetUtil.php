@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use Yiisoft\Aliases\Aliases;
+
+use function is_subclass_of;
 use function mb_strlen;
 use function strncmp;
 use function strpos;
@@ -15,17 +18,27 @@ use function substr_compare;
 final class AssetUtil
 {
     /**
-     * Returns a value indicating whether a URL is relative.
+     * Creates a new asset bundle instance.
      *
-     * A relative URL does not have host info part.
+     * If the name is a class name, an instance of this class will be created,
+     * otherwise an instance of the {@see AssetBundle} will be created.
      *
-     * @param string $url The URL to be checked.
+     * @param string $name The asset bundle name. Usually the asset bundle class name (without leading backslash).
+     * @param array $config The asset bundle instance configuration. If specified, it will be applied to the instance.
      *
-     * @return bool Whether the URL is relative.
+     * @return AssetBundle The created asset bundle.
+     *
+     * @psalm-suppress UnsafeInstantiation
      */
-    public static function isRelative(string $url): bool
+    public static function createAsset(string $name, array $config = []): AssetBundle
     {
-        return strncmp($url, '//', 2) && strpos($url, '://') === false;
+        $bundle = is_subclass_of($name, AssetBundle::class) ? new $name() : new AssetBundle();
+
+        foreach ($config as $property => $value) {
+            $bundle->{$property} = $value;
+        }
+
+        return $bundle;
     }
 
     /**
@@ -59,5 +72,48 @@ final class AssetUtil
         }
 
         return null;
+    }
+
+    /**
+     * Resolve path aliases for {@see AssetBundle} properties:
+     *
+     * - {@see AssetBundle::basePath}
+     * - {@see AssetBundle::baseUrl}
+     * - {@see AssetBundle::sourcePath}
+     *
+     * @param AssetBundle $bundle The asset bundle instance to resolving path aliases.
+     * @param Aliases $aliases The aliases instance to resolving path aliases.
+     *
+     * @return AssetBundle The asset bundle instance with resolved paths.
+     */
+    public static function resolvePathAliases(AssetBundle $bundle, Aliases $aliases): AssetBundle
+    {
+        if ($bundle->basePath !== null) {
+            $bundle->basePath = $aliases->get($bundle->basePath);
+        }
+
+        if ($bundle->baseUrl !== null) {
+            $bundle->baseUrl = $aliases->get($bundle->baseUrl);
+        }
+
+        if ($bundle->sourcePath !== null) {
+            $bundle->sourcePath = $aliases->get($bundle->sourcePath);
+        }
+
+        return $bundle;
+    }
+
+    /**
+     * Returns a value indicating whether a URL is relative.
+     *
+     * A relative URL does not have host info part.
+     *
+     * @param string $url The URL to be checked.
+     *
+     * @return bool Whether the URL is relative.
+     */
+    public static function isRelative(string $url): bool
+    {
+        return strncmp($url, '//', 2) && strpos($url, '://') === false;
     }
 }
