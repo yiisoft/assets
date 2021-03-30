@@ -7,12 +7,8 @@ namespace Yiisoft\Assets\Exporter;
 use JsonException;
 use RuntimeException;
 use Yiisoft\Assets\AssetExporterInterface;
+use Yiisoft\Assets\AssetUtil;
 use Yiisoft\Json\Json;
-
-use function dirname;
-use function file_put_contents;
-use function is_dir;
-use function is_writable;
 
 /**
  * Exports asset bundles with the values of all properties {@see AssetBundle::jsonSerialize()} to a JSON file.
@@ -40,14 +36,6 @@ final class AssetJsonExporter implements AssetExporterInterface
      */
     public function export(array $assetBundles): void
     {
-        $targetDirectory = dirname($this->targetFile);
-
-        if (!is_dir($targetDirectory) || !is_writable($targetDirectory)) {
-            throw new RuntimeException("Target directory \"{$targetDirectory}\" does not exist or is not writable.");
-        }
-
-        if (file_put_contents($this->targetFile, Json::encode($assetBundles), LOCK_EX) === false) {
-            throw new RuntimeException("An error occurred while writing to the \"{$this->targetFile}\" file.");
-        }
+        AssetUtil::exportToFile($this->targetFile, Json::encode($assetBundles));
     }
 }

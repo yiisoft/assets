@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use RuntimeException;
 use Yiisoft\Aliases\Aliases;
 
+use function dirname;
+use function file_put_contents;
+use function is_dir;
 use function is_subclass_of;
+use function is_writable;
 use function mb_strlen;
 use function strncmp;
 use function strpos;
@@ -101,6 +106,27 @@ final class AssetUtil
         }
 
         return $bundle;
+    }
+
+    /**
+     * Writes a string representation of asset bundles to the specified file.
+     *
+     * @param string $targetFile The full path to the target file.
+     * @param string $bundles The string representation of asset bundles.
+     *
+     * @throws RuntimeException If an error occurred while writing to the file.
+     */
+    public static function exportToFile(string $targetFile, string $bundles): void
+    {
+        $targetDirectory = dirname($targetFile);
+
+        if (!is_dir($targetDirectory) || !is_writable($targetDirectory)) {
+            throw new RuntimeException("Target directory \"{$targetDirectory}\" does not exist or is not writable.");
+        }
+
+        if (file_put_contents($targetFile, $bundles, LOCK_EX) === false) {
+            throw new RuntimeException("An error occurred while writing to the \"{$targetFile}\" file.");
+        }
     }
 
     /**
