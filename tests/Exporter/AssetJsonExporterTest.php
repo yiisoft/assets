@@ -31,9 +31,9 @@ final class AssetJsonExporterTest extends TestCase
     {
         $targetFile = $this->aliases->get('@exporter/test.json');
         $expected = Json::encode([
-            PositionAsset::class => AssetUtil::resolvePathAliases(new PositionAsset(), $this->aliases),
-            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
             Level3Asset::class => AssetUtil::resolvePathAliases(new Level3Asset(), $this->aliases),
+            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
+            PositionAsset::class => AssetUtil::resolvePathAliases(new PositionAsset(), $this->aliases),
         ]);
 
         $this->manager->register([PositionAsset::class]);
@@ -59,9 +59,9 @@ final class AssetJsonExporterTest extends TestCase
         ]);
         $manager->setPublisher($this->publisher);
         $expected = Json::encode([
-            SourceAsset::class => AssetUtil::resolvePathAliases($sourceBundle, $this->aliases),
-            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
             Level3Asset::class => AssetUtil::resolvePathAliases(new Level3Asset(), $this->aliases),
+            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
+            SourceAsset::class => AssetUtil::resolvePathAliases($sourceBundle, $this->aliases),
         ]);
 
         $manager->export(new AssetJsonExporter($targetFile));
@@ -76,9 +76,9 @@ final class AssetJsonExporterTest extends TestCase
         $manager = new AssetManager($this->aliases, $this->loader, [PositionAsset::class]);
         $manager->setPublisher($this->publisher);
         $expected = Json::encode([
-            PositionAsset::class => AssetUtil::resolvePathAliases(new PositionAsset(), $this->aliases),
-            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
             Level3Asset::class => AssetUtil::resolvePathAliases(new Level3Asset(), $this->aliases),
+            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
+            PositionAsset::class => AssetUtil::resolvePathAliases(new PositionAsset(), $this->aliases),
         ]);
 
         $manager->export(new AssetJsonExporter($targetFile));

@@ -444,6 +444,7 @@ final class AssetManager
                 $this->registerAssetBundle($dep, $pos);
             }
 
+            unset($this->registeredBundles[$name]);
             $this->registeredBundles[$name] = $bundle;
         } elseif ($this->registeredBundles[$name] === false) {
             throw new RuntimeException("A circular dependency is detected for bundle \"{$name}\".");
