@@ -29,11 +29,3 @@ phpunit.phar
 /phpunit.xml
 # phpunit cache
 .phpunit.result.cache
-
-# Phan
-analysis.txt
-
-# node_modules
-/node_modules
-
-/package-lock.json
