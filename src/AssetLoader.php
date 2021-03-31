@@ -131,6 +131,7 @@ final class AssetLoader implements AssetLoaderInterface
 
         $bundle->basePath = $this->getBundleBasePath($bundle);
         $bundle->baseUrl = $this->getBundleBaseUrl($bundle);
+        $bundle->sourcePath = $bundle->sourcePath === null ? null : $this->aliases->get($bundle->sourcePath);
 
         $bundle->cssOptions = array_merge($bundle->cssOptions, $this->cssDefaultOptions);
         $bundle->jsOptions = array_merge($bundle->jsOptions, $this->jsDefaultOptions);

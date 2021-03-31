@@ -109,8 +109,10 @@ final class AssetPublisher implements AssetPublisherInterface
             );
         }
 
-        if (isset($this->published[$bundle->sourcePath])) {
-            return $this->published[$bundle->sourcePath];
+        $sourcePath = $this->aliases->get($bundle->sourcePath);
+
+        if (isset($this->published[$sourcePath])) {
+            return $this->published[$sourcePath];
         }
 
         if (empty($bundle->basePath)) {
@@ -125,11 +127,11 @@ final class AssetPublisher implements AssetPublisherInterface
             );
         }
 
-        if (!file_exists($this->aliases->get($bundle->sourcePath))) {
-            throw new InvalidConfigException("The sourcePath to be published does not exist: {$bundle->sourcePath}");
+        if (!file_exists($sourcePath)) {
+            throw new InvalidConfigException("The sourcePath to be published does not exist: {$sourcePath}");
         }
 
-        return $this->published[$bundle->sourcePath] = $this->publishBundleDirectory($bundle);
+        return $this->published[$sourcePath] = $this->publishBundleDirectory($bundle);
     }
 
     /**
@@ -154,6 +156,8 @@ final class AssetPublisher implements AssetPublisherInterface
      */
     public function getPublishedPath(string $sourcePath): ?string
     {
+        $sourcePath = $this->aliases->get($sourcePath);
+
         if (isset($this->published[$sourcePath])) {
             return $this->published[$sourcePath][0];
         }
@@ -174,6 +178,8 @@ final class AssetPublisher implements AssetPublisherInterface
      */
     public function getPublishedUrl(string $sourcePath): ?string
     {
+        $sourcePath = $this->aliases->get($sourcePath);
+
         if (isset($this->published[$sourcePath])) {
             return $this->published[$sourcePath][1];
         }

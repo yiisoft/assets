@@ -9,7 +9,7 @@ use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\Exception\InvalidConfigException;
-use Yiisoft\Assets\Exporter\AssetJsonExporter;
+use Yiisoft\Assets\Exporter\JsonAssetExporter;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
@@ -492,6 +492,6 @@ final class AssetManagerTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Not a single asset bundle was registered.');
 
-        $this->manager->export(new AssetJsonExporter($this->aliases->get('@asset/test.json')));
+        $this->manager->export(new JsonAssetExporter($this->aliases->get('@asset/test.json')));
     }
 }
