@@ -35,11 +35,7 @@ There are three main steps using the package:
    are and how they should be used.
 2. [Register bundles to asset manager](docs/asset-manager.md) and obtain list of files to include.
 3. Optionally [use asset converter with asset bundle](docs/asset-converter.md) for asset format conversion (such as TypeScript to JavaScript).
-4. Use your favorite method to include files into HTML (out of scope of this package). 
-
-### Extra development requirements
-
-The package tests depend on `foxy/foxy` that needs [npm installed](https://nodejs.org/en/).
+4. Use your favorite method to include files into HTML (out of scope of this package).
 
 ### Unit testing
 

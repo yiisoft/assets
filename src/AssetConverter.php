@@ -11,11 +11,13 @@ use Yiisoft\Files\FileHelper;
 use function array_key_exists;
 use function escapeshellarg;
 use function fclose;
+use function is_file;
 use function proc_close;
 use function proc_open;
 use function stream_get_contents;
 use function strrpos;
 use function strtr;
+use function substr;
 
 /**
  * AssetConverter supports conversion of several popular script formats into JavaScript or CSS.
@@ -32,7 +34,8 @@ final class AssetConverter implements AssetConverterInterface
      * The keys are the asset file extension names, and the values are the corresponding
      * target script types (either "css" or "js") and the commands used for the conversion.
      *
-     * You may also use a [path alias](guide:concept-aliases) to specify the location of the command:
+     * You may also use a {@see https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md}
+     * to specify the location of the command:
      *
      * ```php
      * [

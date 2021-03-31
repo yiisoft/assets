@@ -42,7 +42,7 @@ final class AssetConverterTest extends TestCase
 
             echo "Hello World!\n";
             echo "Hello Yii!";
-            EOF
+            EOF,
         );
 
         $this->converter->setCommand('php', 'txt', 'php {from} > {to}');
@@ -64,7 +64,7 @@ final class AssetConverterTest extends TestCase
             <?php
 
             echo microtime();
-            EOF
+            EOF,
         );
 
         $this->converter->setCommand('php', 'txt', 'php {from} > {to}');
@@ -91,7 +91,7 @@ final class AssetConverterTest extends TestCase
             <?php
 
             echo microtime();
-            EOF
+            EOF,
         );
 
         $this->converter->setCommand('php', 'txt', 'php {from} > {to}');
@@ -115,14 +115,13 @@ final class AssetConverterTest extends TestCase
      */
     public function testCheckOutdatedCallback(): void
     {
-        $srcFilename = $this->tmpPath . '/test.php';
         file_put_contents(
-            $srcFilename,
+            $this->tmpPath . '/test.php',
             <<<'EOF'
             <?php
 
             echo microtime();
-            EOF
+            EOF,
         );
 
         $this->converter->setCommand('php', 'txt', 'php {from} > {to}');
@@ -141,32 +140,24 @@ final class AssetConverterTest extends TestCase
         $this->assertNotEquals($initialConvertTime, file_get_contents($this->tmpPath . '/test.txt'));
     }
 
-    public function testSassCli(): void
+    public function testConvertWithOptions(): void
     {
-        $this->converter->setCommand('scss', 'css', '@npm/.bin/sass {options} {from} {to}');
+        $this->converter->setCommand('scss', 'css', 'php {options} {from} > {to}');
 
         $this->converter->convert(
             'custom.scss',
             $this->aliases->get('@root/tests/public/sass'),
             [
                 'scss' => [
-                    'command' => '-I {path} --style compressed',
+                    'command' => '-r',
                     'path' => '@sourcePath/sass',
                 ],
             ]
         );
 
-        $customCss = file_get_contents($this->aliases->get('@root/tests/public/sass/custom.css'));
-
         $this->assertFileExists($this->aliases->get('@root/tests/public/sass/custom.css'));
-        $this->assertFileExists($this->aliases->get('@root/tests/public/sass/custom.css.map'));
-        $this->assertStringEqualsFile(
-            $this->aliases->get('@root/tests/public/sass/custom.css'),
-            $customCss
-        );
 
         FileHelper::unlink($this->aliases->get('@root/tests/public/sass/custom.css'));
-        FileHelper::unlink($this->aliases->get('@root/tests/public/sass/custom.css.map'));
     }
 
     public function testNotExistsConverter(): void
