@@ -13,7 +13,7 @@ use Yiisoft\Json\Json;
 /**
  * Exports asset bundles with the values of all properties {@see AssetBundle::jsonSerialize()} to a JSON file.
  */
-final class AssetJsonExporter implements AssetExporterInterface
+final class JsonAssetExporter implements AssetExporterInterface
 {
     /**
      * @var string The full path to the target JSON file.

@@ -6,7 +6,7 @@ namespace Yiisoft\Assets\Tests\Exporter;
 
 use RuntimeException;
 use Yiisoft\Assets\AssetManager;
-use Yiisoft\Assets\Exporter\AssetWebpackExporter;
+use Yiisoft\Assets\Exporter\WebpackAssetExporter;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
@@ -16,7 +16,7 @@ use Yiisoft\Assets\Tests\TestCase;
 use function dirname;
 use function file_get_contents;
 
-final class AssetWebpackExporterTest extends TestCase
+final class WebpackAssetExporterTest extends TestCase
 {
     protected function tearDown(): void
     {
@@ -39,7 +39,7 @@ final class AssetWebpackExporterTest extends TestCase
         ;
 
         $this->manager->register([CdnAsset::class, PositionAsset::class, WebpackAsset::class]);
-        $this->manager->export(new AssetWebpackExporter($targetFile));
+        $this->manager->export(new WebpackAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
         $this->assertSame($expected, file_get_contents($targetFile));
@@ -61,7 +61,7 @@ final class AssetWebpackExporterTest extends TestCase
             . "import '{$this->aliases->get($sourceBundle->sourcePath)}/{$sourceBundle->js[0]}';\n"
         ;
 
-        $manager->export(new AssetWebpackExporter($targetFile));
+        $manager->export(new WebpackAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
         $this->assertSame($expected, file_get_contents($targetFile));
@@ -70,7 +70,7 @@ final class AssetWebpackExporterTest extends TestCase
     public function testExportThrowExceptionForNotExistTargetDirectory(): void
     {
         $targetFile = $this->aliases->get('@exporter/not-exist/test.js');
-        $exporter = new AssetWebpackExporter($targetFile);
+        $exporter = new WebpackAssetExporter($targetFile);
         $targetDirectory = dirname($targetFile);
 
         $this->expectException(RuntimeException::class);

@@ -19,7 +19,7 @@ use function is_array;
  *
  * {@see https://webpack.js.org/concepts/#entry}
  */
-final class AssetWebpackExporter implements AssetExporterInterface
+final class WebpackAssetExporter implements AssetExporterInterface
 {
     /**
      * @var string The full path to the target JavaScript file.
