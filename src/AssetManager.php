@@ -65,7 +65,7 @@ final class AssetManager
     /**
      * @param Aliases $aliases The aliases instance.
      * @param AssetLoaderInterface $loader The loader instance.
-     * @param array $allowedBundleNames List of names of allowed asset bundles {@see $allowedBundleNames}.
+     * @param string[] $allowedBundleNames List of names of allowed asset bundles {@see $allowedBundleNames}.
      * @param array $customizedBundles The asset bundle configurations {@see $customizedBundles}.
      */
     public function __construct(
@@ -198,7 +198,7 @@ final class AssetManager
     public function export(AssetExporterInterface $exporter): void
     {
         if (!empty($this->allowedBundleNames)) {
-            $this->register($this->allowedBundleNames);
+            $this->registerAllAllowed();
         }
 
         if (empty($this->registeredBundles)) {
@@ -209,7 +209,7 @@ final class AssetManager
     }
 
     /**
-     * Generates the array configuration of the asset bundles {@see $registeredBundles}.
+     * Registers asset bundles by names {@see $registeredBundles}.
      *
      * @param string[] $names
      * @param int|null $position
@@ -227,6 +227,24 @@ final class AssetManager
 
         foreach ($names as $name) {
             $this->registerAssetBundle($name, $position);
+            $this->registerFiles($name);
+        }
+    }
+
+    /**
+     * Registers all allowed {@see $allowedBundleNames} asset bundles {@see $registeredBundles}.
+     *
+     * @throws InvalidConfigException
+     * @throws RuntimeException
+     */
+    public function registerAllAllowed(): void
+    {
+        if (empty($this->allowedBundleNames)) {
+            throw new RuntimeException('The allowed names of the asset bundles were not set.');
+        }
+
+        foreach ($this->allowedBundleNames as $name) {
+            $this->registerAssetBundle($name);
             $this->registerFiles($name);
         }
     }

@@ -487,6 +487,31 @@ final class AssetManagerTest extends TestCase
         $manager->getBundle(CdnAsset::class);
     }
 
+    public function testRegisterAllAllowedBundlesWithDependencies(): void
+    {
+        $manager = new AssetManager($this->aliases, $this->loader, [PositionAsset::class]);
+        $manager->setPublisher($this->publisher);
+        $manager->registerAllAllowed();
+
+        $this->assertTrue($manager->isRegisteredBundle(PositionAsset::class));
+        $this->assertTrue($manager->isRegisteredBundle(JqueryAsset::class));
+        $this->assertTrue($manager->isRegisteredBundle(Level3Asset::class));
+
+        $this->assertCount(3, $this->getRegisteredBundles($manager));
+        $this->assertInstanceOf(JqueryAsset::class, $manager->getBundle(JqueryAsset::class));
+        $this->assertInstanceOf(Level3Asset::class, $manager->getBundle(Level3Asset::class));
+    }
+
+    public function testRegisterAllAllowedWithoutSpecifiedAllowedBundles(): void
+    {
+        $manager = new AssetManager($this->aliases, $this->loader);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('The allowed names of the asset bundles were not set.');
+
+        $manager->registerAllAllowed();
+    }
+
     public function testExportWithoutRegisterWithoutAllowedBundles(): void
     {
         $this->expectException(RuntimeException::class);
