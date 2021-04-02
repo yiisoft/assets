@@ -6,49 +6,79 @@ For general usage see "[asset bundles](asset-bundles.md)". Here we'll focus on c
 Configuration could be done in two ways:
 
 - Using DI container such as [yiisoft/di](https://github.com/yiisoft/di)
-- Creating a class manually 
+- Creating a class manually
 
-## Registering within yiisoft/di
+### Creating using a container
 
 ```php
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetConverter;
 use Yiisoft\Assets\AssetConverterInterface;
+use Yiisoft\Assets\AssetLoader;
+use Yiisoft\Assets\AssetLoaderInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
+use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Log\Logger;
 
 return [
     LoggerInterface::class => Logger::class,
-    AssetConverterInterface::class => AssetConverter::class, 
+
+    Aliases::class => static fn () => new Aliases([
+        '@root' => dirname(__DIR__),
+        '@public' => '@root/public',
+        '@assets' => '@public/assets',
+        '@assetsUrl' => '/assets',
+        '@npm' => '@root/node_modules',
+    ]),
     
-    AssetPublisher::class => function (ContainerInterface $container) {
-        $publisher = $container->get(AssetPublisher::class);
+    AssetConverterInterface::class => static function (ContainerInterface $container) {
+        return new AssetConverter(
+            $container->get(Aliases::class),
+            $container->get(LoggerInterface::class),
+        );
+    },
+    
+    AssetLoaderInterface::class => static function (ContainerInterface $container) {
+        $loader = new AssetLoader($container->get(Aliases::class));
+        
+        /**
+         * Example settings options AssetLoader:
+         *
+         * $loader->setAppendTimestamp(true);
+         * $loader->setAssetMap(['jquery.js' => 'https://code.jquery.com/jquery-3.4.1.js']);        
+         * $loader->setBasePath('@assets');
+         * $loader->setBaseUrl('@assetsUrl');
+         * $loader->setCssDefaultOptions(['media' => 'screen', 'hreflang' => 'en');
+         * $loader->setJsDefaultOptions(['async' => true, 'defer' => true);
+         */
+         
+         return $loader;
+    },
+    
+    AssetPublisherInterface::class => static function (ContainerInterface $container) {
+        $publisher = new AssetPublisher($container->get(Aliases::class));
 
         /**
          * Example settings options AssetPublisher:
          *
-         * $publisher->setAppendTimestamp(true);
-         * $publisher->setAssetMap([
-         *     'jquery.js' => 'https://code.jquery.com/jquery-3.4.1.js',
-         * ]);        
-         * $publisher->setBasePath('@assets');
-         * $publisher->setBaseUrl('@assetsUrl');
          * $publisher->setDirMode(0775);
          * $publisher->setFileMode(0755);
          * $publisher->setForceCopy(true);
-         * $publisher->setHashCallback(function () {
-         *     return 'HashCallback';
-         * });
+         * $publisher->setHashCallback(static fn () => 'HashCallback');
          * $publisher->setLinkAssets(true);
          */
 
         return $publisher;
     },
 
-    AssetManager::class => function (ContainerInterface $container) {
-        $assetManager = new AssetManager($container->get(LoggerInterface::class));
+    AssetManager::class => static function (ContainerInterface $container) {
+        $assetManager = new AssetManager(
+            $container->get(Aliases::class),
+            $container->get(AssetLoaderInterface::class),
+        );
 
         /**
          *  Setting AsssetConverter::class in view/layout use $assetManager->getConverter()
@@ -68,24 +98,6 @@ return [
          */ 
         $assetManager->setPublisher($container->get(AssetPublisherInterface::class));
 
-        /**
-         * Example settings options AssetManager:
-         * 
-         * $assetManager->setBundles(
-         *     [
-         *         JqueryAsset::class => [
-         *             'sourcePath' => null, //no publish asset bundle
-         *             'js' => [
-         *             [
-         *                 'https://code.jquery.com/jquery-3.4.1.js',
-         *                 'integrity' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
-         *                 'crossorigin' => 'anonymous'
-         *             ]
-         *         ]
-         *     ]
-         * ]);
-         */
-
         return $assetManager;
     },
 ];
@@ -95,30 +107,199 @@ return [
 
 ```php
 use Yiisoft\Assets\AssetConverter;
+use Yiisoft\Assets\AssetLoader;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
 
-/**
- * Inject dependencies in constructor:
- * 
- * \Yisoft\Aliases\Aliases $aliases, \Psr\Log\LoggerInterface $logger
+/** 
+ * @var \Yiisoft\Aliases\Aliases $aliases
+ * @var \Psr\Log\LoggerInterface $logger
  */
-$converter = new AssetConverter($aliases, $logger);
 
-/**
- * Inject dependencies in constructor:
- * 
- * \Yisoft\Aliases\Aliases $aliases
- */
+$converter = new AssetConverter($aliases, $logger);
+$loader = new AssetLoader($aliases);
 $publisher = new AssetPublisher($aliases);
 
-/**
- * Inject dependencies in constructor:
- * 
- * \Yisoft\Aliases\Aliases $aliases, \Psr\Log\LoggerInterface $logger
- */
-$assetManager = new AssetManager($aliases, $logger);
+
+$assetManager = new AssetManager($aliases, $loader);
 
 $assetManager->setConverter($converter);
 $assetManager->setPublisher($publisher);
 ```
+
+### Creation with additional settings
+
+The asset manager accepts two optional parameters `$allowedBundleNames` and `$customizedBundles` in the constructor:
+
+```php
+/** 
+ * @var string[] $allowedBundleNames
+ * @var array $customizedBundles
+ * @var \Yiisoft\Aliases\Aliases $aliases
+ * @var \Psr\Log\LoggerInterface $logger
+ */
+ 
+$allowedBundleNames = [
+    \App\Assets\BootstrapAsset::class,
+    \App\Assets\MainAsset::class,
+    \App\Assets\JqueryAsset::class,
+];
+
+$customizedBundles = [
+    \App\Assets\JqueryAsset::class => [
+        'sourcePath' => null, // No publish asset bundle.
+        'js' => [
+            [
+                'https://code.jquery.com/jquery-3.4.1.js',
+                'integrity' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                'crossorigin' => 'anonymous',
+            ],
+        ],
+    ],
+];
+
+$assetManager = new \Yiisoft\Assets\AssetManager(
+    $aliases,
+    $logger,
+    $allowedBundleNames, // Default to empty array.
+    $customizedBundles // Default to empty array.
+);
+```
+
+- `$allowedBundleNames` - List of names of allowed asset bundles. If the names of allowed asset bundles were specified,
+  only these asset bundles or their dependencies can be registered and received. If the array is empty,
+  then any asset bundles are allowed.
+- `$customizedBundles` - The configurations to customize asset bundles. When loading an asset bundles,
+  if it has a corresponding configuration specified here, the configuration will be applied.
+
+For use in the [Yii framework](http://www.yiiframework.com/),
+see the configuration files: [`config/params.php`](../config/params.php) and [`config/web.php`](../config/web.php).
+
+## Publishing asset bundles
+
+There are two modes available for using the asset manager. With and without a publisher.
+
+Using the publisher, the manager will automatically publish assets and monitor their changes. This is convenient
+when your application and assets are located on the same server and PHP is responsible for all manipulations.
+This mode is used by default in the [yiisoft/app](https://github.com/yiisoft/app) application template.
+
+```php
+/** 
+ * @var \Yiisoft\Aliases\Aliases $aliases
+ * @var \Yiisoft\Assets\AssetLoaderInterface $loader
+ * @var \Yiisoft\Assets\AssetPublisherInterface $publisher
+ */
+
+$assetManager = new \Yiisoft\Assets\AssetManager($aliases, $loader);
+
+$assetManager->setPublisher($publisher);
+
+$assetManager->register([
+    \App\Assets\BootstrapAsset::class,
+    \App\Assets\MainAsset::class,
+]);
+```
+
+If you opt out of using the publisher, you should take care of publishing the asset bundles yourself.
+This is useful when there are multiple applications and resources are located on a separate server.
+
+This mode is also suitable in the following cases:
+
+- For using asset files with CDN only.
+- For using an external module builder, such as [webpack](https://github.com/webpack/webpack).
+- For a single publication, such as when deploying an application.
+
+For a single publication, you need to create a console command and execute it at the time of application deployment:
+
+```php
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Assets\AssetManager;
+use Yiisoft\Assets\AssetPublisher;
+
+class ListCommand extends Command
+{
+    protected static $defaultName = 'assets/publish';
+
+    private AssetManager $assetManager;
+    private Aliases $aliases;
+
+    public function __construct(AssetManager $assetManager, Aliases $aliases)
+    {
+        $this->assetManager = $assetManager;
+        $this->aliases = $aliases;
+        parent::__construct();
+    }
+    
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $this->assetManager->setPublisher(new AssetPublisher($this->aliases));
+        
+        $this->assetManager->register([/* asset bundle names */]);
+        // To register all bundles if the allowed asset bundle names are used.
+        //$this->assetManager->registerAllAllowed();
+        
+        $output->writeln('<info>Done</info>');
+        return 0;
+    }
+}
+```
+
+## Exporting asset bundles
+
+Export automates the collection of asset bundle data for external module builders.
+Two exporters are provided out of the box:
+
+- `Yiisoft\Assets\Exporter\JsonAssetExporter` - exports asset bundles with the values of all properties to a JSON file.
+- `Yiisoft\Assets\Exporter\WebpackAssetExporter` - exports the CSS and JavaScript file paths of asset bundles,
+  converting them to `import '/path/to/file';` expressions and placing them in the specified JavaScript file
+  for later loading into Webpack. For more information, [see here](https://webpack.js.org/concepts/#entry).
+
+Export is especially useful when using the allowed names of asset bundles:
+
+```php
+use Yiisoft\Assets\Exporter\JsonAssetExporter;
+use Yiisoft\Assets\Exporter\WebpackAssetExporter;
+use Yiisoft\Assets\AssetManager;
+
+/** 
+ * @var \Yiisoft\Aliases\Aliases $aliases
+ * @var \Yiisoft\Assets\AssetLoaderInterface $loader
+ */
+
+$assetManager = new AssetManager($aliases, $loader, [
+    \App\Assets\BootstrapAsset::class,
+    \App\Assets\MainAsset::class,
+]);
+
+$assetManager->export(new JsonAssetExporter('/path/to/file.json'));
+$assetManager->export(new WebpackAssetExporter('/path/to/file.js'));
+```
+
+If the allowed asset bundle names are not used, they must be registered before exporting:
+
+```php
+use Yiisoft\Assets\Exporter\JsonAssetExporter;
+use Yiisoft\Assets\Exporter\WebpackAssetExporter;
+use Yiisoft\Assets\AssetManager;
+
+/** 
+ * @var \Yiisoft\Aliases\Aliases $aliases
+ * @var \Yiisoft\Assets\AssetLoaderInterface $loader
+ */
+
+$assetManager = new AssetManager($aliases, $loader);
+
+$assetManager->register([
+    \App\Assets\BootstrapAsset::class,
+    \App\Assets\MainAsset::class,
+]);
+
+$assetManager->export(new JsonAssetExporter('/path/to/file.json'));
+$assetManager->export(new WebpackAssetExporter('/path/to/file.js'));
+```
+
+You can create your own custom exporters for various integrations,
+you just need to implement the `Yiisoft\Assets\AssetExporterInterface`.

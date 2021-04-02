@@ -8,7 +8,6 @@ several popular formats into JavaScript and CSS.
 In order to use asset conversion we have to configure it first. Let's see how it's done. As example
 let's convert [SCSS](https://sass-lang.com/) into CSS.  
 
-
 We'll use [foxy](https://github.com/fxpio/foxy). Since it calls npm we'll need [NodeJS](https://nodejs.org/en/) installed.
 After it is done, create `package.json`:
 
@@ -54,7 +53,7 @@ final class BootstrapAsset extends AssetBundle
     public array $converterOptions = [
         'scss' => [
             'command' => '-I {path} --style compressed',
-            'path' => '@root/tests/public/sourcepath/sass'
+            'path' => '@root/tests/public/sourcepath/sass',
         ]
     ];
 }
@@ -88,13 +87,12 @@ or, if done via params.php:
         'command' => [
             'from' => 'scss',
             'to' => 'css',
-            'command' => '@npm/.bin/sass {options} {from} {to}'
+            'command' => '@npm/.bin/sass {options} {from} {to}',
         ],
-        'forceConvert' => false
+        'forceConvert' => false,
     ],
 ],
 ```
-
 
 Asset bundle's `$converterOptions` define additional options passed to conversion utility. In this case we're telling `sass`
 to minify resulting CSS.
@@ -103,6 +101,6 @@ Now, registering asset bundle as usual would result in asset conversion taking p
 
 ```php
 $assetManager->register([
-    \App\Assets\BootstrapAsset::class
+    \App\Assets\BootstrapAsset::class,
 ]);
 ```
