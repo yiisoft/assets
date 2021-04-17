@@ -24,8 +24,6 @@ use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Log\Logger;
 
 return [
-    LoggerInterface::class => Logger::class,
-
     Aliases::class => static fn () => new Aliases([
         '@root' => dirname(__DIR__),
         '@public' => '@root/public',
@@ -33,13 +31,9 @@ return [
         '@assetsUrl' => '/assets',
         '@npm' => '@root/node_modules',
     ]),
-    
-    AssetConverterInterface::class => static function (ContainerInterface $container) {
-        return new AssetConverter(
-            $container->get(Aliases::class),
-            $container->get(LoggerInterface::class),
-        );
-    },
+
+    LoggerInterface::class => Logger::class,
+    AssetConverterInterface::class => AssetConverter::class,
     
     AssetLoaderInterface::class => static function (ContainerInterface $container) {
         $loader = new AssetLoader($container->get(Aliases::class));
@@ -67,7 +61,7 @@ return [
          * $publisher->setDirMode(0775);
          * $publisher->setFileMode(0755);
          * $publisher->setForceCopy(true);
-         * $publisher->setHashCallback(static fn () => 'HashCallback');
+         * $publisher->setHashCallback(static fn () => 'hash');
          * $publisher->setLinkAssets(true);
          */
 
@@ -138,13 +132,50 @@ The asset manager accepts two optional parameters `$allowedBundleNames` and `$cu
  * @var \Yiisoft\Aliases\Aliases $aliases
  * @var \Psr\Log\LoggerInterface $logger
  */
- 
+
+$assetManager = new \Yiisoft\Assets\AssetManager(
+    $aliases,
+    $logger,
+    $allowedBundleNames, // Default to empty array.
+    $customizedBundles // Default to empty array.
+);
+```
+
+#### Allowed asset bundles
+
+`$allowedBundleNames` - List of names of allowed asset bundles. If the names of allowed asset bundles were specified,
+only these asset bundles or their dependencies can be registered and received. If the array is empty,
+then any asset bundles are allowed.
+
+```php
 $allowedBundleNames = [
     \App\Assets\BootstrapAsset::class,
     \App\Assets\MainAsset::class,
     \App\Assets\JqueryAsset::class,
 ];
+```
 
+The specified asset bundles and all their dependencies will be allowed, so you can specify the top-level bundles
+and not list all the dependencies. For example, if the `MainAsset` depends on the `BootstrapAsset`,
+and the `BootstrapAsset` depends on the `JqueryAsset`, then you can specify only the `MainAsset`.
+
+```php
+$allowedBundleNames = [
+    \App\Assets\MainAsset::class,
+];
+```
+
+Using allowed asset bundles allows you to publish and export bundles of assets without manually registering them.
+It is also convenient if you publish assets using a console command, for example,
+for a one-time publication when deploying an application.
+
+#### Customization of asset bundles
+
+`$customizedBundles` - The configurations to customize asset bundles. When loading an asset bundles,
+if it has a corresponding configuration specified here, the configuration will be applied. The array
+keys are the names of asset class bundles, and the values are arrays with modified property values.
+
+```php
 $customizedBundles = [
     \App\Assets\JqueryAsset::class => [
         'sourcePath' => null, // No publish asset bundle.
@@ -157,20 +188,13 @@ $customizedBundles = [
         ],
     ],
 ];
-
-$assetManager = new \Yiisoft\Assets\AssetManager(
-    $aliases,
-    $logger,
-    $allowedBundleNames, // Default to empty array.
-    $customizedBundles // Default to empty array.
-);
 ```
 
-- `$allowedBundleNames` - List of names of allowed asset bundles. If the names of allowed asset bundles were specified,
-  only these asset bundles or their dependencies can be registered and received. If the array is empty,
-  then any asset bundles are allowed.
-- `$customizedBundles` - The configurations to customize asset bundles. When loading an asset bundles,
-  if it has a corresponding configuration specified here, the configuration will be applied.
+The values of the `sourcePath` and `js` properties will be redefined for the `App\Assets\JqueryAsset` bundle,
+and the values of the other properties will remain unchanged.
+
+> If a value is `false`, it means the corresponding asset bundle is disabled and
+> all the values of its properties will be empty.
 
 For use in the [Yii framework](http://www.yiiframework.com/),
 see the configuration files: [`config/params.php`](../config/params.php) and [`config/web.php`](../config/web.php).
