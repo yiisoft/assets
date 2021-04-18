@@ -243,7 +243,7 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
 
-class ListCommand extends Command
+class PublishCommand extends Command
 {
     protected static $defaultName = 'assets/publish';
 
@@ -270,6 +270,55 @@ class ListCommand extends Command
     }
 }
 ```
+
+### Publishing when using a load balancer
+
+Single publishing of asset bundles is suitable when using local files, load balancer, and multiple applications
+located on different servers.
+
+Additionally, you need to use a static hash for the name of the directory that is created when publishing. Just like
+in the previous example, you need to create a console command and execute it at the time of application deployment:
+
+```php
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Assets\AssetManager;
+use Yiisoft\Assets\AssetPublisher;
+
+class PublishCommand extends Command
+{
+    protected static $defaultName = 'assets/publish';
+
+    private AssetManager $assetManager;
+    private Aliases $aliases;
+
+    public function __construct(AssetManager $assetManager, Aliases $aliases)
+    {
+        $this->assetManager = $assetManager;
+        $this->aliases = $aliases;
+        parent::__construct();
+    }
+    
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $publisher = new AssetPublisher($this->aliases);
+        $publisher->setHashCallback(static fn (string $path):string => hash('md4', $path));
+        $this->assetManager->setPublisher(new AssetPublisher($this->aliases));
+        
+        $this->assetManager->register([/* asset bundle names */]);
+        // To register all bundles if the allowed asset bundle names are used.
+        //$this->assetManager->registerAllAllowed();
+        
+        $output->writeln('<info>Done</info>');
+        return 0;
+    }
+}
+```
+
+If you publish asset bundles with an external module builder or store everything only on a CDN,
+then just don't use the publisher.
 
 ## Exporting asset bundles
 

@@ -66,7 +66,7 @@ final class AssetPublisher implements AssetPublisherInterface
      * Example of an implementation using MD4 hash:
      *
      * ```php
-     * function ($path) {
+     * function (string $path): string {
      *     return hash('md4', $path);
      * }
      * ```
