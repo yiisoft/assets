@@ -3,10 +3,11 @@
 Asset bundle represents a collection of asset files, such as CSS, JavaScript, images along with publishing options.
 
 Each asset bundle has a unique name that globally identifies it among all asset bundles used in an application.
-The name is the [fully qualified class name](http://php.net/manual/en/language.namespaces.rules.php) of the class representing it.
+The name is the [fully qualified class name](http://php.net/manual/en/language.namespaces.rules.php) of the class
+representing it.
 
-An asset bundle can depend on other asset bundles. When registering an asset bundle to an asset manager, all its dependent
-asset bundles will be recursively registered.
+An asset bundle can depend on other asset bundles. When registering an asset bundle to an asset manager,
+all its dependent asset bundles will be recursively registered.
 
 There are three types of asset bundles:
 
@@ -37,9 +38,11 @@ as public properties:
 
 ## Defining asset bundle for local assets
 
-A common use case is to define bundles for local files. As an example, we will create a bunlde with `sourcePath` pointing to [Bootstrap 4](https://getbootstrap.com/).
+A common use case is to define bundles for local files. As an example, we will create a bundle with `sourcePath` pointing
+to [Bootstrap 4](https://getbootstrap.com/).
 
-We'll use [foxy](https://github.com/fxpio/foxy). In calls npm so we'll need [NodeJS](https://nodejs.org/en/) installed. After it is done, create `package.json`:
+We'll use [foxy](https://github.com/fxpio/foxy). It calls npm, so we'll need [NodeJS](https://nodejs.org/en/) installed.
+After it is done, create `package.json`:
 
 ```json
 {
@@ -52,7 +55,8 @@ We'll use [foxy](https://github.com/fxpio/foxy). In calls npm so we'll need [Nod
 }
 ```
 
-npm installs three packages into `node_modules` directory of our application. These are bootstrap4, and its two dependencies: jquery and popper.
+npm installs three packages into `node_modules` directory of our application. These are bootstrap4, and its two
+dependencies: jQuery and popper.
 
 Add alias to the application config at `config/params.php`:
 
