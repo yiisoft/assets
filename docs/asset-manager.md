@@ -233,7 +233,8 @@ This mode is also suitable in the following cases:
 - For using an external module builder, such as [webpack](https://github.com/webpack/webpack).
 - For a single publication, such as when deploying an application.
 
-For a single publication, you need to create a console command and execute it at the time of application deployment:
+Another way is to pre-publish assets. In order to do it, you need to create a console command and execute it at the time
+of application deployment:
 
 ```php
 use Symfony\Component\Console\Command\Command;
@@ -271,13 +272,12 @@ class PublishCommand extends Command
 }
 ```
 
-### Publishing when using a load balancer
+### Pre-publishing when using a load balancer
 
-Single publishing of asset bundles is suitable when using local files, load balancer, and multiple applications
-located on different servers.
-
-Additionally, you need to use a static hash for the name of the directory that is created when publishing. Just like
-in the previous example, you need to create a console command and execute it at the time of application deployment:
+Pre-publishing asset bundles is suitable for both local files and multiple servers behind a load balancer.
+In the latter case you need to use a static hash for the name of the directory that is created when publishing.
+Just like in the previous example, you need to create a console command and execute it at the time of
+application deployment:
 
 ```php
 use Symfony\Component\Console\Command\Command;
@@ -316,9 +316,6 @@ class PublishCommand extends Command
     }
 }
 ```
-
-If you publish asset bundles with an external module builder or store everything only on a CDN,
-then just don't use the publisher.
 
 ## Exporting asset bundles
 
