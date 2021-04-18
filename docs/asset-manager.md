@@ -1,7 +1,7 @@
 # Asset manager
 
 AssetManager resolves asset bundles registered in it and provides a list of files to include into HTML.
-For general usage see "[asset bundles](asset-bundles.md)". Here we'll focus on configuring it.
+For general usage see "[asset bundles](asset-bundles.md)". In this guide we'll focus on configuring it.
 
 Configuration could be done in two ways:
 
@@ -121,7 +121,7 @@ $assetManager->setConverter($converter);
 $assetManager->setPublisher($publisher);
 ```
 
-### Creation with additional settings
+### Specifying additional settings
 
 The asset manager accepts two optional parameters `$allowedBundleNames` and `$customizedBundles` in the constructor:
 
@@ -144,7 +144,7 @@ $assetManager = new \Yiisoft\Assets\AssetManager(
 #### Allowed asset bundles
 
 `$allowedBundleNames` - List of names of allowed asset bundles. If the names of allowed asset bundles were specified,
-only these asset bundles or their dependencies can be registered and received. If the array is empty,
+only these asset bundles, or their dependencies can be registered and received. If the array is empty,
 then any asset bundles are allowed.
 
 ```php
