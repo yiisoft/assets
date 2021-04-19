@@ -117,6 +117,7 @@ final class AssetUtil
      * Extracts the file paths to export from each asset bundle {@see AssetBundle::$export}.
      *
      * @param AssetBundle[] $bundles List of asset bundles.
+     *
      * @return string[] Extracted file paths.
      */
     public static function extractFilePathsForExport(array $bundles): array
