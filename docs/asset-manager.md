@@ -319,13 +319,13 @@ class PublishCommand extends Command
 
 ## Exporting asset bundles
 
-Export automates the collection of asset bundle data for external module builders.
+Export automates the collection of asset bundle file paths for external module builders.
 Two exporters are provided out of the box:
 
-- `Yiisoft\Assets\Exporter\JsonAssetExporter` - exports asset bundles with the values of all properties to a JSON file.
-- `Yiisoft\Assets\Exporter\WebpackAssetExporter` - exports the CSS and JavaScript file paths of asset bundles,
-  converting them to `import '/path/to/file';` expressions and placing them in the specified JavaScript file
-  for later loading into Webpack. For more information, [see here](https://webpack.js.org/concepts/#entry).
+- `Yiisoft\Assets\Exporter\JsonAssetExporter` - the file paths of asset bundles to a JSON file.
+- `Yiisoft\Assets\Exporter\WebpackAssetExporter` - exports the file paths of asset bundles, converting them to
+  `import '/path/to/file';` expressions and placing them in the specified JavaScript file for later loading into
+  Webpack. For more information, [see here](https://webpack.js.org/concepts/#entry).
 
 Export is especially useful when using the allowed names of asset bundles:
 

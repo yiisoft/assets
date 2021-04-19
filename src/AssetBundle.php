@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use JsonSerializable;
-
 /**
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
  *
@@ -16,7 +14,7 @@ use JsonSerializable;
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
  */
-class AssetBundle implements JsonSerializable
+class AssetBundle
 {
     /**
      * @var string|null The Web-accessible directory that contains the asset files in this bundle.
@@ -127,18 +125,38 @@ class AssetBundle implements JsonSerializable
     public array $jsVar = [];
 
     /**
-     * @var array The options to be passed to {@see AssetPublisher::publish()} when the asset bundle is being published.
-     * This property is used only when {@see $sourcePath} is set.
+     * @var array The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
+     * is being published. This property is used only when {@see $sourcePath} is set.
      */
     public array $publishOptions = [];
 
     /**
+     * @var string[] List of file paths to export into a format readable
+     * by third party tools such as Webpack {@see AssetManager::export()}.
+     *
+     * If the array is empty, the file paths from the {@see $css} and {@see $js}
+     * will be exported {@see AssetUtil::extractFilePathsForExport()}.
+     *
+     * For example:
+     *
+     * ```php
+     * public array $export = [
+     *     'img/image.png',
+     *     'css/style.css',
+     *     'js/script.js',
+     * ]:
+     * ```
+     */
+    public array $export = [];
+
+    /**
      * @var string|null The directory that contains the source asset files for this asset bundle.
      * A source asset file is a file that is part of your source code repository of your Web application.
-     *
      * You must set this property if the directory containing the source asset files is not Web accessible.
-     * By setting this property, {@see AssetManager} will publish the source asset files to a Web-accessible
-     * directory automatically when the asset bundle is registered on a page.
+     *
+     * If a publisher is used {@see AssetManager::setPublisher()}, by setting this property,
+     * {@see AssetManager} will publish the source asset files to a Web-accessible directory
+     * automatically when the asset bundle is registered on a page.
      *
      * If you do not set this property, it means the source asset files are located under {@see $basePath}.
      *
@@ -147,9 +165,4 @@ class AssetBundle implements JsonSerializable
      * {@see $publishOptions}
      */
     public ?string $sourcePath = null;
-
-    public function jsonSerialize(): array
-    {
-        return (array) $this;
-    }
 }

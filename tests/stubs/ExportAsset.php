@@ -6,24 +6,27 @@ namespace Yiisoft\Assets\Tests\stubs;
 
 use Yiisoft\Assets\AssetBundle;
 
-final class WebpackAsset extends AssetBundle
+final class ExportAsset extends AssetBundle
 {
     public ?string $basePath = '@asset';
 
     public ?string $baseUrl = '@assetUrl';
 
     public array $css = [
-        'webpack/stub.css',
-        'css/stub.css',
+        'export/stub.css',
     ];
 
     public array $js = [
-        ['webpack/stub.js', 'defer' => true],
-        'js/stub.js',
+        'export/stub.js',
+    ];
+
+    public array $export = [
+        'export/yii-logo.png',
+        'export/stub.css',
     ];
 
     public array $depends = [
-        ExportAsset::class,
+        SourceAsset::class,
     ];
 
     public ?string $sourcePath = '@sourcePath';
