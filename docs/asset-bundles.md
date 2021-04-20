@@ -33,6 +33,7 @@ as public properties:
 `$js`            |`array`      | `[]`    | List of JavaScript files that this bundle contains.
 `$jsOptions`     |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setJsFiles()`.
 `$publishOptions`|`array`      | `[]`    | The options to be passed to `\Yiisoft\Assets\AssetPublisher::publish()` when the asset bundle is being published.
+`$export`        |`array`      | `[]`    | List of file paths to export into a format readable by third party tools such as [Webpack](https://webpack.js.org/). If the array is empty, the file paths from the `$css` and `$js` will be exported. 
 `$sourcePath`    |`string/null`| `null`  | The directory that contains the source asset files for this asset bundle.
 
 
@@ -244,3 +245,39 @@ $this->setJsFiles($assetManager->getJsFiles());
 
 > Note: If you need to register an asset in a single view, registering asset is done in that view instead while
 resolving files stays in the layout.
+
+### Override file paths for export
+
+By default, all CSS and JavaScript file paths are exported from the asset bundle, but you can specify the list of exported
+file paths explicitly in the `$export` property.
+
+```php
+namespace App\Assets;
+
+use Yiisoft\Assets\AssetBundle;
+
+class AppAsset extends AssetBundle
+{
+    public ?string $basePath = '@assets';
+
+    public ?string $baseUrl = '@assetsUrl';
+
+    public ?string $sourcePath = '@resources/assets';
+    
+    public array $css = [
+        'css/style.css',
+    ];
+
+    public array $js = [
+        'js/script.js',
+    ];
+
+    public array $export = [
+        'img/image.png',
+        'js/script.js',
+    ];
+}
+```
+
+In this example, the paths to the `img/image.png` and `js/script.js` files will be exported,
+but the path to the `css/style.css` file will not be exported.

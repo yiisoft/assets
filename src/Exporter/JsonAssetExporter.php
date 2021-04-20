@@ -11,7 +11,7 @@ use Yiisoft\Assets\AssetUtil;
 use Yiisoft\Json\Json;
 
 /**
- * Exports asset bundles with the values of all properties {@see AssetBundle::jsonSerialize()} to a JSON file.
+ * Exports the file paths of asset bundles {@see AssetBundle::$export} to a JSON file.
  */
 final class JsonAssetExporter implements AssetExporterInterface
 {
@@ -36,6 +36,6 @@ final class JsonAssetExporter implements AssetExporterInterface
      */
     public function export(array $assetBundles): void
     {
-        AssetUtil::exportToFile($this->targetFile, Json::encode($assetBundles));
+        AssetUtil::exportToFile($this->targetFile, Json::encode(AssetUtil::extractFilePathsForExport($assetBundles)));
     }
 }

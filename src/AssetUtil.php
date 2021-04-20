@@ -7,8 +7,13 @@ namespace Yiisoft\Assets;
 use RuntimeException;
 use Yiisoft\Aliases\Aliases;
 
+use function array_merge;
+use function array_filter;
+use function array_shift;
+use function array_unique;
 use function dirname;
 use function file_put_contents;
+use function is_array;
 use function is_dir;
 use function is_subclass_of;
 use function is_writable;
@@ -82,9 +87,9 @@ final class AssetUtil
     /**
      * Resolve path aliases for {@see AssetBundle} properties:
      *
-     * - {@see AssetBundle::basePath}
-     * - {@see AssetBundle::baseUrl}
-     * - {@see AssetBundle::sourcePath}
+     * - {@see AssetBundle::$basePath}
+     * - {@see AssetBundle::$baseUrl}
+     * - {@see AssetBundle::$sourcePath}
      *
      * @param AssetBundle $bundle The asset bundle instance to resolving path aliases.
      * @param Aliases $aliases The aliases instance to resolving path aliases.
@@ -106,6 +111,40 @@ final class AssetUtil
         }
 
         return $bundle;
+    }
+
+    /**
+     * Extracts the file paths to export from each asset bundle {@see AssetBundle::$export}.
+     *
+     * @param AssetBundle[] $bundles List of asset bundles.
+     *
+     * @return string[] Extracted file paths.
+     */
+    public static function extractFilePathsForExport(array $bundles): array
+    {
+        $filePaths = [];
+
+        foreach ($bundles as $bundle) {
+            if ($bundle->cdn || empty($bundle->sourcePath)) {
+                continue;
+            }
+
+            if (!empty($bundle->export)) {
+                foreach ($bundle->export as $filePath) {
+                    $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
+                }
+                continue;
+            }
+
+            foreach (array_merge($bundle->css, $bundle->js) as $item) {
+                if ($item !== null) {
+                    $filePath = is_array($item) ? array_shift($item) : $item;
+                    $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
+                }
+            }
+        }
+
+        return array_unique(array_filter($filePaths));
     }
 
     /**

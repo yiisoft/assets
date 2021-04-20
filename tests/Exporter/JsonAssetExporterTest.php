@@ -8,8 +8,8 @@ use RuntimeException;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetUtil;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
-use Yiisoft\Assets\Tests\stubs\JqueryAsset;
-use Yiisoft\Assets\Tests\stubs\Level3Asset;
+use Yiisoft\Assets\Tests\stubs\CdnAsset;
+use Yiisoft\Assets\Tests\stubs\ExportAsset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\TestCase;
@@ -30,14 +30,38 @@ final class JsonAssetExporterTest extends TestCase
     public function testExportWithCreateDependencies(): void
     {
         $targetFile = $this->aliases->get('@exporter/test.json');
+        $exportBundle = AssetUtil::resolvePathAliases(new ExportAsset(), $this->aliases);
+        $sourceBundle = AssetUtil::resolvePathAliases(new SourceAsset(), $this->aliases);
         $expected = Json::encode([
-            Level3Asset::class => AssetUtil::resolvePathAliases(new Level3Asset(), $this->aliases),
-            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
-            PositionAsset::class => AssetUtil::resolvePathAliases(new PositionAsset(), $this->aliases),
+            "{$sourceBundle->sourcePath}/{$sourceBundle->css[0]}",
+            "{$sourceBundle->sourcePath}/{$sourceBundle->js[0]}",
+            "{$exportBundle->sourcePath}/{$exportBundle->export[0]}",
+            "{$exportBundle->sourcePath}/{$exportBundle->export[1]}",
         ]);
 
-        $this->manager->register([PositionAsset::class]);
+        $this->manager->register([ExportAsset::class]);
         $this->manager->export(new JsonAssetExporter($targetFile));
+
+        $this->assertFileExists($targetFile);
+        $this->assertSame($expected, file_get_contents($targetFile));
+    }
+
+    public function testExportWithoutRegisterAndWithAllowed(): void
+    {
+        $targetFile = $this->aliases->get('@exporter/test.json');
+        $exportBundle = AssetUtil::resolvePathAliases(new ExportAsset(), $this->aliases);
+        $sourceBundle = AssetUtil::resolvePathAliases(new SourceAsset(), $this->aliases);
+        $manager = new AssetManager($this->aliases, $this->loader, [ExportAsset::class]);
+
+        $expected = Json::encode([
+            "{$sourceBundle->sourcePath}/{$sourceBundle->css[0]}",
+            "{$sourceBundle->sourcePath}/{$sourceBundle->js[0]}",
+            "{$exportBundle->sourcePath}/{$exportBundle->export[0]}",
+            "{$exportBundle->sourcePath}/{$exportBundle->export[1]}",
+        ]);
+
+        $manager->setPublisher($this->publisher);
+        $manager->export(new JsonAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
         $this->assertSame($expected, file_get_contents($targetFile));
@@ -47,44 +71,53 @@ final class JsonAssetExporterTest extends TestCase
     {
         $targetFile = $this->aliases->get('@exporter/test.json');
         $config = [
-            'basePath' => '@root/tests/public/jquery',
-            'baseUrl' => '/js',
             'js' => ['jquery.js'],
             'css' => [],
-            'sourcePath' => '',
+            'export' => [],
+            'sourcePath' => '@root/tests/public/jquery',
         ];
-        $sourceBundle = AssetUtil::createAsset(SourceAsset::class, $config);
-        $manager = new AssetManager($this->aliases, $this->loader, [SourceAsset::class], [
-            SourceAsset::class => $config,
-        ]);
-        $manager->setPublisher($this->publisher);
-        $expected = Json::encode([
-            Level3Asset::class => AssetUtil::resolvePathAliases(new Level3Asset(), $this->aliases),
-            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
-            SourceAsset::class => AssetUtil::resolvePathAliases($sourceBundle, $this->aliases),
+
+        $sourceBundle = AssetUtil::resolvePathAliases(new SourceAsset(), $this->aliases);
+        $exportBundle = AssetUtil::resolvePathAliases(
+            AssetUtil::createAsset(ExportAsset::class, $config),
+            $this->aliases,
+        );
+
+        $manager = new AssetManager($this->aliases, $this->loader, [ExportAsset::class], [
+            ExportAsset::class => $config,
         ]);
 
+        $expected = Json::encode([
+            "{$sourceBundle->sourcePath}/{$sourceBundle->css[0]}",
+            "{$sourceBundle->sourcePath}/{$sourceBundle->js[0]}",
+            "{$exportBundle->sourcePath}/{$exportBundle->js[0]}",
+        ]);
+
+        $manager->setPublisher($this->publisher);
         $manager->export(new JsonAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
         $this->assertSame($expected, file_get_contents($targetFile));
     }
 
-    public function testExportWithoutRegisterAndWithAllowed(): void
+    public function testExportWithCdnBundle(): void
     {
         $targetFile = $this->aliases->get('@exporter/test.json');
-        $manager = new AssetManager($this->aliases, $this->loader, [PositionAsset::class]);
-        $manager->setPublisher($this->publisher);
-        $expected = Json::encode([
-            Level3Asset::class => AssetUtil::resolvePathAliases(new Level3Asset(), $this->aliases),
-            JqueryAsset::class => AssetUtil::resolvePathAliases(new JqueryAsset(), $this->aliases),
-            PositionAsset::class => AssetUtil::resolvePathAliases(new PositionAsset(), $this->aliases),
-        ]);
-
-        $manager->export(new JsonAssetExporter($targetFile));
+        $this->manager->register([CdnAsset::class]);
+        $this->manager->export(new JsonAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
-        $this->assertSame($expected, file_get_contents($targetFile));
+        $this->assertSame('[]', file_get_contents($targetFile));
+    }
+
+    public function testExportWithBundleWithoutSourcePath(): void
+    {
+        $targetFile = $this->aliases->get('@exporter/test.json');
+        $this->manager->register([PositionAsset::class]);
+        $this->manager->export(new JsonAssetExporter($targetFile));
+
+        $this->assertFileExists($targetFile);
+        $this->assertSame('[]', file_get_contents($targetFile));
     }
 
     public function testExportToJsonFileThrowExceptionForNotExistTargetDirectory(): void
@@ -96,6 +129,6 @@ final class JsonAssetExporterTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage("Target directory \"{$targetDirectory}\" does not exist or is not writable.");
 
-        $exporter->export([PositionAsset::class => new PositionAsset()]);
+        $exporter->export([ExportAsset::class => new ExportAsset()]);
     }
 }
