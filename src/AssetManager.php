@@ -23,23 +23,12 @@ use function is_int;
 final class AssetManager
 {
     /**
-     * @var string[] List of names of allowed asset bundles.
-     * If the array is empty, then any asset bundles are allowed. Default to empty array.
-     *
-     * If the names of allowed asset bundles were specified, only these asset bundles or their dependencies can be
-     * registered {@see register()} and received {@see getBundle ()}. Also, specifying names allows to export
-     * {@see export()} asset bundles automatically without first registering them manually.
+     * @var string[] List of names of allowed asset bundles. If the array is empty, then any asset bundles are allowed.
      */
     private array $allowedBundleNames;
 
     /**
      * @var array The asset bundle configurations. This property is provided to customize asset bundles.
-     * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration
-     * specified here, the configuration will be applied to the bundle.
-     *
-     * The array keys are the asset class bundle names (without leading backslash).
-     * If a value is false, it means the corresponding asset bundle is disabled and {@see getBundle()}
-     * should return an instance of the specified asset bundle with empty property values.
      */
     private array $customizedBundles;
 
@@ -65,8 +54,15 @@ final class AssetManager
     /**
      * @param Aliases $aliases The aliases instance.
      * @param AssetLoaderInterface $loader The loader instance.
-     * @param string[] $allowedBundleNames List of names of allowed asset bundles {@see $allowedBundleNames}.
-     * @param array $customizedBundles The asset bundle configurations {@see $customizedBundles}.
+     * @param string[] $allowedBundleNames List of names of allowed asset bundles. If the array is empty, then any
+     * asset bundles are allowed. If the names of allowed asset bundles were specified, only these asset bundles
+     * or their dependencies can be registered {@see register()} and obtained {@see getBundle()}. Also, specifying
+     * names allows to export {@see export()} asset bundles automatically without first registering them manually.
+     * @param array $customizedBundles The asset bundle configurations. Provided to customize asset bundles.
+     * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration specified
+     * here, the configuration will be applied to the bundle. The array keys are the asset class bundle names
+     * (without leading backslash). If a value is false, it means the corresponding asset bundle is disabled
+     * and {@see getBundle()} should return an instance of the specified asset bundle with empty property values.
      */
     public function __construct(
         Aliases $aliases,
@@ -107,19 +103,19 @@ final class AssetManager
         return clone $bundle;
     }
 
-    public function getConverter(): ?AssetConverterInterface
+    /**
+     * Returns the actual URL for the specified asset.
+     *
+     * @param string $name The asset bundle name.
+     * @param string $path The asset path.
+     *
+     * @throws InvalidConfigException If asset files are not found.
+     *
+     * @return string The actual URL for the specified asset.
+     */
+    public function getAssetUrl(string $name, string $path): string
     {
-        return $this->converter;
-    }
-
-    public function getLoader(): AssetLoaderInterface
-    {
-        return $this->loader;
-    }
-
-    public function getPublisher(): ?AssetPublisherInterface
-    {
-        return $this->publisher;
+        return $this->loader->getAssetUrl($this->getBundle($name), $path);
     }
 
     /**
@@ -163,30 +159,51 @@ final class AssetManager
     }
 
     /**
-     * Sets the asset converter.
+     * Returns a new instance with the specified converter.
      *
-     * @param AssetConverterInterface $converter The asset converter. This can be either an object implementing the
-     * {@see AssetConverterInterface}, or a configuration array that can be used to create the asset converter object.
+     * @param AssetConverterInterface $converter
+     *
+     * @return self
      */
-    public function setConverter(AssetConverterInterface $converter): void
+    public function withConverter(AssetConverterInterface $converter): self
     {
-        $this->converter = $converter;
+        $new = clone $this;
+        $new->converter = $converter;
+        return $new;
     }
 
     /**
-     * Sets the asset publisher.
+     * Returns a new instance with the specified loader.
+     *
+     * @param AssetLoaderInterface $loader
+     *
+     * @return self
+     */
+    public function withLoader(AssetLoaderInterface $loader): self
+    {
+        $new = clone $this;
+        $new->loader = $loader;
+        return $new;
+    }
+
+    /**
+     * Returns a new instance with the specified publisher.
      *
      * @param AssetPublisherInterface $publisher
+     *
+     * @return self
      */
-    public function setPublisher(AssetPublisherInterface $publisher): void
+    public function withPublisher(AssetPublisherInterface $publisher): self
     {
-        $this->publisher = $publisher;
+        $new = clone $this;
+        $new->publisher = $publisher;
+        return $new;
     }
 
     /**
-     * Exports registered asset bundles {@see $registeredBundles}.
+     * Exports registered asset bundles.
      *
-     * When using the allowed asset bundles {@see $allowedBundleNames}, the export result will always be the same,
+     * When using the allowed asset bundles, the export result will always be the same,
      * since the asset bundles are registered before the export. If do not use the allowed asset bundles mode,
      * must register {@see register()} all the required asset bundles before exporting.
      *
@@ -209,7 +226,7 @@ final class AssetManager
     }
 
     /**
-     * Registers asset bundles by names {@see $registeredBundles}.
+     * Registers asset bundles by names.
      *
      * @param string[] $names
      * @param int|null $position
@@ -232,7 +249,7 @@ final class AssetManager
     }
 
     /**
-     * Registers all allowed {@see $allowedBundleNames} asset bundles {@see $registeredBundles}.
+     * Registers all allowed asset bundles.
      *
      * @throws InvalidConfigException
      * @throws RuntimeException

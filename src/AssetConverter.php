@@ -9,6 +9,7 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Files\FileHelper;
 
 use function array_key_exists;
+use function array_merge;
 use function escapeshellarg;
 use function fclose;
 use function is_file;
@@ -33,15 +34,6 @@ final class AssetConverter implements AssetConverterInterface
      * @var array The commands that are used to perform the asset conversion.
      * The keys are the asset file extension names, and the values are the corresponding
      * target script types (either "css" or "js") and the commands used for the conversion.
-     *
-     * You may also use a {@see https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md}
-     * to specify the location of the command:
-     *
-     * ```php
-     * [
-     *     'styl' => ['css', '@app/node_modules/bin/stylus < {from} > {to}'],
-     * ]
-     * ```
      */
     private array $commands = [
         'less' => ['css', 'lessc {from} {to} --no-color --source-map'],
@@ -54,14 +46,110 @@ final class AssetConverter implements AssetConverterInterface
 
     /**
      * @var bool Whether the source asset file should be converted even if its result already exists.
-     * You may want to set this to be `true` during the development stage to make sure the converted
-     * assets are always up-to-date. Do not set this to true on production servers as it will
-     * significantly degrade the performance.
      */
-    private bool $forceConvert = false;
+    private bool $forceConvert;
 
     /**
      * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is outdated.
+     */
+    private $isOutdatedCallback = null;
+
+    /**
+     * @param Aliases $aliases The aliases instance.
+     * @param LoggerInterface $logger The logger instance.
+     * @param array $commands The commands that are used to perform the asset conversion.
+     * The keys are the asset file extension names, and the values are the corresponding
+     * target script types (either "css" or "js") and the commands used for the conversion.
+     *
+     * You may also use a {@see https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md}
+     * to specify the location of the command:
+     *
+     * ```php
+     * [
+     *     'styl' => ['css', '@app/node_modules/bin/stylus < {from} > {to}'],
+     * ]
+     * ```
+     * @param bool $forceConvert Whether the source asset file should be converted even if its result already exists.
+     * See {@see withForceConvert()}.
+     */
+    public function __construct(
+        Aliases $aliases,
+        LoggerInterface $logger,
+        array $commands = [],
+        bool $forceConvert = false
+    ) {
+        $this->aliases = $aliases;
+        $this->logger = $logger;
+        $this->commands = array_merge($this->commands, $commands);
+        $this->forceConvert = $forceConvert;
+    }
+
+    public function convert(string $asset, string $basePath, array $optionsConverter = []): string
+    {
+        $pos = strrpos($asset, '.');
+
+        if ($pos !== false) {
+            $srcExt = substr($asset, $pos + 1);
+
+            $commandOptions = $this->buildConverterOptions($srcExt, $optionsConverter);
+
+            if (isset($this->commands[$srcExt])) {
+                [$ext, $command] = $this->commands[$srcExt];
+                $result = substr($asset, 0, $pos + 1) . $ext;
+                if ($this->forceConvert || $this->isOutdated($basePath, $asset, $result, $srcExt, $ext)) {
+                    $this->runCommand($command, $basePath, $asset, $result, $commandOptions);
+                }
+
+                return $result;
+            }
+        }
+
+        return $asset;
+    }
+
+    /**
+     * Returns a new instance with the specified command.
+     *
+     * Allows you to set a command that is used to perform the asset conversion {@see $commands}.
+     *
+     * @param string $from The file extension of the format converting from.
+     * @param string $to The file extension of the format converting to.
+     * @param string $command The command to execute for conversion.
+     *
+     * Example:
+     *
+     * $converter = $converter->withCommand('scss', 'css', 'sass {options} {from} {to}');
+     *
+     * @return self
+     */
+    public function withCommand(string $from, string $to, string $command): self
+    {
+        $new = clone $this;
+        $new->commands[$from] = [$to, $command];
+        return $new;
+    }
+
+    /**
+     * Returns a new instance with the specified force convert value.
+     *
+     * @param bool $forceConvert Whether the source asset file should be converted even if its result already exists.
+     * Default is `false`. You may want to set this to be `true` during the development stage to make
+     * sure the converted assets are always up-to-date. Do not set this to true on production servers
+     * as it will significantly degrade the performance.
+     *
+     * @return self
+     */
+    public function withForceConvert(bool $forceConvert): self
+    {
+        $new = clone $this;
+        $new->forceConvert = $forceConvert;
+        return $new;
+    }
+
+    /**
+     * Returns a new instance with a callback that is used to check for outdated result.
+     *
+     * @param callable $isOutdatedCallback A PHP callback, which should be invoked to check whether asset conversion result is outdated.
      * It will be invoked only if conversion target file exists and its modification time is older then the one of
      * source file.
      * Callback should match following signature:
@@ -93,72 +181,14 @@ final class AssetConverter implements AssetConverterInterface
      *     return false;
      * }
      * ```
+     *
+     * @return self
      */
-    private $isOutdatedCallback = null;
-
-    public function __construct(Aliases $aliases, LoggerInterface $logger)
+    public function withIsOutdatedCallback(callable $isOutdatedCallback): self
     {
-        $this->aliases = $aliases;
-        $this->logger = $logger;
-    }
-
-    public function convert(string $asset, string $basePath, array $optionsConverter = []): string
-    {
-        $pos = strrpos($asset, '.');
-
-        if ($pos !== false) {
-            $srcExt = substr($asset, $pos + 1);
-
-            $commandOptions = $this->buildConverterOptions($srcExt, $optionsConverter);
-
-            if (isset($this->commands[$srcExt])) {
-                [$ext, $command] = $this->commands[$srcExt];
-                $result = substr($asset, 0, $pos + 1) . $ext;
-                if ($this->forceConvert || $this->isOutdated($basePath, $asset, $result, $srcExt, $ext)) {
-                    $this->runCommand($command, $basePath, $asset, $result, $commandOptions);
-                }
-
-                return $result;
-            }
-        }
-
-        return $asset;
-    }
-
-    /**
-     * Allows you to set a command that is used to perform the asset conversion.
-     *
-     * @param string $from The file extension of the format converting from.
-     * @param string $to The file extension of the format converting to.
-     * @param string $command The command to execute for conversion.
-     *
-     * Example:
-     *
-     * $converter->setCommand('scss', 'css', 'sass {options} {from} {to}');
-     */
-    public function setCommand(string $from, string $to, string $command): void
-    {
-        $this->commands[$from] = [$to, $command];
-    }
-
-    /**
-     * Make the conversion regardless of whether the asset already exists.
-     *
-     * @param bool $value
-     */
-    public function setForceConvert(bool $value): void
-    {
-        $this->forceConvert = $value;
-    }
-
-    /**
-     * PHP callback, which should be invoked to check whether asset conversion result is outdated.
-     *
-     * @param callable $value
-     */
-    public function setIsOutdatedCallback(callable $value): void
-    {
-        $this->isOutdatedCallback = $value;
+        $new = clone $this;
+        $new->isOutdatedCallback = $isOutdatedCallback;
+        return $new;
     }
 
     /**

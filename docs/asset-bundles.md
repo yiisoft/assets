@@ -248,8 +248,8 @@ resolving files stays in the layout.
 
 ### Override file paths for export
 
-By default, all CSS and JavaScript file paths are exported from the asset bundle, but you can specify the list of exported
-file paths explicitly in the `$export` property.
+By default, all CSS and JavaScript file paths are exported from the asset bundle, but
+you can specify the list of exported file paths explicitly in the `$export` property.
 
 ```php
 namespace App\Assets;

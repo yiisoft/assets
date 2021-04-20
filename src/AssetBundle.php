@@ -154,8 +154,8 @@ class AssetBundle
      * A source asset file is a file that is part of your source code repository of your Web application.
      * You must set this property if the directory containing the source asset files is not Web accessible.
      *
-     * If a publisher is set via {@see AssetManager::setPublisher()}, {@see AssetManager} will publish
-     * the source asset files to a Web-accessible directory automatically when the asset bundle is registered on a page.
+     * If a publisher is set via {@see AssetManager::withPublisher()}, {@see AssetManager} will publish the source
+     * asset files to a Web-accessible directory automatically when the asset bundle is registered on a page.
      *
      * If you do not set this property, it means the source asset files are located under {@see $basePath}.
      *

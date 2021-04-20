@@ -22,10 +22,12 @@ use Yiisoft\Files\FileHelper;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 
 use function closedir;
+use function crc32;
 use function dirname;
 use function is_dir;
 use function opendir;
 use function readdir;
+use function sprintf;
 use function str_replace;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
@@ -66,6 +68,24 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $registeredBundles = $property->getValue($manager);
         $property->setAccessible(false);
         return $registeredBundles;
+    }
+
+    /**
+     * Returns a published hash which is the name of the directory.
+     *
+     * @param string $path
+     * @param AssetPublisherInterface $publisher
+     *
+     * @return string The published hash which is the name of the directory.
+     */
+    protected function getPublishedHash(string $path, AssetPublisherInterface $publisher): string
+    {
+        $reflection = new ReflectionClass($publisher);
+        $property = $reflection->getProperty('linkAssets');
+        $property->setAccessible(true);
+        $linkAssets = $property->getValue($publisher);
+        $property->setAccessible(false);
+        return sprintf('%x', crc32($path . '|' . $linkAssets));
     }
 
     /**
@@ -159,23 +179,26 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             '@sourcePath' => '@root/tests/public/sourcepath',
         ]);
 
-        $converter = new AssetConverter($aliases, new NullLogger());
-        $converter->setCommand(
-            $params['yiisoft/assets']['assetConverter']['command']['from'],
-            $params['yiisoft/assets']['assetConverter']['command']['to'],
-            $params['yiisoft/assets']['assetConverter']['command']['command'],
+        $converter = new AssetConverter(
+            $aliases,
+            new NullLogger(),
+            $params['yiisoft/assets']['assetConverter']['commands'],
+            $params['yiisoft/assets']['assetConverter']['forceConvert'],
         );
-        $converter->setForceConvert($params['yiisoft/assets']['assetConverter']['forceConvert']);
 
-        $loader = new AssetLoader($aliases);
-        $loader->setAppendTimestamp($params['yiisoft/assets']['assetLoader']['appendTimestamp']);
-        $loader->setAssetMap($params['yiisoft/assets']['assetLoader']['assetMap']);
-        $loader->setBasePath($params['yiisoft/assets']['assetLoader']['basePath']);
-        $loader->setBaseUrl($params['yiisoft/assets']['assetLoader']['baseUrl']);
+        $loader = new AssetLoader(
+            $aliases,
+            $params['yiisoft/assets']['assetLoader']['appendTimestamp'],
+            $params['yiisoft/assets']['assetLoader']['assetMap'],
+            $params['yiisoft/assets']['assetLoader']['basePath'],
+            $params['yiisoft/assets']['assetLoader']['baseUrl'],
+        );
 
-        $publisher = new AssetPublisher($aliases);
-        $publisher->setForceCopy($params['yiisoft/assets']['assetPublisher']['forceCopy']);
-        $publisher->setLinkAssets($params['yiisoft/assets']['assetPublisher']['linkAssets']);
+        $publisher = new AssetPublisher(
+            $aliases,
+            $params['yiisoft/assets']['assetPublisher']['forceCopy'],
+            $params['yiisoft/assets']['assetPublisher']['linkAssets'],
+        );
 
         $manager = new AssetManager(
             $aliases,
@@ -183,8 +206,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $params['yiisoft/assets']['assetManager']['allowedBundleNames'],
             $params['yiisoft/assets']['assetManager']['customizedBundles'],
         );
-        $manager->setConverter($converter);
-        $manager->setPublisher($publisher);
+        $manager = $manager->withConverter($converter)->withPublisher($publisher);
         $manager->register($params['yiisoft/assets']['assetManager']['register']);
 
         return new SimpleContainer([

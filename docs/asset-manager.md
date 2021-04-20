@@ -41,12 +41,12 @@ return [
         /**
          * Example settings options AssetLoader:
          *
-         * $loader->setAppendTimestamp(true);
-         * $loader->setAssetMap(['jquery.js' => 'https://code.jquery.com/jquery-3.4.1.js']);        
-         * $loader->setBasePath('@assets');
-         * $loader->setBaseUrl('@assetsUrl');
-         * $loader->setCssDefaultOptions(['media' => 'screen', 'hreflang' => 'en');
-         * $loader->setJsDefaultOptions(['async' => true, 'defer' => true);
+         * $loader = $loader->withAppendTimestamp(true);
+         * $loader = $loader->withAssetMap(['jquery.js' => 'https://code.jquery.com/jquery-3.4.1.js']);        
+         * $loader = $loader->withBasePath('@assets');
+         * $loader = $loader->withBaseUrl('@assetsUrl');
+         * $loader = $loader->withCssDefaultOptions(['media' => 'screen', 'hreflang' => 'en');
+         * $loader = $loader->withJsDefaultOptions(['async' => true, 'defer' => true);
          */
          
          return $loader;
@@ -58,11 +58,11 @@ return [
         /**
          * Example settings options AssetPublisher:
          *
-         * $publisher->setDirMode(0775);
-         * $publisher->setFileMode(0755);
-         * $publisher->setForceCopy(true);
-         * $publisher->setHashCallback(static fn () => 'hash');
-         * $publisher->setLinkAssets(true);
+         * $publisher = $publisher->withDirMode(0775);
+         * $publisher = $publisher->withFileMode(0755);
+         * $publisher = $publisher->withForceCopy(true);
+         * $publisher = $publisher->withHashCallback(static fn () => 'hash');
+         * $publisher = $publisher->withLinkAssets(true);
          */
 
         return $publisher;
@@ -73,24 +73,9 @@ return [
             $container->get(Aliases::class),
             $container->get(AssetLoaderInterface::class),
         );
-
-        /**
-         *  Setting AsssetConverter::class in view/layout use $assetManager->getConverter()
-         * 
-         *  In view/layout command example:
-         * 
-         *  $assetManager->getConverter()->setCommand('php', 'txt', 'php {from} > {to}');
-         */ 
-        $assetManager->setConverter($container->get(AssetConverterInterface::class));
-
-        /**
-         *  Setting AsssetPublisher::class in view/layout use $assetManager->getPublisher()
-         * 
-         *  In view/layout command example:
-         * 
-         *  $assetManager->getPublisher()->setForceCopy(true);
-         */ 
-        $assetManager->setPublisher($container->get(AssetPublisherInterface::class));
+ 
+        $assetManager = $assetManager->withConverter($container->get(AssetConverterInterface::class));
+        $assetManager = $assetManager->withPublisher($container->get(AssetPublisherInterface::class));
 
         return $assetManager;
     },
@@ -115,10 +100,10 @@ $loader = new AssetLoader($aliases);
 $publisher = new AssetPublisher($aliases);
 
 
-$assetManager = new AssetManager($aliases, $loader);
-
-$assetManager->setConverter($converter);
-$assetManager->setPublisher($publisher);
+$assetManager = (new AssetManager($aliases, $loader))
+    ->withConverter($converter)
+    ->withPublisher($publisher)
+;
 ```
 
 ### Specifying additional settings
@@ -214,9 +199,9 @@ This mode is used by default in the [yiisoft/app](https://github.com/yiisoft/app
  * @var \Yiisoft\Assets\AssetPublisherInterface $publisher
  */
 
-$assetManager = new \Yiisoft\Assets\AssetManager($aliases, $loader);
-
-$assetManager->setPublisher($publisher);
+$assetManager = (new \Yiisoft\Assets\AssetManager($aliases, $loader))
+    ->withPublisher($publisher)
+;
 
 $assetManager->register([
     \App\Assets\BootstrapAsset::class,
@@ -249,19 +234,15 @@ class PublishCommand extends Command
     protected static $defaultName = 'assets/publish';
 
     private AssetManager $assetManager;
-    private Aliases $aliases;
 
     public function __construct(AssetManager $assetManager, Aliases $aliases)
     {
-        $this->assetManager = $assetManager;
-        $this->aliases = $aliases;
+        $this->assetManager = $assetManager->withPublisher(new AssetPublisher($aliases));
         parent::__construct();
     }
     
     protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $this->assetManager->setPublisher(new AssetPublisher($this->aliases));
-        
+    {        
         $this->assetManager->register([/* asset bundle names */]);
         // To register all bundles if the allowed asset bundle names are used.
         //$this->assetManager->registerAllAllowed();
@@ -292,21 +273,18 @@ class PublishCommand extends Command
     protected static $defaultName = 'assets/publish';
 
     private AssetManager $assetManager;
-    private Aliases $aliases;
 
     public function __construct(AssetManager $assetManager, Aliases $aliases)
     {
-        $this->assetManager = $assetManager;
-        $this->aliases = $aliases;
+        $publisher = (new AssetPublisher($aliases))
+            ->withHashCallback(static fn (string $path): string => hash('md4', $path))
+        ;
+        $this->assetManager = $assetManager->withPublisher($publisher);
         parent::__construct();
     }
     
     protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $publisher = new AssetPublisher($this->aliases);
-        $publisher->setHashCallback(static fn (string $path):string => hash('md4', $path));
-        $this->assetManager->setPublisher(new AssetPublisher($this->aliases));
-        
+    {   
         $this->assetManager->register([/* asset bundle names */]);
         // To register all bundles if the allowed asset bundle names are used.
         //$this->assetManager->registerAllAllowed();
