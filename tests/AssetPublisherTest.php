@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Assets\Tests;
 
 use Yiisoft\Assets\AssetPublisher;
+use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\stubs\WithoutBaseAsset;
@@ -31,81 +32,76 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
-        $path = (is_file($sourcePath) ? dirname($sourcePath) : $sourcePath) .
-            FileHelper::lastModifiedTime($sourcePath);
-        $hash = sprintf('%x', crc32($path . '|' . $this->publisher->getLinkAssets()));
+        $hash = $this->getPublishedHash(
+            (is_file($sourcePath) ? dirname($sourcePath) : $sourcePath) . FileHelper::lastModifiedTime($sourcePath),
+            $this->publisher,
+        );
 
-        $this->loader->setCssDefaultOptions([
-            'media' => 'none',
-        ]);
+        $manager = $this->manager->withLoader(
+            $this->loader->withCssDefaultOptions(['media' => 'none'])->withJsDefaultOptions(['position' => 2]),
+        );
 
-        $this->loader->setJsDefaultOptions([
-            'position' => 2,
-        ]);
+        $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $this->assertEmpty($this->getRegisteredBundles($this->manager));
-
-        $this->manager->register([SourceAsset::class]);
+        $manager->register([SourceAsset::class]);
 
         $this->assertEquals(
             [
                 'media' => 'none',
             ],
-            $this->manager->getCssFiles()["/baseUrl/{$hash}/css/stub.css"]['attributes'],
+            $manager->getCssFiles()["/baseUrl/{$hash}/css/stub.css"]['attributes'],
         );
         $this->assertEquals(
             [
                 'position' => 2,
             ],
-            $this->manager->getJsFiles()['/js/jquery.js']['attributes'],
+            $manager->getJsFiles()['/js/jquery.js']['attributes'],
         );
         $this->assertEquals(
             [
                 'position' => 2,
             ],
-            $this->manager->getJsFiles()["/baseUrl/{$hash}/js/stub.js"]['attributes'],
+            $manager->getJsFiles()["/baseUrl/{$hash}/js/stub.js"]['attributes'],
         );
     }
 
-    public function testSourceSetHashCallback(): void
+    public function testSourceWithHashCallback(): void
     {
-        $this->publisher->setHashCallback(function () {
-            return 'HashCallback';
-        });
+        $manager = $this->manager->withPublisher($this->publisher->withHashCallback(static fn (): string => 'hash'));
 
-        $this->assertEmpty($this->getRegisteredBundles($this->manager));
+        $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $this->manager->register([SourceAsset::class]);
+        $manager->register([SourceAsset::class]);
 
         $this->assertStringContainsString(
-            '/baseUrl/HashCallback/css/stub.css',
-            $this->manager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['url'],
+            '/baseUrl/hash/css/stub.css',
+            $manager->getCssFiles()['/baseUrl/hash/css/stub.css']['url'],
         );
         $this->assertEquals(
             [],
-            $this->manager->getCssFiles()['/baseUrl/HashCallback/css/stub.css']['attributes'],
+            $manager->getCssFiles()['/baseUrl/hash/css/stub.css']['attributes'],
         );
 
         $this->assertStringContainsString(
             '/js/jquery.js',
-            $this->manager->getJsFiles()['/js/jquery.js']['url'],
+            $manager->getJsFiles()['/js/jquery.js']['url'],
         );
         $this->assertEquals(
             [
                 'position' => 3,
             ],
-            $this->manager->getJsFiles()['/js/jquery.js']['attributes'],
+            $manager->getJsFiles()['/js/jquery.js']['attributes'],
         );
 
         $this->assertStringContainsString(
-            '/baseUrl/HashCallback/js/stub.js',
-            $this->manager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['url'],
+            '/baseUrl/hash/js/stub.js',
+            $manager->getJsFiles()['/baseUrl/hash/js/stub.js']['url'],
         );
         $this->assertEquals(
             [
                 'position' => 3,
             ],
-            $this->manager->getJsFiles()['/baseUrl/HashCallback/js/stub.js']['attributes'],
+            $manager->getJsFiles()['/baseUrl/hash/js/stub.js']['attributes'],
         );
     }
 
@@ -188,26 +184,15 @@ final class AssetPublisherTest extends TestCase
 
     public function testSourcesPublishedBySymlinkIssue9333(): void
     {
-        $this->publisher->setLinkAssets(true);
-
-        $this->publisher->setHashCallback(
-            static function ($path) {
-                return sprintf('%x/%x', crc32($path), crc32('3.0-dev'));
-            }
-        );
-
-        $bundle = $this->verifySourcesPublishedBySymlink();
-
-        $this->assertDirectoryExists(dirname($bundle->basePath));
-    }
-
-    private function verifySourcesPublishedBySymlink(): SourceAsset
-    {
         $bundle = new SourceAsset();
-        $this->publisher->setDirMode(0775);
-        $this->publisher->setFileMode(0775);
+        $publisher = $this->publisher
+            ->withLinkAssets(true)
+            ->withDirMode(0775)
+            ->withFileMode(0775)
+            ->withHashCallback(static fn (string $path): string => sprintf('%x/%x', crc32($path), crc32('3.0-dev')))
+        ;
 
-        [$bundle->basePath, $bundle->baseUrl] = $this->publisher->publish($bundle);
+        [$bundle->basePath, $bundle->baseUrl] = $publisher->publish($bundle);
 
         $this->assertDirectoryExists($bundle->basePath);
 
@@ -223,7 +208,7 @@ final class AssetPublisherTest extends TestCase
         FileHelper::unlink($bundle->basePath);
         $this->assertDirectoryDoesNotExist($bundle->basePath);
 
-        return $bundle;
+        $this->assertDirectoryExists(dirname($bundle->basePath));
     }
 
     public function testPublishWithAndWithoutBasePath(): void
@@ -237,5 +222,28 @@ final class AssetPublisherTest extends TestCase
         );
 
         $publisher->publish(new WithoutBaseAsset());
+    }
+
+    public function testSettersImmutability(): void
+    {
+        $publisher = $this->publisher->withDirMode(755);
+        $this->assertInstanceOf(AssetPublisherInterface::class, $publisher);
+        $this->assertNotSame($this->publisher, $publisher);
+
+        $publisher = $this->publisher->withFileMode(755);
+        $this->assertInstanceOf(AssetPublisherInterface::class, $publisher);
+        $this->assertNotSame($this->publisher, $publisher);
+
+        $publisher = $this->publisher->withForceCopy(false);
+        $this->assertInstanceOf(AssetPublisherInterface::class, $publisher);
+        $this->assertNotSame($this->publisher, $publisher);
+
+        $publisher = $this->publisher->withHashCallback(static fn (): string => 'hash');
+        $this->assertInstanceOf(AssetPublisherInterface::class, $publisher);
+        $this->assertNotSame($this->publisher, $publisher);
+
+        $publisher = $this->publisher->withLinkAssets(false);
+        $this->assertInstanceOf(AssetPublisherInterface::class, $publisher);
+        $this->assertNotSame($this->publisher, $publisher);
     }
 }

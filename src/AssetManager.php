@@ -107,21 +107,6 @@ final class AssetManager
         return clone $bundle;
     }
 
-    public function getConverter(): ?AssetConverterInterface
-    {
-        return $this->converter;
-    }
-
-    public function getLoader(): AssetLoaderInterface
-    {
-        return $this->loader;
-    }
-
-    public function getPublisher(): ?AssetPublisherInterface
-    {
-        return $this->publisher;
-    }
-
     /**
      * Return config array CSS AssetBundle.
      *
@@ -163,24 +148,45 @@ final class AssetManager
     }
 
     /**
-     * Sets the asset converter.
+     * Returns a new instance with the specified converter.
      *
-     * @param AssetConverterInterface $converter The asset converter. This can be either an object implementing the
-     * {@see AssetConverterInterface}, or a configuration array that can be used to create the asset converter object.
+     * @param AssetConverterInterface $converter
+     *
+     * @return self
      */
-    public function setConverter(AssetConverterInterface $converter): void
+    public function withConverter(AssetConverterInterface $converter): self
     {
-        $this->converter = $converter;
+        $new = clone $this;
+        $new->converter = $converter;
+        return $new;
     }
 
     /**
-     * Sets the asset publisher.
+     * Returns a new instance with the specified loader.
+     *
+     * @param AssetLoaderInterface $loader
+     *
+     * @return self
+     */
+    public function withLoader(AssetLoaderInterface $loader): self
+    {
+        $new = clone $this;
+        $new->loader = $loader;
+        return $new;
+    }
+
+    /**
+     * Returns a new instance with the specified publisher.
      *
      * @param AssetPublisherInterface $publisher
+     *
+     * @return self
      */
-    public function setPublisher(AssetPublisherInterface $publisher): void
+    public function withPublisher(AssetPublisherInterface $publisher): self
     {
-        $this->publisher = $publisher;
+        $new = clone $this;
+        $new->publisher = $publisher;
+        return $new;
     }
 
     /**

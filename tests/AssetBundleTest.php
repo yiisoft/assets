@@ -68,7 +68,7 @@ final class AssetBundleTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $message = 'basePath must be set in AssetLoader->setBasePath($path)'
+        $message = 'basePath must be set in AssetLoader->withBasePath($path)'
             . ' or AssetBundle property public ?string $basePath = $path';
 
         $this->expectException(InvalidConfigException::class);
@@ -92,18 +92,16 @@ final class AssetBundleTest extends TestCase
 
     public function testBaseUrlIsNotSetException(): void
     {
-        $manager = new AssetManager($this->aliases, $this->loader, [], [
+        $manager = (new AssetManager($this->aliases, $this->loader, [], [
             BaseAsset::class => [
                 'basePath' => null,
                 'baseUrl' => null,
             ],
-        ]);
-
-        $this->manager->getLoader()->setBasePath('@asset');
+        ]))->withLoader($this->loader->withBasePath('@asset'));
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $message = 'baseUrl must be set in AssetLoader->setBaseUrl($path)'
+        $message = 'baseUrl must be set in AssetLoader->withBaseUrl($path)'
             . ' or AssetBundle property public ?string $baseUrl = $path';
 
         $this->expectException(InvalidConfigException::class);
@@ -112,23 +110,22 @@ final class AssetBundleTest extends TestCase
         $manager->register([BaseAsset::class]);
     }
 
-    public function testBasePathEmptyWithAssetManagerSetBasePath(): void
+    public function testBasePathEmptyWithAssetManagerWithBasePath(): void
     {
-        $this->manager->getLoader()->setBasePath('@asset');
+        $manager = $this->manager->withLoader($this->loader->withBasePath('@asset'));
 
-        $this->assertEmpty($this->getRegisteredBundles($this->manager));
-        $this->assertIsObject($this->manager->getBundle(BaseAsset::class));
-        $this->assertInstanceOf(BaseAsset::class, $this->manager->getBundle(BaseAsset::class));
+        $this->assertEmpty($this->getRegisteredBundles($manager));
+        $this->assertIsObject($manager->getBundle(BaseAsset::class));
+        $this->assertInstanceOf(BaseAsset::class, $manager->getBundle(BaseAsset::class));
     }
 
-    public function testBasePathEmptyBaseUrlEmptyWithAssetManagerSetBasePathSetBaseUrl(): void
+    public function testBasePathEmptyBaseUrlEmptyWithAssetManagerWithBasePathWithBaseUrl(): void
     {
-        $this->manager->getLoader()->setBasePath('@asset');
-        $this->manager->getLoader()->setBaseUrl('@assetUrl');
+        $manager = $this->manager->withLoader($this->loader->withBasePath('@asset')->withBaseUrl('@assetUrl'));
 
-        $this->assertEmpty($this->getRegisteredBundles($this->manager));
-        $this->assertIsObject($this->manager->getBundle(BaseAsset::class));
-        $this->assertInstanceOf(BaseAsset::class, $this->manager->getBundle(BaseAsset::class));
+        $this->assertEmpty($this->getRegisteredBundles($manager));
+        $this->assertIsObject($manager->getBundle(BaseAsset::class));
+        $this->assertInstanceOf(BaseAsset::class, $manager->getBundle(BaseAsset::class));
     }
 
     public function testBasePathWrongException(): void

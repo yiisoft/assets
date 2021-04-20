@@ -14,20 +14,18 @@ use Yiisoft\Assets\AssetBundle;
  *
  * Note:
  *
- * - When not assigned $basePath, and $baseUrl they can be configured globally through the AssetPublisher.
+ * - When not assigned $basePath, and $baseUrl they can be configured globally through the AssetLoader.
  *
  * ```php
  * use Yiisoft\Assets\AssetPublisher;
  *
- * $assetPublisher = new AssetPublisher($aliases, $LoggerInterface);
- *
- * $assetPublisher->setBasePath($basePath);
- * $assetPublisher->setBaseUrl($baseUrl);
+ * $assetLoader = (new \Yiisoft\Assets\AssetLoader($aliases))
+ *     ->withBasePath($basePath)
+ *     ->withBaseUrl($baseUrl)
+ * ;
  * ```
  *
  * - The property array $publishOptions = [] is not available, since the AssetManager is not publishing anything.
- *
- * @package Assets
  */
 final class BaseAsset extends AssetBundle
 {

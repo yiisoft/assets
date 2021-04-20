@@ -28,6 +28,32 @@ final class AssetPublisher implements AssetPublisherInterface
     private Aliases $aliases;
 
     /**
+     * @var bool Whether the directory being published should be copied even if it is found in the target directory.
+     * Default is `false`. This option is used only when publishing a directory. You may want to set this to be `true`
+     * during thedevelopment stage to make sure the published directory is always up-to-date. Do not set this to true
+     * on production servers as it will significantly degrade the performance.
+     */
+    private bool $forceCopy;
+
+    /**
+     * @var bool Whether to use symbolic link to publish asset files. Default is `false`, meaning asset files are
+     * copied to {@see AssetBundle::$basePath}. Using symbolic links has the benefit that the published assets
+     * will always be consistent with the source assets and there is no copy operation required.
+     * This is especially useful during development.
+     *
+     * However, there are special requirements for hosting environments in order to use symbolic links. In particular,
+     * symbolic links are supported only on Linux/Unix, and Windows Vista/2008 or greater.
+     *
+     * Moreover, some Web servers need to be properly configured so that the linked assets are accessible to Web users.
+     * For example, for Apache Web server, the following configuration directive should be added for the Web folder:
+     *
+     * ```apache
+     * Options FollowSymLinks
+     * ```
+     */
+    private bool $linkAssets;
+
+    /**
      * @var int The permission to be set for newly generated asset directories. This value will be used by PHP chmod()
      * function. No umask will be applied. Defaults to 0775, meaning the directory is read-writable by owner
      * and group, but read-only for other users.
@@ -40,14 +66,6 @@ final class AssetPublisher implements AssetPublisherInterface
      * environment.
      */
     private int $fileMode = 0755;
-
-    /**
-     * @var bool Whether the directory being published should be copied even if it is found in the target directory.
-     * This option is used only when publishing a directory. You may want to set this to be `true` during the
-     * development stage to make sure the published directory is always up-to-date. Do not set this to true
-     * on production servers as it will significantly degrade the performance.
-     */
-    private bool $forceCopy = false;
 
     /**
      * @var callable|null A callback that will be called to produce hash for asset directory generation. The signature
@@ -74,31 +92,21 @@ final class AssetPublisher implements AssetPublisherInterface
     private $hashCallback = null;
 
     /**
-     * @var bool Whether to use symbolic link to publish asset files. Defaults to false, meaning asset files are copied
-     * to {@see AssetBundle::$basePath}. Using symbolic links has the benefit that the published assets will always
-     * be consistent with the source assets and there is no copy operation required.
-     * This is especially useful during development.
-     *
-     * However, there are special requirements for hosting environments in order to use symbolic links. In particular,
-     * symbolic links are supported only on Linux/Unix, and Windows Vista/2008 or greater.
-     *
-     * Moreover, some Web servers need to be properly configured so that the linked assets are accessible to Web users.
-     * For example, for Apache Web server, the following configuration directive should be added for the Web folder:
-     *
-     * ```apache
-     * Options FollowSymLinks
-     * ```
-     */
-    private bool $linkAssets = false;
-
-    /**
      * @var array Contain published {@see AssetsBundle}.
      */
     private array $published = [];
 
-    public function __construct(Aliases $aliases)
+    /**
+     * @param Aliases $aliases The aliases instance.
+     * @param bool $forceCopy Whether the directory being published should be copied even
+     * if it is found in the target directory {@see $forceCopy}.
+     * @param bool $linkAssets Whether to use symbolic link to publish asset files {@see $linkAssets}.
+     */
+    public function __construct(Aliases $aliases, bool $forceCopy = false, bool $linkAssets = false)
     {
         $this->aliases = $aliases;
+        $this->forceCopy = $forceCopy;
+        $this->linkAssets = $linkAssets;
     }
 
     public function publish(AssetBundle $bundle): array
@@ -132,16 +140,6 @@ final class AssetPublisher implements AssetPublisherInterface
         }
 
         return $this->published[$sourcePath] = $this->publishBundleDirectory($bundle);
-    }
-
-    /**
-     * Return config linkAssets.
-     *
-     * @return bool
-     */
-    public function getLinkAssets(): bool
-    {
-        return $this->linkAssets;
     }
 
     /**
@@ -188,63 +186,75 @@ final class AssetPublisher implements AssetPublisherInterface
     }
 
     /**
-     * The permission to be set for newly generated asset directories.
+     * Returns a new instance with the specified directory mode.
      *
-     * @param int $value
+     * @param int $dirMode The permission to be set for newly generated asset directories {@see $dirMode}.
      *
-     * {@see $dirMode}
+     * @return self
      */
-    public function setDirMode(int $value): void
+    public function withDirMode(int $dirMode): self
     {
-        $this->dirMode = $value;
+        $new = clone $this;
+        $new->dirMode = $dirMode;
+        return $new;
     }
 
     /**
-     * The permission to be set for newly published asset files.
+     * Returns a new instance with the specified files mode.
      *
-     * @param int $value
+     * @param int $fileMode he permission to be set for newly published asset files. {@see $fileMode}.
      *
-     * {@see $fileMode}
+     * @return self
      */
-    public function setFileMode(int $value): void
+    public function withFileMode(int $fileMode): self
     {
-        $this->fileMode = $value;
+        $new = clone $this;
+        $new->fileMode = $fileMode;
+        return $new;
     }
 
     /**
-     * Whether the directory being published should be copied even if it is found in the target directory.
+     * Returns a new instance with the specified force copy value.
      *
-     * @param bool $value
+     * @param bool $forceCopy Whether the directory being published should be copied even
+     * if it is found in the target directory {@see $forceCopy}.
      *
-     * {@see $forceCopy}
+     * @return self
      */
-    public function setForceCopy(bool $value): void
+    public function withForceCopy(bool $forceCopy): self
     {
-        $this->forceCopy = $value;
+        $new = clone $this;
+        $new->forceCopy = $forceCopy;
+        return $new;
     }
 
     /**
-     * A callback that will be called to produce hash for asset directory generation.
+     * Returns a new instance with the specified force hash callback.
      *
-     * @param callable $value
+     * @param callable $hashCallback A callback that will be called to produce hash
+     * for asset directory generation {@see $hashCallback}.
      *
-     * {@see $hashCallback}
+     * @return self
      */
-    public function setHashCallback(callable $value): void
+    public function withHashCallback(callable $hashCallback): self
     {
-        $this->hashCallback = $value;
+        $new = clone $this;
+        $new->hashCallback = $hashCallback;
+        return $new;
     }
 
     /**
-     * Whether to use symbolic link to publish asset files.
+     * Returns a new instance with the specified link assets value.
      *
-     * @param bool $value
+     * @param bool $linkAssets Whether to use symbolic link to publish asset files {@see $linkAssets}.
      *
-     * {@see $linkAssets}
+     * @return self
      */
-    public function setLinkAssets(bool $value): void
+    public function withLinkAssets(bool $linkAssets): self
     {
-        $this->linkAssets = $value;
+        $new = clone $this;
+        $new->linkAssets = $linkAssets;
+        return $new;
     }
 
     /**

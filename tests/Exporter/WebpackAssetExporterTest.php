@@ -64,13 +64,13 @@ final class WebpackAssetExporterTest extends TestCase
                 'js' => ['js/stub.js'],
             ],
         ]);
-        $manager->setPublisher($this->publisher);
         $sourceBundle = new SourceAsset();
 
         $expected = "import '{$this->aliases->get($sourceBundle->sourcePath)}/{$sourceBundle->css[0]}';\n"
             . "import '{$this->aliases->get($sourceBundle->sourcePath)}/{$sourceBundle->js[0]}';\n"
         ;
 
+        $manager = $manager->withPublisher($this->publisher);
         $manager->export(new WebpackAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);

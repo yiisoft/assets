@@ -21,22 +21,22 @@ final class AssetLoader implements AssetLoaderInterface
     private Aliases $aliases;
 
     /**
-     * @var bool Whether to append a timestamp to the URL of every published asset. When this is true, the URL of a
-     * published asset may look like `/path/to/asset?v=timestamp`, where `timestamp` is the last modification time
-     * of the published asset file. You normally would want to set this property to true when you have enabled
-     * HTTP caching for assets, because it allows you to bust caching when the assets are updated.
+     * @var bool Whether to append a timestamp to the URL of every published asset. Default is `false`.
+     * When this is true, the URL of a published asset may look like `/path/to/asset?v=timestamp`, where `timestamp`
+     * is the last modification time of the published asset file. You normally would want to set this property to true
+     * when you have enabled HTTP caching for assets, because it allows you to bust caching when the assets are updated.
      */
-    private bool $appendTimestamp = false;
+    private bool $appendTimestamp;
 
     /**
      * @var array<string, string> Mapping from source asset files (keys) to target asset files (values).
      *
-     * This property is provided to support fixing incorrect asset file paths in some asset bundles. When an asset
-     * bundle is registered with a view, each relative asset file in its {@see AssetBundle::$css} and
-     * {@see AssetBundle::$js} arrays will be examined against this map. If any of the keys is found to be the last
-     * part of an asset file (which is prefixed with {@see AssetBundle::$sourcePath} if available), the corresponding
-     * value will replace the asset and be registered with the view. For example, an asset file `my/path/to/jquery.js`
-     * matches a key `jquery.js`.
+     * Default is empty array. This property is provided to support fixing incorrect asset file paths in some
+     * asset bundles. When an asset bundle is registered with a view, each relative asset file in its
+     * {@see AssetBundle::$css} and {@see AssetBundle::$js} arrays will be examined against this map.
+     * If any of the keys is found to be the last part of an asset file (which is prefixed with
+     * {@see AssetBundle::$sourcePath} if available), the corresponding value will replace the asset
+     * and be registered with the view. For example, an asset file `my/path/to/jquery.js` matches a key `jquery.js`.
      *
      * Note that the target asset files should be absolute URLs, domain relative URLs (starting from '/') or paths
      * relative to {@see $baseUrl} and {@see $basePath}.
@@ -50,17 +50,17 @@ final class AssetLoader implements AssetLoaderInterface
      * ]
      * ```
      */
-    private array $assetMap = [];
+    private array $assetMap;
 
     /**
-     * @var string|null The root directory storing the asset files.
+     * @var string|null The root directory storing the asset files. Default is `null`.
      */
-    private ?string $basePath = null;
+    private ?string $basePath;
 
     /**
-     * @var string|null The base URL that can be used to access the asset files.
+     * @var string|null The base URL that can be used to access the asset files. Default is `null`.
      */
-    private ?string $baseUrl = null;
+    private ?string $baseUrl;
 
     /**
      * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
@@ -74,23 +74,39 @@ final class AssetLoader implements AssetLoaderInterface
      */
     private array $jsDefaultOptions = [];
 
-    public function __construct(Aliases $aliases)
-    {
+    /**
+     * @param Aliases $aliases The aliases instance.
+     * @param bool $appendTimestamp Whether to append a timestamp to the URL {@see $appendTimestamp}.
+     * @param array<string, string> $assetMap Mapping from source asset files to target asset files {@see $assetMap}.
+     * @param string|null $basePath The root directory storing the asset files {@see $basePath}.
+     * @param string|null $baseUrl The base URL that can be used to access the asset files {@see $baseUrl}.
+     */
+    public function __construct(
+        Aliases $aliases,
+        bool $appendTimestamp = false,
+        array $assetMap = [],
+        ?string $basePath = null,
+        ?string $baseUrl = null
+    ) {
         $this->aliases = $aliases;
+        $this->appendTimestamp = $appendTimestamp;
+        $this->assetMap = $assetMap;
+        $this->basePath = $basePath;
+        $this->baseUrl = $baseUrl;
     }
 
     public function getAssetUrl(AssetBundle $bundle, string $assetPath): string
     {
         if (!$bundle->cdn && empty($this->basePath) && empty($bundle->basePath)) {
             throw new InvalidConfigException(
-                'basePath must be set in AssetLoader->setBasePath($path) or ' .
+                'basePath must be set in AssetLoader->withBasePath($path) or ' .
                 'AssetBundle property public ?string $basePath = $path'
             );
         }
 
         if (!$bundle->cdn && $this->baseUrl === null && $bundle->baseUrl === null) {
             throw new InvalidConfigException(
-                'baseUrl must be set in AssetLoader->setBaseUrl($path) or ' .
+                'baseUrl must be set in AssetLoader->withBaseUrl($path) or ' .
                 'AssetBundle property public ?string $baseUrl = $path'
             );
         }
@@ -140,75 +156,87 @@ final class AssetLoader implements AssetLoaderInterface
     }
 
     /**
-     * Sets whether to append a timestamp to the URL of every loaded asset.
+     * Returns a new instance with the specified append timestamp.
      *
-     * @param bool $value
+     * @param bool $appendTimestamp {@see $appendTimestamp}
      *
-     * {@see $appendTimestamp}
+     * @return self
      */
-    public function setAppendTimestamp(bool $value): void
+    public function withAppendTimestamp(bool $appendTimestamp): self
     {
-        $this->appendTimestamp = $value;
+        $new = clone $this;
+        $new->appendTimestamp = $appendTimestamp;
+        return $new;
     }
 
     /**
-     * Sets the map for mapping from source asset files (keys) to target asset files (values).
+     * Returns a new instance with the specified asset map.
      *
-     * @param array<string, string> $value
+     * @param array<string, string> $assetMap {@see $assetMap}
      *
-     * {@see $assetMap}
+     * @return self
      */
-    public function setAssetMap(array $value): void
+    public function withAssetMap(array $assetMap): self
     {
-        $this->assetMap = $value;
+        $new = clone $this;
+        $new->assetMap = $assetMap;
+        return $new;
     }
 
     /**
-     * Sets the root directory storing the asset files.
+     * Returns a new instance with the specified base path.
      *
-     * @param string|null $value
+     * @param string|null $basePath {@see $basePath}
      *
-     * {@see $basePath}
+     * @return self
      */
-    public function setBasePath(?string $value): void
+    public function withBasePath(?string $basePath): self
     {
-        $this->basePath = $value;
+        $new = clone $this;
+        $new->basePath = $basePath;
+        return $new;
     }
 
     /**
-     * Sets the base URL that can be used to access the asset files.
+     * Returns a new instance with the specified base URL.
      *
-     * @param string|null $value
+     * @param string|null $baseUrl {@see $baseUrl}
      *
-     * {@see $baseUrl}
+     * @return self
      */
-    public function setBaseUrl(?string $value): void
+    public function withBaseUrl(?string $baseUrl): self
     {
-        $this->baseUrl = $value;
+        $new = clone $this;
+        $new->baseUrl = $baseUrl;
+        return $new;
     }
 
     /**
-     * Sets the global `$css` default options for all assets bundle.
+     * Returns a new instance with the specified global `$css` default options for all assets bundle.
      *
-     * @param array $value
+     * @param array $cssDefaultOptions {@see $cssDefaultOptions}
      *
-     * {@see $cssDefaultOptions}
+     * @return self
      */
-    public function setCssDefaultOptions(array $value): void
+    public function withCssDefaultOptions(array $cssDefaultOptions): self
     {
-        $this->cssDefaultOptions = $value;
+        $new = clone $this;
+        $new->cssDefaultOptions = $cssDefaultOptions;
+        return $new;
     }
 
     /**
-     * Sets the global `$js` default options for all assets bundle.
+     * Returns a new instance with the specified global `$js` default options for all assets bundle.
      *
-     * @param array $value
+     * @param array $jsDefaultOptions {@see $jsDefaultOptions}
      *
-     * {@see $jsDefaultOptions}
+     * @return self
      */
-    public function setJsDefaultOptions(array $value): void
+    public function withJsDefaultOptions(array $jsDefaultOptions): self
     {
-        $this->jsDefaultOptions = $value;
+        $new = clone $this;
+        $new->jsDefaultOptions = $jsDefaultOptions;
+        return $new;
     }
 
     /**

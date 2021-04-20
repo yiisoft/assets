@@ -64,7 +64,16 @@ to CSS. By default, asset converter has command definitions for less, scss, sass
 are meant to be installed globally, and we have it as local dependency, we need to redefine a command:
 
 ```php
-$assetManager->getConverter()->setCommand('scss', ['css', '@npm/.bin/sass {options} {from} {to}']);
+/**
+ * @var \Psr\Log\LoggerInterface $logger
+ * @var \Yiisoft\Aliases\Aliases $aliases
+ * @var \Yiisoft\Assets\AssetManager $assetManager
+ */
+
+$converter = new \Yiisoft\Assets\AssetConverter($aliases, $logger, [
+    'scss' => ['css', '@npm/.bin/sass {options} {from} {to}'],
+]);
+$assetManager = $assetManager->withConverter($converter);
 ```  
 
 or, if done via `yiisoft/di` container:
@@ -73,9 +82,9 @@ or, if done via `yiisoft/di` container:
 AssetConverterInterface::class => static function (\Psr\Container\ContainerInterface $container) {
     $aliases = $container->get(\Yiisoft\Aliases\Aliases::class);
     $logger = $container->get(\Psr\Log\LoggerInterface::class);
-    $converter = new \Yiisoft\Assets\AssetConverter($aliases, $logger);
-    $converter->setCommand('scss', 'css', '@npm/.bin/sass {options} {from} {to}');
-    return $converter;
+    return new \Yiisoft\Assets\AssetConverter($aliases, $logger, [
+        'scss' => ['css', '@npm/.bin/sass {options} {from} {to}'],
+    ]);
 }
 ```
 
@@ -84,10 +93,8 @@ or, if done via params.php:
 ```php
 'yiisoft/assets' => [
     'assetConverter' => [
-        'command' => [
-            'from' => 'scss',
-            'to' => 'css',
-            'command' => '@npm/.bin/sass {options} {from} {to}',
+        'commands' => [
+            'scss' => ['css', '@npm/.bin/sass {options} {from} {to}'],
         ],
         'forceConvert' => false,
     ],

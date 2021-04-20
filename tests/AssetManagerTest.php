@@ -6,46 +6,34 @@ namespace Yiisoft\Assets\Tests;
 
 use RuntimeException;
 use Yiisoft\Assets\AssetBundle;
-use Yiisoft\Assets\AssetConverterInterface;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
+use Yiisoft\Assets\Tests\stubs\ExportAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Files\FileHelper;
 
-use function crc32;
-use function sprintf;
 use function ucfirst;
 
 final class AssetManagerTest extends TestCase
 {
-    public function testGetConverter(): void
-    {
-        $this->assertInstanceOf(
-            AssetConverterInterface::class,
-            $this->manager->getConverter(),
-        );
-    }
-
     public function testGetPublishedPathLinkAssetsFalse(): void
     {
         $bundle = new SourceAsset();
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
-
-        $path = $sourcePath . FileHelper::lastModifiedTime($sourcePath);
-        $path = sprintf('%x', crc32($path . '|' . $this->manager->getPublisher()->getLinkAssets()));
+        $hash = $this->getPublishedHash($sourcePath . FileHelper::lastModifiedTime($sourcePath), $this->publisher);
 
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
         $this->manager->register([SourceAsset::class]);
 
         $this->assertEquals(
-            $this->manager->getPublisher()->getPublishedPath($bundle->sourcePath),
-            $this->aliases->get("@root/tests/public/assets/{$path}"),
+            $this->publisher->getPublishedPath($bundle->sourcePath),
+            $this->aliases->get("@root/tests/public/assets/{$hash}"),
         );
     }
 
@@ -55,7 +43,7 @@ final class AssetManagerTest extends TestCase
 
         $this->manager->register([SourceAsset::class]);
 
-        $this->assertNull($this->manager->getPublisher()->getPublishedPath('/wrong'));
+        $this->assertNull($this->publisher->getPublishedPath('/wrong'));
     }
 
     public function testGetPublishedUrl(): void
@@ -63,18 +51,13 @@ final class AssetManagerTest extends TestCase
         $bundle = new SourceAsset();
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
-
-        $path = $sourcePath . FileHelper::lastModifiedTime($sourcePath);
-        $path = sprintf('%x', crc32($path . '|' . $this->manager->getPublisher()->getLinkAssets()));
+        $hash = $this->getPublishedHash($sourcePath . FileHelper::lastModifiedTime($sourcePath), $this->publisher);
 
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
         $this->manager->register([SourceAsset::class]);
 
-        $this->assertEquals(
-            $this->manager->getPublisher()->getPublishedUrl($bundle->sourcePath),
-            "/baseUrl/{$path}"
-        );
+        $this->assertEquals($this->publisher->getPublishedUrl($bundle->sourcePath), "/baseUrl/{$hash}");
     }
 
     public function testGetPublishedUrlWrong(): void
@@ -83,7 +66,7 @@ final class AssetManagerTest extends TestCase
 
         $this->manager->register([SourceAsset::class]);
 
-        $this->assertNull($this->manager->getPublisher()->getPublishedUrl('/wrong'));
+        $this->assertNull($this->publisher->getPublishedUrl('/wrong'));
     }
 
     public function testAssetManagerWithCustomizedBundles(): void
@@ -411,13 +394,12 @@ final class AssetManagerTest extends TestCase
 
         $this->aliases->set('@assetUrl', $webAlias);
         $path = $this->aliases->get($path);
-        $this->loader->setAppendTimestamp($appendTimestamp);
-        $this->invokeMethod($this->manager, 'register' . ucfirst($type) . 'File', [$path, [], null]);
+        $manager = $this->manager->withLoader($this->loader->withAppendTimestamp($appendTimestamp));
+        $this->invokeMethod($manager, 'register' . ucfirst($type) . 'File', [$path, [], null]);
 
         $this->assertStringContainsString(
             $expected,
-            $type === 'css' ? $this->manager->getCssFiles()[$expected]['url']
-                : $this->manager->getJsFiles()[$expected]['url'],
+            $type === 'css' ? $manager->getCssFiles()[$expected]['url'] : $manager->getJsFiles()[$expected]['url'],
         );
     }
 
@@ -443,7 +425,7 @@ final class AssetManagerTest extends TestCase
     public function testRegisterWithAllowedBundlesWithDependencies(): void
     {
         $manager = new AssetManager($this->aliases, $this->loader, [JqueryAsset::class]);
-        $manager->setPublisher($this->publisher);
+        $manager = $manager->withPublisher($this->publisher);
         $manager->register([JqueryAsset::class]);
 
         $this->assertTrue($manager->isRegisteredBundle(JqueryAsset::class));
@@ -464,7 +446,7 @@ final class AssetManagerTest extends TestCase
     public function testRegisterParentWithAllowedBundlesWithDependencies(): void
     {
         $manager = new AssetManager($this->aliases, $this->loader, [PositionAsset::class]);
-        $manager->setPublisher($this->publisher);
+        $manager = $manager->withPublisher($this->publisher);
         $manager->register([JqueryAsset::class]);
 
         $this->assertFalse($manager->isRegisteredBundle(PositionAsset::class));
@@ -490,7 +472,7 @@ final class AssetManagerTest extends TestCase
     public function testRegisterAllAllowedBundlesWithDependencies(): void
     {
         $manager = new AssetManager($this->aliases, $this->loader, [PositionAsset::class]);
-        $manager->setPublisher($this->publisher);
+        $manager = $manager->withPublisher($this->publisher);
         $manager->registerAllAllowed();
 
         $this->assertTrue($manager->isRegisteredBundle(PositionAsset::class));
@@ -518,5 +500,20 @@ final class AssetManagerTest extends TestCase
         $this->expectExceptionMessage('Not a single asset bundle was registered.');
 
         $this->manager->export(new JsonAssetExporter($this->aliases->get('@asset/test.json')));
+    }
+
+    public function testSettersImmutability(): void
+    {
+        $manager = $this->manager->withConverter($this->converter);
+        $this->assertInstanceOf(AssetManager::class, $manager);
+        $this->assertNotSame($this->manager, $manager);
+
+        $manager = $this->manager->withLoader($this->loader);
+        $this->assertInstanceOf(AssetManager::class, $manager);
+        $this->assertNotSame($this->manager, $manager);
+
+        $manager = $this->manager->withPublisher($this->publisher);
+        $this->assertInstanceOf(AssetManager::class, $manager);
+        $this->assertNotSame($this->manager, $manager);
     }
 }

@@ -9,6 +9,7 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Files\FileHelper;
 
 use function array_key_exists;
+use function array_merge;
 use function escapeshellarg;
 use function fclose;
 use function is_file;
@@ -54,11 +55,11 @@ final class AssetConverter implements AssetConverterInterface
 
     /**
      * @var bool Whether the source asset file should be converted even if its result already exists.
-     * You may want to set this to be `true` during the development stage to make sure the converted
-     * assets are always up-to-date. Do not set this to true on production servers as it will
-     * significantly degrade the performance.
+     * Default is `false`. You may want to set this to be `true` during the development stage to make
+     * sure the converted assets are always up-to-date. Do not set this to true on production servers
+     * as it will significantly degrade the performance.
      */
-    private bool $forceConvert = false;
+    private bool $forceConvert;
 
     /**
      * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is outdated.
@@ -96,10 +97,22 @@ final class AssetConverter implements AssetConverterInterface
      */
     private $isOutdatedCallback = null;
 
-    public function __construct(Aliases $aliases, LoggerInterface $logger)
-    {
+    /**
+     * @param Aliases $aliases The aliases instance.
+     * @param LoggerInterface $logger The logger instance.
+     * @param array $commands The commands that are used to perform the asset conversion. {@see $commands}
+     * @param bool $forceConvert Whether the source asset file should be converted even if its result already exists.
+     */
+    public function __construct(
+        Aliases $aliases,
+        LoggerInterface $logger,
+        array $commands = [],
+        bool $forceConvert = false
+    ) {
         $this->aliases = $aliases;
         $this->logger = $logger;
+        $this->commands = array_merge($this->commands, $commands);
+        $this->forceConvert = $forceConvert;
     }
 
     public function convert(string $asset, string $basePath, array $optionsConverter = []): string
@@ -126,7 +139,9 @@ final class AssetConverter implements AssetConverterInterface
     }
 
     /**
-     * Allows you to set a command that is used to perform the asset conversion.
+     * Returns a new instance with the specified command.
+     *
+     * Allows you to set a command that is used to perform the asset conversion {@see $commands}.
      *
      * @param string $from The file extension of the format converting from.
      * @param string $to The file extension of the format converting to.
@@ -134,31 +149,46 @@ final class AssetConverter implements AssetConverterInterface
      *
      * Example:
      *
-     * $converter->setCommand('scss', 'css', 'sass {options} {from} {to}');
+     * $converter = $converter->withCommand('scss', 'css', 'sass {options} {from} {to}');
+     *
+     * @return self
      */
-    public function setCommand(string $from, string $to, string $command): void
+    public function withCommand(string $from, string $to, string $command): self
     {
-        $this->commands[$from] = [$to, $command];
+        $new = clone $this;
+        $new->commands[$from] = [$to, $command];
+        return $new;
     }
 
     /**
-     * Make the conversion regardless of whether the asset already exists.
+     * Returns a new instance with the specified force convert value.
      *
-     * @param bool $value
+     * Make the conversion regardless of whether the asset already exists {@see $forceConvert}.
+     *
+     * @param bool $forceConvert
+     *
+     * @return self
      */
-    public function setForceConvert(bool $value): void
+    public function withForceConvert(bool $forceConvert): self
     {
-        $this->forceConvert = $value;
+        $new = clone $this;
+        $new->forceConvert = $forceConvert;
+        return $new;
     }
 
     /**
-     * PHP callback, which should be invoked to check whether asset conversion result is outdated.
+     * Returns a new instance with the specified is outdated callback value.
      *
-     * @param callable $value
+     * @param callable $isOutdatedCallback PHP callback, which should be invoked to
+     * check whether asset conversion result is outdated {@see $isOutdatedCallback}.
+     *
+     * @return self
      */
-    public function setIsOutdatedCallback(callable $value): void
+    public function withIsOutdatedCallback(callable $isOutdatedCallback): self
     {
-        $this->isOutdatedCallback = $value;
+        $new = clone $this;
+        $new->isOutdatedCallback = $isOutdatedCallback;
+        return $new;
     }
 
     /**

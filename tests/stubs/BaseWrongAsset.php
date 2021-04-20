@@ -12,8 +12,6 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
  *
  * Example class with $basePath wrong.
  *
- * @package Assets
- *
  * @throws InvalidConfigException
  */
 final class BaseWrongAsset extends AssetBundle

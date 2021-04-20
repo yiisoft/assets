@@ -60,7 +60,7 @@ final class JsonAssetExporterTest extends TestCase
             "{$exportBundle->sourcePath}/{$exportBundle->export[1]}",
         ]);
 
-        $manager->setPublisher($this->publisher);
+        $manager = $manager->withPublisher($this->publisher);
         $manager->export(new JsonAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
@@ -93,7 +93,7 @@ final class JsonAssetExporterTest extends TestCase
             "{$exportBundle->sourcePath}/{$exportBundle->js[0]}",
         ]);
 
-        $manager->setPublisher($this->publisher);
+        $manager = $manager->withPublisher($this->publisher);
         $manager->export(new JsonAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
