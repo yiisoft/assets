@@ -56,7 +56,7 @@ final class AssetManager
      * @param AssetLoaderInterface $loader The loader instance.
      * @param string[] $allowedBundleNames List of names of allowed asset bundles. If the array is empty, then any
      * asset bundles are allowed. If the names of allowed asset bundles were specified, only these asset bundles
-     * or their dependencies can be registered {@see register()} and received {@see getBundle()}. Also, specifying
+     * or their dependencies can be registered {@see register()} and obtained {@see getBundle()}. Also, specifying
      * names allows to export {@see export()} asset bundles automatically without first registering them manually.
      * @param array $customizedBundles The asset bundle configurations. Provided to customize asset bundles.
      * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration specified
