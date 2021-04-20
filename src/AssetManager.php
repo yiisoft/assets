@@ -108,6 +108,21 @@ final class AssetManager
     }
 
     /**
+     * Returns the actual URL for the specified asset.
+     *
+     * @param string $name The asset bundle name.
+     * @param string $path The asset path.
+     *
+     * @throws InvalidConfigException If asset files are not found.
+     *
+     * @return string The actual URL for the specified asset.
+     */
+    public function getAssetUrl(string $name, string $path): string
+    {
+        return $this->loader->getAssetUrl($this->getBundle($name), $path);
+    }
+
+    /**
      * Return config array CSS AssetBundle.
      *
      * @return array

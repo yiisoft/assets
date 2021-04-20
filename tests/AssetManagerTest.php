@@ -502,6 +502,34 @@ final class AssetManagerTest extends TestCase
         $this->manager->export(new JsonAssetExporter($this->aliases->get('@asset/test.json')));
     }
 
+    public function testGetAssetUrl(): void
+    {
+        $bundle = new ExportAsset();
+        $sourcePath = $this->aliases->get($bundle->sourcePath);
+        $hash = $this->getPublishedHash($sourcePath . FileHelper::lastModifiedTime($sourcePath), $this->publisher);
+
+        $this->assertSame(
+            $this->aliases->get("@assetUrl/{$hash}/css/stub.css"),
+            $this->manager->getAssetUrl(ExportAsset::class, 'css/stub.css'),
+        );
+        $this->assertSame(
+            $this->aliases->get("@assetUrl/{$hash}/js/stub.js"),
+            $this->manager->getAssetUrl(ExportAsset::class, 'js/stub.js'),
+        );
+        $this->assertSame(
+            $this->aliases->get("@assetUrl/{$hash}/export/stub.css"),
+            $this->manager->getAssetUrl(ExportAsset::class, 'export/stub.css'),
+        );
+        $this->assertSame(
+            $this->aliases->get("@assetUrl/{$hash}/export/stub.js"),
+            $this->manager->getAssetUrl(ExportAsset::class, 'export/stub.js'),
+        );
+        $this->assertSame(
+            $this->aliases->get("@assetUrl/{$hash}/export/yii-logo.png"),
+            $this->manager->getAssetUrl(ExportAsset::class, 'export/yii-logo.png'),
+        );
+    }
+
     public function testSettersImmutability(): void
     {
         $manager = $this->manager->withConverter($this->converter);

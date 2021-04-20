@@ -47,7 +47,7 @@ return [
         ],
     ],
 
-    AssetManager::class => static function (ContainerInterface $container) use ($params):AssetManager {
+    AssetManager::class => static function (ContainerInterface $container) use ($params): AssetManager {
         $assetManager = new AssetManager(
             $container->get(Aliases::class),
             $container->get(AssetLoaderInterface::class),
