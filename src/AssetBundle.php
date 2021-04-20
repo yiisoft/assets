@@ -132,10 +132,10 @@ class AssetBundle
 
     /**
      * @var string[] List of file paths to export into a format readable
-     * by third party tools such as Webpack {@see AssetManager::export()}.
+     * by third party tools such as Webpack. See {@see AssetManager::export()}.
      *
      * If the array is empty, the file paths from the {@see $css} and {@see $js}
-     * will be exported {@see AssetUtil::extractFilePathsForExport()}.
+     * will be exported. See {@see AssetUtil::extractFilePathsForExport()}.
      *
      * For example:
      *
@@ -154,9 +154,8 @@ class AssetBundle
      * A source asset file is a file that is part of your source code repository of your Web application.
      * You must set this property if the directory containing the source asset files is not Web accessible.
      *
-     * If a publisher is used {@see AssetManager::setPublisher()}, by setting this property,
-     * {@see AssetManager} will publish the source asset files to a Web-accessible directory
-     * automatically when the asset bundle is registered on a page.
+     * If a publisher is set via {@see AssetManager::setPublisher()}, {@see AssetManager} will publish
+     * the source asset files to a Web-accessible directory automatically when the asset bundle is registered on a page.
      *
      * If you do not set this property, it means the source asset files are located under {@see $basePath}.
      *

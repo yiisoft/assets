@@ -322,7 +322,7 @@ class PublishCommand extends Command
 Export automates the collection of asset bundle file paths for external module builders.
 Two exporters are provided out of the box:
 
-- `Yiisoft\Assets\Exporter\JsonAssetExporter` - the file paths of asset bundles to a JSON file.
+- `Yiisoft\Assets\Exporter\JsonAssetExporter` - exports the file paths of asset bundles into a JSON file.
 - `Yiisoft\Assets\Exporter\WebpackAssetExporter` - exports the file paths of asset bundles, converting them to
   `import '/path/to/file';` expressions and placing them in the specified JavaScript file for later loading into
   Webpack. For more information, [see here](https://webpack.js.org/concepts/#entry).
