@@ -34,15 +34,6 @@ final class AssetConverter implements AssetConverterInterface
      * @var array The commands that are used to perform the asset conversion.
      * The keys are the asset file extension names, and the values are the corresponding
      * target script types (either "css" or "js") and the commands used for the conversion.
-     *
-     * You may also use a {@see https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md}
-     * to specify the location of the command:
-     *
-     * ```php
-     * [
-     *     'styl' => ['css', '@app/node_modules/bin/stylus < {from} > {to}'],
-     * ]
-     * ```
      */
     private array $commands = [
         'less' => ['css', 'lessc {from} {to} --no-color --source-map'],
@@ -55,53 +46,31 @@ final class AssetConverter implements AssetConverterInterface
 
     /**
      * @var bool Whether the source asset file should be converted even if its result already exists.
-     * Default is `false`. You may want to set this to be `true` during the development stage to make
-     * sure the converted assets are always up-to-date. Do not set this to true on production servers
-     * as it will significantly degrade the performance.
      */
     private bool $forceConvert;
 
     /**
      * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is outdated.
-     * It will be invoked only if conversion target file exists and its modification time is older then the one of
-     * source file.
-     * Callback should match following signature:
-     *
-     * ```php
-     * function (string $basePath, string $sourceFile, string $targetFile, string $sourceExtension, string $targetExtension) : bool
-     * ```
-     *
-     * where $basePath is the asset source directory; $sourceFile is the asset source file path, relative to $basePath;
-     * $targetFile is the asset target file path, relative to $basePath; $sourceExtension is the source asset file
-     * extension and $targetExtension is the target asset file extension, respectively.
-     *
-     * It should return `true` is case asset should be reconverted.
-     * For example:
-     *
-     * ```php
-     * function ($basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension) {
-     *     if (YII_ENV !== 'dev') {
-     *         return false;
-     *     }
-     *
-     *     $resultModificationTime = @filemtime("$basePath/$result");
-     *     foreach (FileHelper::findFiles($basePath, ['only' => ["*.{$sourceExtension}"]]) as $filename) {
-     *         if ($resultModificationTime < @filemtime($filename)) {
-     *             return true;
-     *         }
-     *     }
-     *
-     *     return false;
-     * }
-     * ```
      */
     private $isOutdatedCallback = null;
 
     /**
      * @param Aliases $aliases The aliases instance.
      * @param LoggerInterface $logger The logger instance.
-     * @param array $commands The commands that are used to perform the asset conversion. {@see $commands}
+     * @param array $commands The commands that are used to perform the asset conversion.
+     * The keys are the asset file extension names, and the values are the corresponding
+     * target script types (either "css" or "js") and the commands used for the conversion.
+     *
+     * You may also use a {@see https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md}
+     * to specify the location of the command:
+     *
+     * ```php
+     * [
+     *     'styl' => ['css', '@app/node_modules/bin/stylus < {from} > {to}'],
+     * ]
+     * ```
      * @param bool $forceConvert Whether the source asset file should be converted even if its result already exists.
+     * See {@see withForceConvert()}.
      */
     public function __construct(
         Aliases $aliases,
@@ -163,9 +132,10 @@ final class AssetConverter implements AssetConverterInterface
     /**
      * Returns a new instance with the specified force convert value.
      *
-     * Make the conversion regardless of whether the asset already exists {@see $forceConvert}.
-     *
-     * @param bool $forceConvert
+     * @param bool $forceConvert Whether the source asset file should be converted even if its result already exists.
+     * Default is `false`. You may want to set this to be `true` during the development stage to make
+     * sure the converted assets are always up-to-date. Do not set this to true on production servers
+     * as it will significantly degrade the performance.
      *
      * @return self
      */
@@ -177,10 +147,40 @@ final class AssetConverter implements AssetConverterInterface
     }
 
     /**
-     * Returns a new instance with the specified is outdated callback value.
+     * Returns a new instance with a callback that is used to check for outdated result.
      *
-     * @param callable $isOutdatedCallback PHP callback, which should be invoked to
-     * check whether asset conversion result is outdated {@see $isOutdatedCallback}.
+     * @param callable $isOutdatedCallback A PHP callback, which should be invoked to check whether asset conversion result is outdated.
+     * It will be invoked only if conversion target file exists and its modification time is older then the one of
+     * source file.
+     * Callback should match following signature:
+     *
+     * ```php
+     * function (string $basePath, string $sourceFile, string $targetFile, string $sourceExtension, string $targetExtension) : bool
+     * ```
+     *
+     * where $basePath is the asset source directory; $sourceFile is the asset source file path, relative to $basePath;
+     * $targetFile is the asset target file path, relative to $basePath; $sourceExtension is the source asset file
+     * extension and $targetExtension is the target asset file extension, respectively.
+     *
+     * It should return `true` is case asset should be reconverted.
+     * For example:
+     *
+     * ```php
+     * function ($basePath, $sourceFile, $targetFile, $sourceExtension, $targetExtension) {
+     *     if (YII_ENV !== 'dev') {
+     *         return false;
+     *     }
+     *
+     *     $resultModificationTime = @filemtime("$basePath/$result");
+     *     foreach (FileHelper::findFiles($basePath, ['only' => ["*.{$sourceExtension}"]]) as $filename) {
+     *         if ($resultModificationTime < @filemtime($filename)) {
+     *             return true;
+     *         }
+     *     }
+     *
+     *     return false;
+     * }
+     * ```
      *
      * @return self
      */
