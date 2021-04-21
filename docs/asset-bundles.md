@@ -218,14 +218,11 @@ class ViewFactory
          * Passes {@see UrlGeneratorInterface} and {@see AssetManager} to view files.
          * It will be available as $urlGenerator and $assetManager in all views or layout.
          */
-        $webView->setDefaultParameters([
+        return $webView->withDefaultParameters([
             'aliases' => $aliases,
             'assetManager' => $container->get(AssetManager::class), // <-- here
             'urlGenerator' => $container->get(UrlGeneratorInterface::class),
         ]);
-
-
-        return $webView;
     }
 }
 ```
