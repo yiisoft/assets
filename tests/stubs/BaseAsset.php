@@ -54,12 +54,12 @@ final class BaseAsset extends AssetBundle
     public array $jsStrings = [
         'uniqueName' => 'app1.start();',
         'app2.start();',
-        'uniqueName2' => ['app3.start();', 'position' => 1], //WebView::POSITION_HEAD
+        'uniqueName2' => ['app3.start();', 'position' => 1], // WebView::POSITION_HEAD
     ];
 
-    public array $jsVar = [
-        'var1' => ['option1' => 'value1'],
-        'var2' => ['option2' => 'value2', 'option3' => 'value3'],
-        'var3' => [['option4' => 'value4'], 'position' => 3], //WebView::POSITION_END
+    public array $jsVars = [
+        'var1' => 'value1',
+        'var2' => [1, 2],
+        ['var3', 'value3', 'position' => 3], // WebView::POSITION_END
     ];
 }

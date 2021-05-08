@@ -45,7 +45,7 @@ final class AssetManager
     private array $cssFiles = [];
     private array $jsFiles = [];
     private array $jsStrings = [];
-    private array $jsVar = [];
+    private array $jsVars = [];
     private ?AssetConverterInterface $converter = null;
     private ?AssetPublisherInterface $publisher = null;
     private AssetLoaderInterface $loader;
@@ -153,9 +153,9 @@ final class AssetManager
      *
      * @return array
      */
-    public function getJsVar(): array
+    public function getJsVars(): array
     {
-        return $this->jsVar;
+        return $this->jsVars;
     }
 
     /**
@@ -342,29 +342,6 @@ final class AssetManager
 
         $this->jsStrings[$key]['string'] = $jsString;
         $this->jsStrings[$key]['attributes'] = $options;
-    }
-
-    /**
-     * Registers a JS variable.
-     *
-     * @param string $varName The variable name.
-     * @param array|string $jsVar The JS code block to be registered.
-     * @param array $options The HTML attributes for the script tag. The following options are specially handled and
-     * are not treated as HTML attributes:
-     *
-     * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
-     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section. This is the default value.
-     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
-     *     * {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section.
-     */
-    private function registerJsVar(string $varName, $jsVar, array $options = []): void
-    {
-        if (!array_key_exists('position', $options)) {
-            $options = array_merge(['position' => 1], $options);
-        }
-
-        $this->jsVar[$varName]['variables'] = $jsVar;
-        $this->jsVar[$varName]['attributes'] = $options;
     }
 
     /**
@@ -562,9 +539,7 @@ final class AssetManager
             }
         }
 
-        foreach ($bundle->jsVar as $key => $jsVar) {
-            $this->registerJsVar($key, $jsVar, $jsVar);
-        }
+        $this->jsVars = array_merge($this->jsVars, $bundle->jsVars);
 
         foreach ($bundle->css as $css) {
             if (is_array($css)) {

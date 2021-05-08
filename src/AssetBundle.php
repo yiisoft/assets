@@ -121,8 +121,9 @@ class AssetBundle
 
     /**
      * @var array JavaScript variables to be passed to {@see \Yiisoft\View\WebView::registerJsVar()}.
+     * @psalm-var array<int,array{0:string,1:mixed}>|array<string,mixed>
      */
-    public array $jsVar = [];
+    public array $jsVars = [];
 
     /**
      * @var array The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle

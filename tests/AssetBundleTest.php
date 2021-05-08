@@ -201,20 +201,11 @@ final class AssetBundleTest extends TestCase
 
         $this->assertEquals(
             [
-                'option1' => 'value1',
+                'var1' => 'value1',
+                'var2' => [1, 2],
+                ['var3', 'value3', 'position' => 3],
             ],
-            $this->manager->getJsVar()['var1']['variables'],
-        );
-        $this->assertEquals(
-            [
-                'option2' => 'value2',
-                'option3' => 'value3',
-            ],
-            $this->manager->getJsVar()['var2']['variables'],
-        );
-        $this->assertEquals(
-            3,
-            $this->manager->getJsVar()['var3']['attributes']['position'],
+            $this->manager->getJsVars(),
         );
     }
 
