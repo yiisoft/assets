@@ -60,6 +60,6 @@ final class BaseAsset extends AssetBundle
     public array $jsVars = [
         'var1' => 'value1',
         'var2' => [1, 2],
-        ['var3', 'value3', 'position' => 3], // WebView::POSITION_END
+        ['var3', 'value3', 3],
     ];
 }

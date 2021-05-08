@@ -203,7 +203,7 @@ final class AssetBundleTest extends TestCase
             [
                 'var1' => 'value1',
                 'var2' => [1, 2],
-                ['var3', 'value3', 'position' => 3],
+                ['var3', 'value3', 3],
             ],
             $this->manager->getJsVars(),
         );
