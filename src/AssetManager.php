@@ -15,7 +15,6 @@ use function array_unshift;
 use function in_array;
 use function is_array;
 use function is_file;
-use function is_int;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
