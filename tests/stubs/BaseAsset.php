@@ -54,7 +54,8 @@ final class BaseAsset extends AssetBundle
     public array $jsStrings = [
         'uniqueName' => 'app1.start();',
         'app2.start();',
-        'uniqueName2' => ['app3.start();', 'position' => 1], // WebView::POSITION_HEAD
+        'uniqueName2' => ['app3.start();', 3],
+        ['app4.start();', 3],
     ];
 
     public array $jsVars = [

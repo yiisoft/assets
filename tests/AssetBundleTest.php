@@ -181,17 +181,14 @@ final class AssetBundleTest extends TestCase
     {
         $this->manager->register([BaseAsset::class]);
 
-        $this->assertEquals(
-            'app1.start();',
-            $this->manager->getJsStrings()['uniqueName']['string'],
-        );
-        $this->assertEquals(
-            'app2.start();',
-            $this->manager->getJsStrings()['app2.start();']['string'],
-        );
-        $this->assertEquals(
-            1,
-            $this->manager->getJsStrings()['uniqueName2']['attributes']['position'],
+        $this->assertSame(
+            [
+                'uniqueName' => 'app1.start();',
+                'app2.start();',
+                'uniqueName2' => ['app3.start();', 3],
+                ['app4.start();', 3],
+            ],
+            $this->manager->getJsStrings(),
         );
     }
 
@@ -199,7 +196,7 @@ final class AssetBundleTest extends TestCase
     {
         $this->manager->register([BaseAsset::class]);
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'var1' => 'value1',
                 'var2' => [1, 2],
