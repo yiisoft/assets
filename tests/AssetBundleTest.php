@@ -181,17 +181,14 @@ final class AssetBundleTest extends TestCase
     {
         $this->manager->register([BaseAsset::class]);
 
-        $this->assertEquals(
-            'app1.start();',
-            $this->manager->getJsStrings()['uniqueName']['string'],
-        );
-        $this->assertEquals(
-            'app2.start();',
-            $this->manager->getJsStrings()['app2.start();']['string'],
-        );
-        $this->assertEquals(
-            1,
-            $this->manager->getJsStrings()['uniqueName2']['attributes']['position'],
+        $this->assertSame(
+            [
+                'uniqueName' => 'app1.start();',
+                'app2.start();',
+                'uniqueName2' => ['app3.start();', 3],
+                ['app4.start();', 3],
+            ],
+            $this->manager->getJsStrings(),
         );
     }
 
@@ -199,22 +196,13 @@ final class AssetBundleTest extends TestCase
     {
         $this->manager->register([BaseAsset::class]);
 
-        $this->assertEquals(
+        $this->assertSame(
             [
-                'option1' => 'value1',
+                'var1' => 'value1',
+                'var2' => [1, 2],
+                ['var3', 'value3', 3],
             ],
-            $this->manager->getJsVar()['var1']['variables'],
-        );
-        $this->assertEquals(
-            [
-                'option2' => 'value2',
-                'option3' => 'value3',
-            ],
-            $this->manager->getJsVar()['var2']['variables'],
-        );
-        $this->assertEquals(
-            3,
-            $this->manager->getJsVar()['var3']['attributes']['position'],
+            $this->manager->getJsVars(),
         );
     }
 
