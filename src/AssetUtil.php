@@ -137,10 +137,8 @@ final class AssetUtil
             }
 
             foreach (array_merge($bundle->css, $bundle->js) as $item) {
-                if ($item !== null) {
-                    $filePath = is_array($item) ? array_shift($item) : $item;
-                    $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
-                }
+                $filePath = is_array($item) ? array_shift($item) : $item;
+                $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
             }
         }
 
