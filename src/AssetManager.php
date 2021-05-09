@@ -465,10 +465,6 @@ final class AssetManager
      */
     private function registerFiles(string $bundleName): void
     {
-        if (!isset($this->registeredBundles[$bundleName])) {
-            return;
-        }
-
         $bundle = $this->registeredBundles[$bundleName];
 
         foreach ($bundle->depends as $dep) {
