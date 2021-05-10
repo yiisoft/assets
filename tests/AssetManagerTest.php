@@ -16,6 +16,7 @@ use Yiisoft\Assets\Tests\stubs\ExportAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
+use Yiisoft\Assets\Tests\stubs\PureAsset;
 use Yiisoft\Assets\Tests\stubs\RepeatAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\stubs\UnicodeAsset;
@@ -376,6 +377,22 @@ final class AssetManagerTest extends TestCase
         $this->assertSame(
             $this->aliases->get("@assetUrl/{$hash}/export/yii-logo.png"),
             $this->manager->getAssetUrl(ExportAsset::class, 'export/yii-logo.png'),
+        );
+    }
+
+    public function testRegisterWithCustomBaseUrl(): void
+    {
+        $manager = $this->createManagerWithAliasesAndBaseUrl(['@web' => 'https://example.com/assets/'], '@web');
+
+        $manager->register([PureAsset::class]);
+
+        $this->assertSame(
+            ['https://example.com/assets/pure/main.css' => ['https://example.com/assets/pure/main.css']],
+            $manager->getCssFiles(),
+        );
+        $this->assertSame(
+            ['https://example.com/assets/pure/main.js' => ['https://example.com/assets/pure/main.js']],
+            $manager->getJsFiles(),
         );
     }
 
