@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Assets\Tests;
 
 use Yiisoft\Aliases\Aliases;
+use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetLoader;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
@@ -100,9 +101,53 @@ final class AssetLoaderTest extends TestCase
         );
     }
 
+    public function testCssDefaultPosition(): void
+    {
+        $loader = $this->createLoader()->withCssDefaultPosition(5);
+
+        $bundle = $loader->loadBundle('test', (array)(new AssetBundle()));
+
+        $this->assertSame(5, $bundle->cssPosition);
+        $this->assertNull($bundle->jsPosition);
+    }
+
+    public function testCssDefaultPostionForBundleWithPosition(): void
+    {
+        $loader = $this->createLoader()->withCssDefaultPosition(5);
+
+        $config = (array)(new AssetBundle());
+        $config['cssPosition'] = 7;
+        $bundle = $loader->loadBundle('test', $config);
+
+        $this->assertSame(7, $bundle->cssPosition);
+        $this->assertNull($bundle->jsPosition);
+    }
+
+    public function testJsDefaultPosition(): void
+    {
+        $loader = $this->createLoader()->withJsDefaultPosition(5);
+
+        $bundle = $loader->loadBundle('test', (array)(new AssetBundle()));
+
+        $this->assertSame(5, $bundle->jsPosition);
+        $this->assertNull($bundle->cssPosition);
+    }
+
+    public function testJsDefaultPostionForBundleWithPosition(): void
+    {
+        $loader = $this->createLoader()->withJsDefaultPosition(5);
+
+        $config = (array)(new AssetBundle());
+        $config['jsPosition'] = 7;
+        $bundle = $loader->loadBundle('test', $config);
+
+        $this->assertSame(7, $bundle->jsPosition);
+        $this->assertNull($bundle->cssPosition);
+    }
+
     public function testImmutability(): void
     {
-        $loader = new AssetLoader(new Aliases());
+        $loader = $this->createLoader();
         $this->assertNotSame($loader, $loader->withAppendTimestamp(false));
         $this->assertNotSame($loader, $loader->withAssetMap([]));
         $this->assertNotSame($loader, $loader->withBasePath(null));
@@ -111,5 +156,10 @@ final class AssetLoaderTest extends TestCase
         $this->assertNotSame($loader, $loader->withCssDefaultPosition(null));
         $this->assertNotSame($loader, $loader->withJsDefaultOptions([]));
         $this->assertNotSame($loader, $loader->withJsDefaultPosition(null));
+    }
+
+    private function createLoader(): AssetLoader
+    {
+        return new AssetLoader(new Aliases());
     }
 }
