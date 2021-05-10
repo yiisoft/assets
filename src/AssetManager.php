@@ -491,7 +491,7 @@ final class AssetManager
     /**
      * Registers a CSS file.
      *
-     * @param string|array $css
+     * @param array|string $css
      *
      * @throws InvalidConfigException
      */
@@ -540,7 +540,7 @@ final class AssetManager
     /**
      * Registers a JS file.
      *
-     * @param string|array $js
+     * @param array|string $js
      *
      * @throws InvalidConfigException
      */
