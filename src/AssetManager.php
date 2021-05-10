@@ -10,8 +10,6 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 
 use function array_key_exists;
 use function array_merge;
-use function array_shift;
-use function array_unshift;
 use function get_class;
 use function gettype;
 use function in_array;
@@ -24,7 +22,7 @@ use function is_string;
 /**
  * AssetManager manages asset bundle configuration and loading.
  *
- * @psalm-type CssFile = array{0:string}&array
+ * @psalm-type CssFile = array{0:string,1?:int}&array
  * @psalm-type JsFile = array{0:string,1?:int}&array
  */
 final class AssetManager
@@ -249,7 +247,7 @@ final class AssetManager
      * @throws InvalidConfigException
      * @throws RuntimeException
      */
-    public function register(array $names, ?int $jsPosition = null): void
+    public function register(array $names, ?int $jsPosition = null, ?int $cssPosition = null): void
     {
         if (!empty($this->allowedBundleNames)) {
             foreach ($names as $name) {
@@ -258,7 +256,7 @@ final class AssetManager
         }
 
         foreach ($names as $name) {
-            $this->registerAssetBundle($name, $jsPosition);
+            $this->registerAssetBundle($name, $jsPosition, $cssPosition);
             $this->registerFiles($name);
         }
     }
@@ -390,7 +388,7 @@ final class AssetManager
      * @throws InvalidConfigException If the asset or the asset file paths to be published does not exist.
      * @throws RuntimeException If the asset bundle does not exist or a circular dependency is detected.
      */
-    private function registerAssetBundle(string $name, ?int $jsPosition = null): void
+    private function registerAssetBundle(string $name, ?int $jsPosition = null, ?int $cssPosition = null): void
     {
         if (!isset($this->registeredBundles[$name])) {
             $bundle = $this->publishBundle($this->loadBundle($name));
@@ -398,7 +396,7 @@ final class AssetManager
             $this->registeredBundles[$name] = false;
 
             foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $bundle->jsPosition);
+                $this->registerAssetBundle($dep, $bundle->jsPosition, $bundle->cssPosition);
             }
 
             unset($this->registeredBundles[$name]);
@@ -409,19 +407,32 @@ final class AssetManager
             $bundle = $this->registeredBundles[$name];
         }
 
-        if ($jsPosition !== null) {
-            if ($bundle->jsPosition === null) {
-                $bundle->jsPosition = $jsPosition;
-            } elseif ($bundle->jsPosition > $jsPosition) {
-                throw new RuntimeException(
-                    "An asset bundle that depends on \"{$name}\" has a higher JavaScript file " .
-                    "position configured than \"{$name}\"."
-                );
+        if ($jsPosition !== null || $cssPosition !== null) {
+            if ($jsPosition !== null) {
+                if ($bundle->jsPosition === null) {
+                    $bundle->jsPosition = $jsPosition;
+                } elseif ($bundle->jsPosition > $jsPosition) {
+                    throw new RuntimeException(
+                        "An asset bundle that depends on \"{$name}\" has a higher JavaScript file " .
+                        "position configured than \"{$name}\"."
+                    );
+                }
+            }
+
+            if ($cssPosition !== null) {
+                if ($bundle->cssPosition === null) {
+                    $bundle->cssPosition = $cssPosition;
+                } elseif ($bundle->cssPosition > $cssPosition) {
+                    throw new RuntimeException(
+                        "An asset bundle that depends on \"{$name}\" has a higher CSS file " .
+                        "position configured than \"{$name}\"."
+                    );
+                }
             }
 
             // update position for all dependencies
             foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $bundle->jsPosition);
+                $this->registerAssetBundle($dep, $bundle->jsPosition, $bundle->cssPosition);
             }
         }
     }
@@ -514,6 +525,10 @@ final class AssetManager
             $css[0] = $url;
         } else {
             $css = [$url];
+        }
+
+        if ($bundle->cssPosition !== null) {
+            $css[1] = $bundle->cssPosition;
         }
 
         /** @psalm-var CssFile */
