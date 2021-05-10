@@ -10,8 +10,6 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 
 use function array_key_exists;
 use function array_merge;
-use function array_shift;
-use function array_unshift;
 use function get_class;
 use function gettype;
 use function in_array;
@@ -480,7 +478,7 @@ final class AssetManager
     /**
      * Registers a CSS file.
      *
-     * @param string|array $css
+     * @param array|string $css
      *
      * @throws InvalidConfigException
      */
@@ -525,7 +523,7 @@ final class AssetManager
     /**
      * Registers a JS file.
      *
-     * @param string|array $js
+     * @param array|string $js
      *
      * @throws InvalidConfigException
      */
