@@ -443,12 +443,38 @@ final class AssetManagerTest extends TestCase
         $this->assertNotSame($this->manager, $manager);
     }
 
+    public function testAppendTimestamp(): void
+    {
+        $manager = $this->createManagerWithAppendTimestamp();
+
+        $manager->register([PureAsset::class]);
+
+        $this->assertMatchesRegularExpression(
+            '~/pure/main\.css\?v=\d+~',
+            array_key_first($manager->getCssFiles()),
+        );
+
+        $this->assertMatchesRegularExpression(
+            '~/pure/main\.js\?v=\d+~',
+            array_key_first($manager->getJsFiles()),
+        );
+    }
+
     private function createManager(): AssetManager
     {
         $aliases = new Aliases();
         return new AssetManager(
             $aliases,
             new AssetLoader($aliases, false, [], __DIR__ . '/public', ''),
+        );
+    }
+
+    private function createManagerWithAppendTimestamp(): AssetManager
+    {
+        $aliases = new Aliases();
+        return new AssetManager(
+            $aliases,
+            new AssetLoader($aliases, true, [], __DIR__ . '/public', ''),
         );
     }
 
