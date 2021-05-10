@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
-use Yiisoft\Assets\AssetLoaderInterface;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Assets\AssetLoader;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
@@ -99,30 +100,16 @@ final class AssetLoaderTest extends TestCase
         );
     }
 
-    public function testSettersImmutability(): void
+    public function testImmutability(): void
     {
-        $loader = $this->loader->withAppendTimestamp(false);
-        $this->assertInstanceOf(AssetLoaderInterface::class, $loader);
-        $this->assertNotSame($this->loader, $loader);
-
-        $loader = $this->loader->withAssetMap([]);
-        $this->assertInstanceOf(AssetLoaderInterface::class, $loader);
-        $this->assertNotSame($this->loader, $loader);
-
-        $loader = $this->loader->withBasePath(null);
-        $this->assertInstanceOf(AssetLoaderInterface::class, $loader);
-        $this->assertNotSame($this->loader, $loader);
-
-        $loader = $this->loader->withBaseUrl(null);
-        $this->assertInstanceOf(AssetLoaderInterface::class, $loader);
-        $this->assertNotSame($this->loader, $loader);
-
-        $loader = $this->loader->withCssDefaultOptions([]);
-        $this->assertInstanceOf(AssetLoaderInterface::class, $loader);
-        $this->assertNotSame($this->loader, $loader);
-
-        $loader = $this->loader->withJsDefaultOptions([]);
-        $this->assertInstanceOf(AssetLoaderInterface::class, $loader);
-        $this->assertNotSame($this->loader, $loader);
+        $loader = new AssetLoader(new Aliases());
+        $this->assertNotSame($loader, $loader->withAppendTimestamp(false));
+        $this->assertNotSame($loader, $loader->withAssetMap([]));
+        $this->assertNotSame($loader, $loader->withBasePath(null));
+        $this->assertNotSame($loader, $loader->withBaseUrl(null));
+        $this->assertNotSame($loader, $loader->withCssDefaultOptions([]));
+        $this->assertNotSame($loader, $loader->withCssDefaultPosition(null));
+        $this->assertNotSame($loader, $loader->withJsDefaultOptions([]));
+        $this->assertNotSame($loader, $loader->withJsDefaultPosition(null));
     }
 }
