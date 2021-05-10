@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Assets\Tests;
 
 use RuntimeException;
+use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetBundle;
+use Yiisoft\Assets\AssetLoader;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
@@ -15,6 +17,7 @@ use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
+use Yiisoft\Assets\Tests\stubs\UnicodeAsset;
 use Yiisoft\Files\FileHelper;
 
 final class AssetManagerTest extends TestCase
@@ -375,6 +378,22 @@ final class AssetManagerTest extends TestCase
         );
     }
 
+    public function testUnicodeInPath(): void
+    {
+        $manager = $this->createManager();
+
+        $manager->register([UnicodeAsset::class]);
+
+        $this->assertSame(
+            ['/unicode/русский/main.css' => ['/unicode/русский/main.css']],
+            $manager->getCssFiles(),
+        );
+        $this->assertSame(
+            ['/unicode/汉语漢語/main.js' => ['/unicode/汉语漢語/main.js']],
+            $manager->getJsFiles(),
+        );
+    }
+
     public function testSettersImmutability(): void
     {
         $manager = $this->manager->withConverter($this->converter);
@@ -388,5 +407,14 @@ final class AssetManagerTest extends TestCase
         $manager = $this->manager->withPublisher($this->publisher);
         $this->assertInstanceOf(AssetManager::class, $manager);
         $this->assertNotSame($this->manager, $manager);
+    }
+
+    private function createManager(): AssetManager
+    {
+        $aliases = new Aliases();
+        return new AssetManager(
+            $aliases,
+            new AssetLoader($aliases, false, [], __DIR__ . '/public', ''),
+        );
     }
 }
