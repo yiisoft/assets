@@ -39,23 +39,22 @@ final class AssetLoaderTest extends TestCase
 
         $manager->register([BaseAsset::class]);
 
-        $this->assertStringContainsString($urlCss, $manager->getCssFiles()[$urlCss]['url']);
-        $this->assertEquals(
+        $this->assertSame(
             [
+                $urlCss,
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
             ],
-            $manager->getCssFiles()[$urlCss]['attributes'],
+            $manager->getCssFiles()[$urlCss],
         );
 
-        $this->assertStringContainsString($urlJs, $manager->getJsFiles()[$urlJs]['url']);
         $this->assertEquals(
             [
+                $urlJs,
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
-                'position' => 3,
             ],
-            $manager->getJsFiles()[$urlJs]['attributes'],
+            $manager->getJsFiles()[$urlJs],
         );
     }
 
@@ -69,8 +68,7 @@ final class AssetLoaderTest extends TestCase
 
         $manager->register([JqueryAsset::class]);
 
-        $this->assertStringContainsString($urlJs, $manager->getJsFiles()[$urlJs]['url']);
-        $this->assertEquals(['position' => 3], $manager->getJsFiles()[$urlJs]['attributes']);
+        $this->assertSame([$urlJs], $manager->getJsFiles()[$urlJs]);
     }
 
     public function testWithAssetMapWithCustomizedBundles(): void
@@ -83,8 +81,7 @@ final class AssetLoaderTest extends TestCase
 
         $manager->register([JqueryAsset::class]);
 
-        $this->assertStringContainsString($urlJs, $manager->getJsFiles()[$urlJs]['url']);
-        $this->assertEquals(['position' => 3], $manager->getJsFiles()[$urlJs]['attributes']);
+        $this->assertSame([$urlJs], $manager->getJsFiles()[$urlJs]);
     }
 
     public function testAssetUrlWithCdn(): void

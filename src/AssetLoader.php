@@ -46,11 +46,15 @@ final class AssetLoader implements AssetLoaderInterface
      */
     private array $cssDefaultOptions = [];
 
+    private ?int $cssDefaultPosition = null;
+
     /**
      * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
      * when registering the JS files all assets bundle.
      */
     private array $jsDefaultOptions = [];
+
+    private ?int $jsDefaultPosition = null;
 
     /**
      * @param Aliases $aliases The aliases instance.
@@ -128,7 +132,10 @@ final class AssetLoader implements AssetLoaderInterface
         $bundle->sourcePath = $bundle->sourcePath === null ? null : $this->aliases->get($bundle->sourcePath);
 
         $bundle->cssOptions = array_merge($bundle->cssOptions, $this->cssDefaultOptions);
+        $bundle->jsPosition ??= $this->cssDefaultPosition;
+
         $bundle->jsOptions = array_merge($bundle->jsOptions, $this->jsDefaultOptions);
+        $bundle->jsPosition ??= $this->jsDefaultPosition;
 
         return $bundle;
     }
@@ -226,6 +233,13 @@ final class AssetLoader implements AssetLoaderInterface
         return $new;
     }
 
+    public function withCssDefaultPosition(?int $position): self
+    {
+        $new = clone $this;
+        $new->cssDefaultPosition = $position;
+        return $new;
+    }
+
     /**
      * Returns a new instance with the specified global `$js` default options for all assets bundle.
      *
@@ -238,6 +252,13 @@ final class AssetLoader implements AssetLoaderInterface
     {
         $new = clone $this;
         $new->jsDefaultOptions = $jsDefaultOptions;
+        return $new;
+    }
+
+    public function withJsDefaultPosition(?int $position): self
+    {
+        $new = clone $this;
+        $new->jsDefaultPosition = $position;
         return $new;
     }
 

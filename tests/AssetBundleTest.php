@@ -32,29 +32,22 @@ final class AssetBundleTest extends TestCase
 
         $this->manager->register([BaseAsset::class]);
 
-        $this->assertStringContainsString(
-            '/baseUrl/css/basePath.css',
-            $this->manager->getCssFiles()['/baseUrl/css/basePath.css']['url'],
-        );
-        $this->assertEquals(
+        $this->assertSame(
             [
+                '/baseUrl/css/basePath.css',
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
             ],
-            $this->manager->getCssFiles()['/baseUrl/css/basePath.css']['attributes'],
+            $this->manager->getCssFiles()['/baseUrl/css/basePath.css'],
         );
 
-        $this->assertStringContainsString(
-            '/baseUrl/js/basePath.js',
-            $this->manager->getJsFiles()['/baseUrl/js/basePath.js']['url'],
-        );
-        $this->assertEquals(
+        $this->assertSame(
             [
+                '/baseUrl/js/basePath.js',
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
-                'position' => 3,
             ],
-            $this->manager->getJsFiles()['/baseUrl/js/basePath.js']['attributes'],
+            $this->manager->getJsFiles()['/baseUrl/js/basePath.js'],
         );
     }
 
@@ -165,15 +158,9 @@ final class AssetBundleTest extends TestCase
         $this->assertArrayHasKey(SimpleAsset::class, $this->getRegisteredBundles($this->manager));
         $this->assertInstanceOf(AssetBundle::class, $this->getRegisteredBundles($this->manager)[SimpleAsset::class]);
 
-        $this->assertStringContainsString(
-            '/js/jquery.js',
-            $this->manager->getJsFiles()['/js/jquery.js']['url'],
-        );
-        $this->assertEquals(
-            [
-                'position' => 3,
-            ],
-            $this->manager->getJsFiles()['/js/jquery.js']['attributes'],
+        $this->assertSame(
+            ['/js/jquery.js'],
+            $this->manager->getJsFiles()['/js/jquery.js'],
         );
     }
 
@@ -212,65 +199,44 @@ final class AssetBundleTest extends TestCase
 
         $this->manager->register([FileOptionsAsset::class]);
 
-        $this->assertStringContainsString(
-            '/baseUrl/css/default_options.css',
-            $this->manager->getCssFiles()['/baseUrl/css/default_options.css']['url'],
-        );
-        $this->assertEquals(
+        $this->assertSame(
             [
+                '/baseUrl/css/default_options.css',
                 'media' => 'screen',
                 'hreflang' => 'en',
             ],
-            $this->manager->getCssFiles()['/baseUrl/css/default_options.css']['attributes'],
+            $this->manager->getCssFiles()['/baseUrl/css/default_options.css'],
         );
-
-        $this->assertStringContainsString(
-            '/baseUrl/css/tv.css',
-            $this->manager->getCssFiles()['/baseUrl/css/tv.css']['url'],
-        );
-        $this->assertEquals(
+        $this->assertSame(
             [
+                '/baseUrl/css/tv.css',
                 'media' => 'tv',
                 'hreflang' => 'en',
             ],
-            $this->manager->getCssFiles()['/baseUrl/css/tv.css']['attributes'],
+            $this->manager->getCssFiles()['/baseUrl/css/tv.css'],
         );
-
-        $this->assertStringContainsString(
-            '/baseUrl/css/screen_and_print.css',
-            $this->manager->getCssFiles()['/baseUrl/css/screen_and_print.css']['url'],
-        );
-        $this->assertEquals(
+        $this->assertSame(
             [
+                '/baseUrl/css/screen_and_print.css',
                 'media' => 'screen, print',
                 'hreflang' => 'en',
             ],
-            $this->manager->getCssFiles()['/baseUrl/css/screen_and_print.css']['attributes'],
+            $this->manager->getCssFiles()['/baseUrl/css/screen_and_print.css'],
         );
-
-        $this->assertStringContainsString(
-            '/baseUrl/js/normal.js',
-            $this->manager->getJsFiles()['/baseUrl/js/normal.js']['url'],
-        );
-        $this->assertEquals(
+        $this->assertSame(
             [
+                '/baseUrl/js/normal.js',
                 'charset' => 'utf-8',
-                'position' => 3,
             ],
-            $this->manager->getJsFiles()['/baseUrl/js/normal.js']['attributes'],
+            $this->manager->getJsFiles()['/baseUrl/js/normal.js'],
         );
-
-        $this->assertStringContainsString(
-            '/baseUrl/js/defered.js',
-            $this->manager->getJsFiles()['/baseUrl/js/defered.js']['url'],
-        );
-        $this->assertEquals(
+        $this->assertSame(
             [
+                '/baseUrl/js/defered.js',
                 'charset' => 'utf-8',
                 'defer' => true,
-                'position' => 3,
             ],
-            $this->manager->getJsFiles()['/baseUrl/js/defered.js']['attributes'],
+            $this->manager->getJsFiles()['/baseUrl/js/defered.js'],
         );
     }
 }

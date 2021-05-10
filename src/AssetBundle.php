@@ -56,6 +56,11 @@ class AssetBundle
     public array $cssOptions = [];
 
     /**
+     * @var int|null The CSS file position.
+     */
+    public ?int $cssPosition = null;
+
+    /**
      * @var array The options line command from converter.
      *
      * Example: Dart SASS minify css.
@@ -113,6 +118,11 @@ class AssetBundle
      * when registering the JS files in this bundle.
      */
     public array $jsOptions = [];
+
+    /**
+     * @var int|null The JS file position.
+     */
+    public ?int $jsPosition = null;
 
     /**
      * @var array JavaScript code blocks to be passed to {@see \Yiisoft\View\WebView::registerJs()}.

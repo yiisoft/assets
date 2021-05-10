@@ -38,7 +38,7 @@ final class AssetPublisherTest extends TestCase
         );
 
         $manager = $this->manager->withLoader(
-            $this->loader->withCssDefaultOptions(['media' => 'none'])->withJsDefaultOptions(['position' => 2]),
+            $this->loader->withCssDefaultOptions(['media' => 'none'])->withJsDefaultPosition(2),
         );
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
@@ -47,22 +47,13 @@ final class AssetPublisherTest extends TestCase
 
         $this->assertEquals(
             [
+                "/baseUrl/{$hash}/css/stub.css",
                 'media' => 'none',
             ],
-            $manager->getCssFiles()["/baseUrl/{$hash}/css/stub.css"]['attributes'],
+            $manager->getCssFiles()["/baseUrl/{$hash}/css/stub.css"],
         );
-        $this->assertEquals(
-            [
-                'position' => 2,
-            ],
-            $manager->getJsFiles()['/js/jquery.js']['attributes'],
-        );
-        $this->assertEquals(
-            [
-                'position' => 2,
-            ],
-            $manager->getJsFiles()["/baseUrl/{$hash}/js/stub.js"]['attributes'],
-        );
+        $this->assertEquals(2, $manager->getJsFiles()['/js/jquery.js'][1]);
+        $this->assertEquals(2, $manager->getJsFiles()["/baseUrl/{$hash}/js/stub.js"][1]);
     }
 
     public function testSourceWithHashCallback(): void
@@ -73,35 +64,19 @@ final class AssetPublisherTest extends TestCase
 
         $manager->register([SourceAsset::class]);
 
-        $this->assertStringContainsString(
-            '/baseUrl/hash/css/stub.css',
-            $manager->getCssFiles()['/baseUrl/hash/css/stub.css']['url'],
-        );
-        $this->assertEquals(
-            [],
-            $manager->getCssFiles()['/baseUrl/hash/css/stub.css']['attributes'],
+        $this->assertSame(
+            ['/baseUrl/hash/css/stub.css'],
+            $manager->getCssFiles()['/baseUrl/hash/css/stub.css'],
         );
 
-        $this->assertStringContainsString(
-            '/js/jquery.js',
-            $manager->getJsFiles()['/js/jquery.js']['url'],
-        );
-        $this->assertEquals(
-            [
-                'position' => 3,
-            ],
-            $manager->getJsFiles()['/js/jquery.js']['attributes'],
+        $this->assertSame(
+            ['/js/jquery.js'],
+            $manager->getJsFiles()['/js/jquery.js'],
         );
 
-        $this->assertStringContainsString(
-            '/baseUrl/hash/js/stub.js',
-            $manager->getJsFiles()['/baseUrl/hash/js/stub.js']['url'],
-        );
-        $this->assertEquals(
-            [
-                'position' => 3,
-            ],
-            $manager->getJsFiles()['/baseUrl/hash/js/stub.js']['attributes'],
+        $this->assertSame(
+            ['/baseUrl/hash/js/stub.js'],
+            $manager->getJsFiles()['/baseUrl/hash/js/stub.js'],
         );
     }
 

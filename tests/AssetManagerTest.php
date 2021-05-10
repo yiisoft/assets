@@ -17,8 +17,6 @@ use Yiisoft\Assets\Tests\stubs\PositionAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Files\FileHelper;
 
-use function ucfirst;
-
 final class AssetManagerTest extends TestCase
 {
     public function testGetPublishedPathLinkAssetsFalse(): void
@@ -89,17 +87,13 @@ final class AssetManagerTest extends TestCase
 
         $manager->register([JqueryAsset::class]);
 
-        $this->assertStringContainsString(
-            $urlJs,
-            $manager->getJsFiles()[$urlJs]['url'],
-        );
-        $this->assertEquals(
+        $this->assertSame(
             [
+                $urlJs,
                 'integrity' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
                 'crossorigin' => 'anonymous',
-                'position' => 3,
             ],
-            $manager->getJsFiles()[$urlJs]['attributes'],
+            $manager->getJsFiles()[$urlJs],
         );
     }
 
@@ -128,9 +122,7 @@ final class AssetManagerTest extends TestCase
     {
         $manager = new AssetManager($this->aliases, $this->loader, [], [
             PositionAsset::class => [
-                'jsOptions' => [
-                    'position' => $pos,
-                ],
+                'jsPosition' => $pos,
             ],
         ]);
 
@@ -151,17 +143,12 @@ final class AssetManagerTest extends TestCase
         $this->assertInstanceOf(AssetBundle::class, $this->getRegisteredBundles($manager)[JqueryAsset::class]);
         $this->assertInstanceOf(AssetBundle::class, $this->getRegisteredBundles($manager)[Level3Asset::class]);
 
-        $this->assertArrayHasKey('position', $this->getRegisteredBundles($manager)[PositionAsset::class]->jsOptions);
-        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[PositionAsset::class]->jsOptions['position']);
+        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[PositionAsset::class]->jsPosition);
+        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[JqueryAsset::class]->jsPosition);
+        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[Level3Asset::class]->jsPosition);
 
-        $this->assertArrayHasKey('position', $this->getRegisteredBundles($manager)[JqueryAsset::class]->jsOptions);
-        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[JqueryAsset::class]->jsOptions['position']);
-
-        $this->assertArrayHasKey('position', $this->getRegisteredBundles($manager)[Level3Asset::class]->jsOptions);
-        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[Level3Asset::class]->jsOptions['position']);
-
-        $this->assertEquals(['position' => $pos], $manager->getJsFiles()['/js/jquery.js']['attributes']);
-        $this->assertEquals(['position' => $pos], $manager->getJsFiles()['/files/jsFile.js']['attributes']);
+        $this->assertEquals($pos, $manager->getJsFiles()['/js/jquery.js'][1]);
+        $this->assertEquals($pos, $manager->getJsFiles()['/files/jsFile.js'][1]);
     }
 
     /**
@@ -179,9 +166,6 @@ final class AssetManagerTest extends TestCase
 
     /**
      * @dataProvider positionProviderConflict
-     *
-     * @param int $pos
-     * @param bool $jqAlreadyRegistered
      */
     public function testPositionDependencyConflict(int $pos, bool $jqAlreadyRegistered): void
     {
@@ -189,14 +173,10 @@ final class AssetManagerTest extends TestCase
 
         $manager = new AssetManager($this->aliases, $this->loader, [], [
             PositionAsset::class => [
-                'jsOptions' => [
-                    'position' => $pos - 1,
-                ],
+                'jsPosition' => $pos - 1,
             ],
             JqueryAsset::class => [
-                'jsOptions' => [
-                    'position' => $pos,
-                ],
+                'jsPosition' => $pos,
             ],
         ]);
 
@@ -266,141 +246,6 @@ final class AssetManagerTest extends TestCase
         $this->assertNotSame($jqueryBundle, $bundle);
         $this->assertEquals($jqueryBundle, $bundle);
         $this->assertNotSame($bundle, $manager->getBundle(JqueryAsset::class));
-    }
-
-    /**
-     * @return array
-     */
-    public function registerFileDataProvider(): array
-    {
-        return [
-            // Custom alias repeats in the asset URL
-            [
-                'css', '@assetUrl/assetSources/repeat/css/stub.css', false,
-                '/repeat/assetSources/repeat/css/stub.css',
-                '/repeat',
-            ],
-            [
-                'js', '@assetUrl/assetSources/repeat/js/jquery.js', false,
-                '/repeat/assetSources/repeat/js/jquery.js',
-                '/repeat',
-            ],
-            // JS files registration
-            [
-                'js', '@assetUrl/assetSources/js/missing-file.js', true,
-                '/baseUrl/assetSources/js/missing-file.js',
-            ],
-            [
-                'js', '@assetUrl/assetSources/js/jquery.js', false,
-                '/baseUrl/assetSources/js/jquery.js',
-            ],
-            [
-                'js', 'http://example.com/assetSources/js/jquery.js', false,
-                'http://example.com/assetSources/js/jquery.js',
-            ],
-            [
-                'js', '//example.com/assetSources/js/jquery.js', false,
-                '//example.com/assetSources/js/jquery.js',
-            ],
-            [
-                'js', 'assetSources/js/jquery.js', false,
-                'assetSources/js/jquery.js',
-            ],
-            [
-                'js', '/assetSources/js/jquery.js', false,
-                '/assetSources/js/jquery.js',
-            ],
-            // CSS file registration
-            [
-                'css', '@assetUrl/assetSources/css/missing-file.css', true,
-                '/baseUrl/assetSources/css/missing-file.css',
-            ],
-            [
-                'css', '@assetUrl/assetSources/css/stub.css', false,
-                '/baseUrl/assetSources/css/stub.css',
-            ],
-            [
-                'css', 'http://example.com/assetSources/css/stub.css', false,
-                'http://example.com/assetSources/css/stub.css',
-            ],
-            [
-                'css', '//example.com/assetSources/css/stub.css', false,
-                '//example.com/assetSources/css/stub.css',
-            ],
-            [
-                'css', 'assetSources/css/stub.css', false,
-                'assetSources/css/stub.css',
-            ],
-            [
-                'css', '/assetSources/css/stub.css', false,
-                '/assetSources/css/stub.css',
-            ],
-            // Custom `@assetUrl` aliases
-            [
-                'js', '@assetUrl/assetSources/js/missing-file1.js', true,
-                '/backend/assetSources/js/missing-file1.js',
-                '/backend',
-            ],
-            [
-                'js', 'http://full-url.example.com/backend/assetSources/js/missing-file.js', true,
-                'http://full-url.example.com/backend/assetSources/js/missing-file.js',
-                '/backend',
-            ],
-            [
-                'css', '//backend/backend/assetSources/js/missing-file.js', true,
-                '//backend/backend/assetSources/js/missing-file.js',
-                '/backend',
-            ],
-            [
-                'css', '@assetUrl/assetSources/css/stub.css', false,
-                '/en/blog/backend/assetSources/css/stub.css',
-                '/en/blog/backend',
-            ],
-            // UTF-8 chars
-            [
-                'css', '@assetUrl/assetSources/css/stub.css', false,
-                '/рус/сайт/assetSources/css/stub.css',
-                '/рус/сайт',
-            ],
-            [
-                'js', '@assetUrl/assetSources/js/jquery.js', false,
-                '/汉语/漢語/assetSources/js/jquery.js',
-                '/汉语/漢語',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider registerFileDataProvider
-     *
-     * @param string $type either `js` or `css`
-     * @param string $path
-     * @param bool $appendTimestamp
-     * @param string $expected
-     * @param string|null $webAlias
-     */
-    public function testRegisterFileAppendTimestamp(
-        string $type,
-        string $path,
-        bool $appendTimestamp,
-        string $expected,
-        ?string $webAlias = null
-    ): void {
-        $originalAlias = $this->aliases->get('@assetUrl');
-
-        if ($webAlias === null) {
-            $webAlias = $originalAlias;
-        }
-
-        $this->aliases->set('@assetUrl', $webAlias);
-        $path = $this->aliases->get($path);
-        $manager = $this->manager->withLoader($this->loader->withAppendTimestamp($appendTimestamp));
-        $this->invokeMethod($manager, 'register' . ucfirst($type) . 'File', [$path, [], null]);
-
-        $this->assertStringContainsString(
-            $expected,
-            $type === 'css' ? $manager->getCssFiles()[$expected]['url'] : $manager->getJsFiles()[$expected]['url'],
-        );
     }
 
     public function testRegisterWithAllowedBundlesWithCustomizedBundles(): void
