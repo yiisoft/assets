@@ -16,6 +16,7 @@ use Yiisoft\Assets\Tests\stubs\ExportAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
+use Yiisoft\Assets\Tests\stubs\RepeatAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\stubs\UnicodeAsset;
 use Yiisoft\Files\FileHelper;
@@ -378,6 +379,22 @@ final class AssetManagerTest extends TestCase
         );
     }
 
+    public function testRepeatsAliasInAssetUrl(): void
+    {
+        $manager = $this->createManagerWithAliasesAndBaseUrl(['@web' => '/repeat'], '@web');
+
+        $manager->register([RepeatAsset::class]);
+
+        $this->assertSame(
+            ['/repeat/repeat/assets/repeat/main.css' => ['/repeat/repeat/assets/repeat/main.css']],
+            $manager->getCssFiles(),
+        );
+        $this->assertSame(
+            ['/repeat/repeat/assets/repeat/main.js' => ['/repeat/repeat/assets/repeat/main.js']],
+            $manager->getJsFiles(),
+        );
+    }
+
     public function testUnicodeInPath(): void
     {
         $manager = $this->createManager();
@@ -415,6 +432,15 @@ final class AssetManagerTest extends TestCase
         return new AssetManager(
             $aliases,
             new AssetLoader($aliases, false, [], __DIR__ . '/public', ''),
+        );
+    }
+
+    private function createManagerWithAliasesAndBaseUrl(array $aliases, string $baseUrl): AssetManager
+    {
+        $aliases = new Aliases($aliases);
+        return new AssetManager(
+            $aliases,
+            new AssetLoader($aliases, false, [], __DIR__ . '/public', $baseUrl),
         );
     }
 }
