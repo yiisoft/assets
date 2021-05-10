@@ -24,7 +24,8 @@ use function is_string;
 /**
  * AssetManager manages asset bundle configuration and loading.
  *
- * @psalm-type AssetUrl = array{0:string,1?:int}&array
+ * @psalm-type CssFile = array{0:string}&array
+ * @psalm-type JsFile = array{0:string,1?:int}&array
  */
 final class AssetManager
 {
@@ -50,12 +51,12 @@ final class AssetManager
     private array $dummyBundles = [];
 
     /**
-     * @psalm-var AssetUrl[]
+     * @psalm-var CssFile[]
      */
     private array $cssFiles = [];
 
     /**
-     * @psalm-var AssetUrl[]
+     * @psalm-var JsFile[]
      */
     private array $jsFiles = [];
 
@@ -136,7 +137,7 @@ final class AssetManager
     /**
      * Return config array CSS AssetBundle.
      *
-     * @psalm-return AssetUrl[]
+     * @psalm-return CssFile[]
      */
     public function getCssFiles(): array
     {
@@ -146,7 +147,7 @@ final class AssetManager
     /**
      * Returns config array JS AssetBundle.
      *
-     * @psalm-return AssetUrl[]
+     * @psalm-return JsFile[]
      */
     public function getJsFiles(): array
     {
@@ -248,7 +249,7 @@ final class AssetManager
      * @throws InvalidConfigException
      * @throws RuntimeException
      */
-    public function register(array $names, ?int $jsPosition = null, ?int $cssPosition = null): void
+    public function register(array $names, ?int $jsPosition = null): void
     {
         if (!empty($this->allowedBundleNames)) {
             foreach ($names as $name) {
@@ -257,7 +258,7 @@ final class AssetManager
         }
 
         foreach ($names as $name) {
-            $this->registerAssetBundle($name, $jsPosition, $cssPosition);
+            $this->registerAssetBundle($name, $jsPosition);
             $this->registerFiles($name);
         }
     }
@@ -382,7 +383,7 @@ final class AssetManager
      * All dependent asset bundles will be registered.
      *
      * @param string $name The class name of the asset bundle (without the leading backslash).
-     * @param int|null $position If set, this forces a minimum position for javascript files.
+     * @param int|null $jsPosition If set, this forces a minimum position for javascript files.
      * This will adjust depending assets javascript file position or fail if requirement can not be met.
      * If this is null, asset bundles position settings will not be changed.
      *
@@ -391,7 +392,7 @@ final class AssetManager
      * @throws InvalidConfigException If the asset or the asset file paths to be published does not exist.
      * @throws RuntimeException If the asset bundle does not exist or a circular dependency is detected.
      */
-    private function registerAssetBundle(string $name, ?int $jsPosition = null, ?int $cssPosition = null): void
+    private function registerAssetBundle(string $name, ?int $jsPosition = null): void
     {
         if (!isset($this->registeredBundles[$name])) {
             $bundle = $this->publishBundle($this->loadBundle($name));
@@ -399,7 +400,7 @@ final class AssetManager
             $this->registeredBundles[$name] = false;
 
             foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $bundle->jsPosition, $bundle->cssPosition);
+                $this->registerAssetBundle($dep, $bundle->jsPosition);
             }
 
             unset($this->registeredBundles[$name]);
@@ -422,7 +423,7 @@ final class AssetManager
 
             // update position for all dependencies
             foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $bundle->jsPosition, $bundle->cssPosition);
+                $this->registerAssetBundle($dep, $bundle->jsPosition);
             }
         }
     }
@@ -517,11 +518,7 @@ final class AssetManager
             $css = [$url];
         }
 
-        if ($bundle->cssPosition !== null) {
-            $css[1] = $bundle->cssPosition;
-        }
-
-        /** @psalm-var AssetUrl */
+        /** @psalm-var CssFile */
         $css = $this->mergeWithReverseOrder($bundle->cssOptions, $css);
 
         $this->cssFiles[$key ?: $url] = $css;
@@ -570,7 +567,7 @@ final class AssetManager
             $js[1] = $bundle->jsPosition;
         }
 
-        /** @psalm-var AssetUrl */
+        /** @psalm-var JsFile */
         $js = $this->mergeWithReverseOrder($bundle->jsOptions, $js);
 
         $this->jsFiles[$key ?: $url] = $js;

@@ -56,11 +56,6 @@ class AssetBundle
     public array $cssOptions = [];
 
     /**
-     * @var int|null The CSS file position.
-     */
-    public ?int $cssPosition = null;
-
-    /**
      * @var array The options line command from converter.
      *
      * Example: Dart SASS minify css.
