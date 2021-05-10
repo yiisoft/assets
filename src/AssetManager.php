@@ -23,6 +23,8 @@ use function is_string;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
+ *
+ * @psalm-type AssetUrl = array{0:string,1?:int}&array
  */
 final class AssetManager
 {
@@ -46,8 +48,17 @@ final class AssetManager
 
     private array $loadedBundles = [];
     private array $dummyBundles = [];
+
+    /**
+     * @psalm-var AssetUrl[]
+     */
     private array $cssFiles = [];
+
+    /**
+     * @psalm-var AssetUrl[]
+     */
     private array $jsFiles = [];
+
     private array $jsStrings = [];
     private array $jsVars = [];
     private ?AssetConverterInterface $converter = null;
@@ -125,7 +136,7 @@ final class AssetManager
     /**
      * Return config array CSS AssetBundle.
      *
-     * @return array
+     * @psalm-return AssetUrl[]
      */
     public function getCssFiles(): array
     {
@@ -135,7 +146,7 @@ final class AssetManager
     /**
      * Returns config array JS AssetBundle.
      *
-     * @return array
+     * @psalm-return AssetUrl[]
      */
     public function getJsFiles(): array
     {
@@ -507,9 +518,10 @@ final class AssetManager
         }
 
         if ($bundle->cssPosition !== null) {
-            $css[] = $bundle->cssPosition;
+            $css[1] = $bundle->cssPosition;
         }
 
+        /** @psalm-var AssetUrl */
         $css = $this->mergeWithReverseOrder($bundle->cssOptions, $css);
 
         $this->cssFiles[$key ?: $url] = $css;
@@ -555,9 +567,10 @@ final class AssetManager
         }
 
         if ($bundle->jsPosition !== null) {
-            $js[] = $bundle->jsPosition;
+            $js[1] = $bundle->jsPosition;
         }
 
+        /** @psalm-var AssetUrl */
         $js = $this->mergeWithReverseOrder($bundle->jsOptions, $js);
 
         $this->jsFiles[$key ?: $url] = $js;
