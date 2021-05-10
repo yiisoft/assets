@@ -233,8 +233,8 @@ final class AssetBundleTest extends TestCase
         $this->assertSame(
             [
                 '/baseUrl/js/defered.js',
-                'charset' => 'utf-8',
                 'defer' => true,
+                'charset' => 'utf-8',
             ],
             $this->manager->getJsFiles()['/baseUrl/js/defered.js'],
         );

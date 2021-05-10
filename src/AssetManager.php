@@ -302,20 +302,19 @@ final class AssetManager
     {
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
-                $file = array_shift($css);
+                $file = $css[0];
                 if (AssetUtil::isRelative($file)) {
-                    $css = array_merge($bundle->cssOptions, $css);
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
                         /**
                          * @psalm-suppress PossiblyNullArgument
                          * @psalm-suppress PossiblyNullReference
                          */
-                        array_unshift($css, $this->converter->convert(
+                        $css[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
                             $bundle->converterOptions,
-                        ));
+                        );
 
                         $bundle->css[$i] = $css;
                     }
@@ -346,20 +345,19 @@ final class AssetManager
     {
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
-                $file = array_shift($js);
+                $file = $js[0];
                 if (AssetUtil::isRelative($file)) {
-                    $js = array_merge($bundle->jsOptions, $js);
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
                         /**
                          * @psalm-suppress PossiblyNullArgument
                          * @psalm-suppress PossiblyNullReference
                          */
-                        array_unshift($js, $this->converter->convert(
+                        $js[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
                             $bundle->converterOptions
-                        ));
+                        );
 
                         $bundle->js[$i] = $js;
                     }
