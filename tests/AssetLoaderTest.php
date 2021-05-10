@@ -53,8 +53,7 @@ final class AssetLoaderTest extends TestCase
         $this->assertEquals(
             [
                 $urlJs,
-                'integrity' => 'integrity-hash',
-                'crossorigin' => 'anonymous',
+                'data-test' => 'one',
             ],
             $manager->getJsFiles()[$urlJs],
         );

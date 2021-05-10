@@ -44,8 +44,7 @@ final class AssetBundleTest extends TestCase
         $this->assertSame(
             [
                 '/baseUrl/js/basePath.js',
-                'integrity' => 'integrity-hash',
-                'crossorigin' => 'anonymous',
+                'data-test' => 'one',
             ],
             $this->manager->getJsFiles()['/baseUrl/js/basePath.js'],
         );

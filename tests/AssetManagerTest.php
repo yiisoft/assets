@@ -11,6 +11,7 @@ use Yiisoft\Assets\AssetLoader;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
+use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
 use Yiisoft\Assets\Tests\stubs\ExportAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
@@ -22,8 +23,82 @@ use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\stubs\UnicodeAsset;
 use Yiisoft\Files\FileHelper;
 
+use function dirname;
+
 final class AssetManagerTest extends TestCase
 {
+    public function testRegister(): void
+    {
+        $manager = $this->createManager([
+            '@root' => dirname(__DIR__),
+            '@assetUrl' => '/',
+        ]);
+
+        $manager->register([BaseAsset::class]);
+
+        $this->assertSame([
+            '/css/basePath.css' => [
+                '/css/basePath.css',
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+            ],
+        ], $manager->getCssFiles());
+        $this->assertSame([
+            '/js/basePath.js' => [
+                '/js/basePath.js',
+                'data-test' => 'one',
+            ],
+        ], $manager->getJsFiles());
+        $this->assertSame([
+            'uniqueName' => 'app1.start();',
+            'app2.start();',
+            'uniqueName2' => ['app3.start();', 3],
+            ['app4.start();', 3],
+        ], $manager->getJsStrings());
+        $this->assertSame([
+            'var1' => 'value1',
+            'var2' => [1, 2],
+            ['var3', 'value3', 3],
+        ], $manager->getJsVars());
+    }
+
+    public function testRegisterWithCustomPosition(): void
+    {
+        $manager = $this->createManager([
+            '@root' => dirname(__DIR__),
+            '@assetUrl' => '/',
+        ]);
+
+        $manager->register([BaseAsset::class], 7, 42);
+
+        $this->assertSame([
+            '/css/basePath.css' => [
+                '/css/basePath.css',
+                42,
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+            ],
+        ], $manager->getCssFiles());
+        $this->assertSame([
+            '/js/basePath.js' => [
+                '/js/basePath.js',
+                7,
+                'data-test' => 'one',
+            ],
+        ], $manager->getJsFiles());
+        $this->assertSame([
+            'uniqueName' => 'app1.start();',
+            'app2.start();',
+            'uniqueName2' => ['app3.start();', 3],
+            ['app4.start();', 3],
+        ], $manager->getJsStrings());
+        $this->assertSame([
+            'var1' => 'value1',
+            'var2' => [1, 2],
+            ['var3', 'value3', 3],
+        ], $manager->getJsVars());
+    }
+
     public function testGetPublishedPathLinkAssetsFalse(): void
     {
         $bundle = new SourceAsset();
@@ -460,9 +535,9 @@ final class AssetManagerTest extends TestCase
         );
     }
 
-    private function createManager(): AssetManager
+    private function createManager(array $aliases = []): AssetManager
     {
-        $aliases = new Aliases();
+        $aliases = new Aliases($aliases);
         return new AssetManager(
             $aliases,
             new AssetLoader($aliases, false, [], __DIR__ . '/public', ''),
