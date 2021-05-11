@@ -9,7 +9,6 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 use function array_key_exists;
-use function array_merge;
 use function get_class;
 use function gettype;
 use function in_array;
@@ -170,7 +169,7 @@ final class AssetManager
      */
     public function getJsVars(): array
     {
-        return $this->jsVars;
+        return array_values($this->jsVars);
     }
 
     /**
@@ -484,7 +483,13 @@ final class AssetManager
                 $jsString,
             );
         }
-        $this->jsVars = array_merge($this->jsVars, $bundle->jsVars);
+        foreach ($bundle->jsVars as $name => $jsVar) {
+            if (is_string($name)) {
+                $this->registerJsVar($name, $jsVar, $bundle->jsPosition);
+            } else {
+                $this->registerJsVarByConfig($jsVar, $bundle->jsPosition);
+            }
+        }
 
         foreach ($bundle->css as $key => $css) {
             $this->registerCssFile(
@@ -631,6 +636,54 @@ final class AssetManager
         } else {
             $this->jsStrings[$key] = $jsString;
         }
+    }
+
+    /**
+     * Registers a JavaScript variable.
+     *
+     * @param mixed $value
+     */
+    private function registerJsVar(string $name, $value, ?int $position): void
+    {
+        $config = [$name, $value];
+
+        if ($position !== null) {
+            $config[2] = $position;
+        }
+
+        $this->jsVars[$name] = $config;
+    }
+
+    /**
+     * Registers a JavaScript variable by config.
+     *
+     * @throws InvalidConfigException
+     */
+    private function registerJsVarByConfig(array $config, ?int $bundleJsPosition): void
+    {
+        if (!array_key_exists(0, $config)) {
+            throw new InvalidConfigException('Do not set JavaScript variable name.');
+        }
+        $name = $config[0];
+
+        if (!is_string($name)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'JavaScript variable name should be string. Got %s.',
+                    $this->getType($name),
+                )
+            );
+        }
+
+        if (!array_key_exists(1, $config)) {
+            throw new InvalidConfigException('Do not set JavaScript variable value.');
+        }
+        /** @var mixed */
+        $value = $config[1];
+
+        $position = $config[2] ?? $bundleJsPosition;
+
+        $this->registerJsVar($name, $value, $position);
     }
 
     /**

@@ -56,8 +56,8 @@ final class AssetManagerTest extends TestCase
             ['app4.start();', 3, 'data-test' => 'one'],
         ], $manager->getJsStrings());
         $this->assertSame([
-            'var1' => 'value1',
-            'var2' => [1, 2],
+            ['var1', 'value1'],
+            ['var2', [1, 2]],
             ['var3', 'value3', 3],
         ], $manager->getJsVars());
     }
@@ -93,8 +93,8 @@ final class AssetManagerTest extends TestCase
             ['app4.start();', 3, 'data-test' => 'one'],
         ], $manager->getJsStrings());
         $this->assertSame([
-            'var1' => 'value1',
-            'var2' => [1, 2],
+            ['var1', 'value1', 7],
+            ['var2', [1, 2], 7],
             ['var3', 'value3', 3],
         ], $manager->getJsVars());
     }
