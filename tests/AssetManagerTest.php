@@ -42,10 +42,21 @@ final class AssetManagerTest extends TestCase
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
             ],
+            '/css/main.css' => [
+                '/css/main.css',
+                1,
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+            ],
         ], $manager->getCssFiles());
         $this->assertSame([
             '/js/basePath.js' => [
                 '/js/basePath.js',
+                'data-test' => 'one',
+            ],
+            '/js/main.js' => [
+                '/js/main.js',
+                1,
                 'data-test' => 'one',
             ],
         ], $manager->getJsFiles());
@@ -78,11 +89,22 @@ final class AssetManagerTest extends TestCase
                 'integrity' => 'integrity-hash',
                 'crossorigin' => 'anonymous',
             ],
+            '/css/main.css' => [
+                '/css/main.css',
+                1,
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+            ],
         ], $manager->getCssFiles());
         $this->assertSame([
             '/js/basePath.js' => [
                 '/js/basePath.js',
                 7,
+                'data-test' => 'one',
+            ],
+            '/js/main.js' => [
+                '/js/main.js',
+                1,
                 'data-test' => 'one',
             ],
         ], $manager->getJsFiles());

@@ -35,6 +35,7 @@ final class BaseAsset extends AssetBundle
 
     public array $css = [
         'css/basePath.css',
+        ['css/main.css', 1],
     ];
 
     public array $cssOptions = [
@@ -44,6 +45,7 @@ final class BaseAsset extends AssetBundle
 
     public array $js = [
         'js/basePath.js',
+        ['js/main.js', 1],
     ];
 
     public array $jsOptions = [

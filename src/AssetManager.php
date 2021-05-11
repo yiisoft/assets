@@ -539,7 +539,7 @@ final class AssetManager
             $css = [$url];
         }
 
-        if ($bundle->cssPosition !== null) {
+        if ($bundle->cssPosition !== null && !isset($css[1])) {
             $css[1] = $bundle->cssPosition;
         }
 
@@ -588,7 +588,7 @@ final class AssetManager
             $js = [$url];
         }
 
-        if ($bundle->jsPosition !== null) {
+        if ($bundle->jsPosition !== null && !isset($js[1])) {
             $js[1] = $bundle->jsPosition;
         }
 
