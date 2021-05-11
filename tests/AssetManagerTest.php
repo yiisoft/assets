@@ -50,10 +50,10 @@ final class AssetManagerTest extends TestCase
             ],
         ], $manager->getJsFiles());
         $this->assertSame([
-            'uniqueName' => 'app1.start();',
-            'app2.start();',
-            'uniqueName2' => ['app3.start();', 3],
-            ['app4.start();', 3],
+            'uniqueName' => ['app1.start();', 'data-test' => 'one'],
+            ['app2.start();', 'data-test' => 'one'],
+            'uniqueName2' => ['app3.start();', 3, 'data-test' => 'one'],
+            ['app4.start();', 3, 'data-test' => 'one'],
         ], $manager->getJsStrings());
         $this->assertSame([
             'var1' => 'value1',
@@ -87,10 +87,10 @@ final class AssetManagerTest extends TestCase
             ],
         ], $manager->getJsFiles());
         $this->assertSame([
-            'uniqueName' => 'app1.start();',
-            'app2.start();',
-            'uniqueName2' => ['app3.start();', 3],
-            ['app4.start();', 3],
+            'uniqueName' => ['app1.start();', 7, 'data-test' => 'one'],
+            ['app2.start();', 7, 'data-test' => 'one'],
+            'uniqueName2' => ['app3.start();', 3, 'data-test' => 'one'],
+            ['app4.start();', 3, 'data-test' => 'one'],
         ], $manager->getJsStrings());
         $this->assertSame([
             'var1' => 'value1',

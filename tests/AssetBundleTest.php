@@ -169,10 +169,10 @@ final class AssetBundleTest extends TestCase
 
         $this->assertSame(
             [
-                'uniqueName' => 'app1.start();',
-                'app2.start();',
-                'uniqueName2' => ['app3.start();', 3],
-                ['app4.start();', 3],
+                'uniqueName' => ['app1.start();', 'data-test' => 'one'],
+                ['app2.start();', 'data-test' => 'one'],
+                'uniqueName2' => ['app3.start();', 3, 'data-test' => 'one'],
+                ['app4.start();', 3, 'data-test' => 'one'],
             ],
             $this->manager->getJsStrings(),
         );

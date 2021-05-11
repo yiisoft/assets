@@ -24,6 +24,7 @@ use function is_string;
  *
  * @psalm-type CssFile = array{0:string,1?:int}&array
  * @psalm-type JsFile = array{0:string,1?:int}&array
+ * @psalm-type JsString = array{0:string,1?:int}&array
  */
 final class AssetManager
 {
@@ -476,7 +477,13 @@ final class AssetManager
                 $js,
             );
         }
-        $this->jsStrings = array_merge($this->jsStrings, $bundle->jsStrings);
+        foreach ($bundle->jsStrings as $key => $jsString) {
+            $this->registerJsString(
+                $bundle,
+                is_string($key) ? $key : null,
+                $jsString,
+            );
+        }
         $this->jsVars = array_merge($this->jsVars, $bundle->jsVars);
 
         foreach ($bundle->css as $key => $css) {
@@ -584,6 +591,46 @@ final class AssetManager
         $js = $this->mergeWithReverseOrder($bundle->jsOptions, $js);
 
         $this->jsFiles[$key ?: $url] = $js;
+    }
+
+    /**
+     * Registers a JS string.
+     *
+     * @param array|string $jsString
+     *
+     * @throws InvalidConfigException
+     */
+    private function registerJsString(AssetBundle $bundle, ?string $key, $jsString): void
+    {
+        if (is_array($jsString)) {
+            if (!array_key_exists(0, $jsString)) {
+                throw new InvalidConfigException('JavaScript string do not set in array.');
+            }
+        } else {
+            $jsString = [$jsString];
+        }
+
+        if (!is_string($jsString[0])) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'JavaScript string should be string. Got %s.',
+                    $this->getType($jsString),
+                )
+            );
+        }
+
+        if ($bundle->jsPosition !== null && !isset($jsString[1])) {
+            $jsString[1] = $bundle->jsPosition;
+        }
+
+        /** @psalm-var JsString */
+        $jsString = $this->mergeWithReverseOrder($bundle->jsOptions, $jsString);
+
+        if ($key === null) {
+            $this->jsStrings[] = $jsString;
+        } else {
+            $this->jsStrings[$key] = $jsString;
+        }
     }
 
     /**
