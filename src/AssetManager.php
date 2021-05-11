@@ -596,15 +596,6 @@ final class AssetManager
             $config = [$cssString];
         }
 
-        if (!is_string($config[0])) {
-            throw new InvalidConfigException(
-                sprintf(
-                    'CSS string should be string. Got %s.',
-                    $this->getType($config[0]),
-                )
-            );
-        }
-
         if ($bundle->cssPosition !== null && !isset($config[1])) {
             $config[1] = $bundle->cssPosition;
         }
@@ -683,15 +674,6 @@ final class AssetManager
             }
         } else {
             $jsString = [$jsString];
-        }
-
-        if (!is_string($jsString[0])) {
-            throw new InvalidConfigException(
-                sprintf(
-                    'JavaScript string should be string. Got %s.',
-                    $this->getType($jsString[0]),
-                )
-            );
         }
 
         if ($bundle->jsPosition !== null && !isset($jsString[1])) {
