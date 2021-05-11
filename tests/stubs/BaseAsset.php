@@ -43,6 +43,17 @@ final class BaseAsset extends AssetBundle
         'crossorigin' => 'anonymous',
     ];
 
+    public array $cssStrings = [
+        'a { color: red; }',
+        ['a { color: red; }'],
+        ['a { color: red; }', 3],
+        ['a { color: red; }', 3, 'crossorigin' => 'any'],
+        'key1' => 'a { color: red; }',
+        'key2' => ['a { color: red; }'],
+        'key3' => ['a { color: red; }', 3],
+        'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any'],
+    ];
+
     public array $js = [
         'js/basePath.js',
         ['js/main.js', 1],

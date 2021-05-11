@@ -50,6 +50,21 @@ class AssetBundle
     public array $css = [];
 
     /**
+     * @var array CSS blocks. Format:
+     *
+     * ```css
+     * [
+     *     'a { color: red; }',
+     *     ['a { color: red; }'],
+     *     ['a { color: red; }', 3],
+     *     ['a { color: red; }', 3, 'crossorigin' => 'anonymous'],
+     *     'key' => 'a { color: red; }',
+     * ]
+     * ```
+     */
+    public array $cssStrings = [];
+
+    /**
      * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
      * when registering the CSS files in this bundle.
      */

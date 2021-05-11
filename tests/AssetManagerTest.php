@@ -50,6 +50,16 @@ final class AssetManagerTest extends TestCase
             ],
         ], $manager->getCssFiles());
         $this->assertSame([
+            ['a { color: red; }', 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 3, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 3, 'crossorigin' => 'any', 'integrity' => 'integrity-hash',],
+            'key1' => ['a { color: red; }', 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key2' => ['a { color: red; }', 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key3' => ['a { color: red; }', 3, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any', 'integrity' => 'integrity-hash'],
+        ], $manager->getCssStrings());
+        $this->assertSame([
             '/js/basePath.js' => [
                 '/js/basePath.js',
                 'data-test' => 'one',
@@ -96,6 +106,16 @@ final class AssetManagerTest extends TestCase
                 'crossorigin' => 'anonymous',
             ],
         ], $manager->getCssFiles());
+        $this->assertSame([
+            ['a { color: red; }', 42, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 42, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 3, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 3, 'crossorigin' => 'any', 'integrity' => 'integrity-hash',],
+            'key1' => ['a { color: red; }', 42, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key2' => ['a { color: red; }', 42, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key3' => ['a { color: red; }', 3, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any', 'integrity' => 'integrity-hash'],
+        ], $manager->getCssStrings());
         $this->assertSame([
             '/js/basePath.js' => [
                 '/js/basePath.js',

@@ -22,6 +22,7 @@ use function is_string;
  * AssetManager manages asset bundle configuration and loading.
  *
  * @psalm-type CssFile = array{0:string,1?:int}&array
+ * @psalm-type CssString = array{0:string,1?:int}&array
  * @psalm-type JsFile = array{0:string,1?:int}&array
  * @psalm-type JsString = array{0:string,1?:int}&array
  */
@@ -54,11 +55,20 @@ final class AssetManager
     private array $cssFiles = [];
 
     /**
+     * @psalm-var CssString[]
+     */
+    private array $cssStrings = [];
+
+    /**
      * @psalm-var JsFile[]
      */
     private array $jsFiles = [];
 
+    /**
+     * @psalm-var JsString[]
+     */
     private array $jsStrings = [];
+
     private array $jsVars = [];
     private ?AssetConverterInterface $converter = null;
     private ?AssetPublisherInterface $publisher = null;
@@ -143,6 +153,17 @@ final class AssetManager
     }
 
     /**
+     * Returns CSS blocks.
+     *
+     * @return array
+     * @psalm-return CssString[]
+     */
+    public function getCssStrings(): array
+    {
+        return $this->cssStrings;
+    }
+
+    /**
      * Returns config array JS AssetBundle.
      *
      * @psalm-return JsFile[]
@@ -156,6 +177,7 @@ final class AssetManager
      * Returns JS code blocks.
      *
      * @return array
+     * @psalm-return JsString[]
      */
     public function getJsStrings(): array
     {
@@ -498,6 +520,13 @@ final class AssetManager
                 $css,
             );
         }
+        foreach ($bundle->cssStrings as $key => $cssString) {
+            $this->registerCssString(
+                $bundle,
+                is_string($key) ? $key : null,
+                $cssString,
+            );
+        }
     }
 
     /**
@@ -547,6 +576,47 @@ final class AssetManager
         $css = $this->mergeWithReverseOrder($bundle->cssOptions, $css);
 
         $this->cssFiles[$key ?: $url] = $css;
+    }
+
+    /**
+     * Registers a CSS string.
+     *
+     * @param mixed $cssString
+     *
+     * @throws InvalidConfigException
+     */
+    private function registerCssString(AssetBundle $bundle, ?string $key, $cssString): void
+    {
+        if (is_array($cssString)) {
+            $config = $cssString;
+            if (!array_key_exists(0, $config)) {
+                throw new InvalidConfigException('CSS string do not set in array.');
+            }
+        } else {
+            $config = [$cssString];
+        }
+
+        if (!is_string($config[0])) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'CSS string should be string. Got %s.',
+                    $this->getType($config[0]),
+                )
+            );
+        }
+
+        if ($bundle->cssPosition !== null && !isset($config[1])) {
+            $config[1] = $bundle->cssPosition;
+        }
+
+        /** @psalm-var CssString */
+        $config = $this->mergeWithReverseOrder($bundle->cssOptions, $config);
+
+        if ($key === null) {
+            $this->cssStrings[] = $config;
+        } else {
+            $this->cssStrings[$key] = $config;
+        }
     }
 
     /**
@@ -619,7 +689,7 @@ final class AssetManager
             throw new InvalidConfigException(
                 sprintf(
                     'JavaScript string should be string. Got %s.',
-                    $this->getType($jsString),
+                    $this->getType($jsString[0]),
                 )
             );
         }
