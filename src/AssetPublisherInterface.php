@@ -41,4 +41,29 @@ interface AssetPublisherInterface
      * @return array The path (directory or file path) and the URL that the asset is published as.
      */
     public function publish(AssetBundle $bundle): array;
+
+    /**
+     * Returns the published path of a file path.
+     *
+     * This method does not perform any publishing. It merely tells you if the file or directory is published, where it
+     * will go.
+     *
+     * @param string $sourcePath The directory or file path being published.
+     *
+     * @return string|null The string the published file path. Null if the file or directory does not exist.
+     */
+    public function getPublishedPath(string $sourcePath): ?string;
+
+    /**
+     * Returns the URL of a published file path.
+     *
+     * This method does not perform any publishing. It merely tells you if the file path is published,
+     * what the URL will be to access it.
+     *
+     * @param string $sourcePath The directory or file path being published.
+     *
+     * @return string|null The string the published URL for the file or directory.
+     * Null if the file or directory does not exist.
+     */
+    public function getPublishedUrl(string $sourcePath): ?string;
 }
