@@ -13,6 +13,11 @@ namespace Yiisoft\Assets;
  *
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
+ *
+ * @psalm-type CssFile = string|array{0:string,1?:int}&array
+ * @psalm-type CssString = string|array{0:mixed,1?:int}&array
+ * @psalm-type JsFile = string|array{0:string,1?:int}&array
+ * @psalm-type JsString = string|array{0:mixed,1?:int}&array
  */
 class AssetBundle
 {
@@ -42,25 +47,65 @@ class AssetBundle
     public bool $cdn = false;
 
     /**
-     * @var array List of CSS files that this bundle contains. Each CSS file can be specified in one of the three
-     * formats as explained in {@see $js}.
+     * @var array List of CSS files. Each CSS file can be specified in one of the following formats:
      *
-     * Note that only a forward slash "/" should be used as directory separator.
+     * - An absolute URL representing an external asset. For example,
+     *   `https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css` or
+     *   `//cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css`.
+     * - A relative path representing a local asset (e.g. `css/main.css`). The actual file path of a local asset can be
+     *   determined by prefixing {@see $basePath} to the relative path, and the actual URL of the asset can be
+     *   determined by prefixing {@see $baseUrl} to the relative path.
+     * - An array, with the first entry being the URL or relative path as described before, and a list of key/value
+     *   pairs that will be used to overwrite {@see $cssOptions} settings for this entry.
+     *
+     * Note that only a forward slash `/` should be used as directory separator.
+     *
+     * Optionally, use string keys for identifies the CSS file.
+     * If key not set, it will use full CSS file URL as the key.
+     *
+     * Example:
+     *
+     * ```php
+     * public array $css = [
+     *     'https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css',
+     *     'css/main.css',
+     *     ['css/a.css'],
+     *     ['css/b.css', 3],
+     *     ['css/c.css', 3, 'crossorigin' => 'any'],
+     *     'key' => 'css/d.css',
+     * ]
+     * ```
+     *
+     * @psalm-var CssFile[]
      */
     public array $css = [];
 
     /**
-     * @var array CSS blocks. Format:
+     * @var array List of CSS blocks. Each CSS block can be specified in one of the following formats:
      *
-     * ```css
-     * [
+     *  - CSS block. For example, `a { color: red; }`.
+     *  - An array, with the first entry is CSS block, second entry is position on page (integer, optional) that
+     *    will be used to overwrite {@see $cssPosition} setting and a list of key/value pairs
+     *    that will be used to overwrite {@see $cssOptions} settings for this CSS block.
+     *
+     * Optionally, use string keys for identifies the CSS block.
+     *
+     * Example:
+     *
+     * ```php
+     * public array $cssString = [
      *     'a { color: red; }',
      *     ['a { color: red; }'],
      *     ['a { color: red; }', 3],
-     *     ['a { color: red; }', 3, 'crossorigin' => 'anonymous'],
-     *     'key' => 'a { color: red; }',
-     * ]
+     *     ['a { color: red; }', 3, 'crossorigin' => 'any'],
+     *     'key1' => 'a { color: red; }',
+     *     'key2' => ['a { color: red; }'],
+     *     'key3' => ['a { color: red; }', 3],
+     *     'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any'],
+     * ];
      * ```
+     *
+     * @psalm-var CssString[]
      */
     public array $cssStrings = [];
 
@@ -125,8 +170,39 @@ class AssetBundle
      *   pairs that will be used to overwrite {@see $jsOptions} settings for this entry.
      *
      * Note that only a forward slash "/" should be used as directory separator.
+     *
+     * @psalm-var JsFile[]
      */
     public array $js = [];
+
+    /**
+     * @var array List of JS blocks. Each JS block can be specified in one of the following formats:
+     *
+     *  - JS block. For example, `alert(42);`.
+     *  - An array, with the first entry is JS block, second entry is position on page (integer, optional) that
+     *    will be used to overwrite {@see $jsPosition} setting and a list of key/value pairs
+     *    that will be used to overwrite {@see $jsOptions} settings for this CSS block.
+     *
+     * Optionally, use string keys for identifies the JS block.
+     *
+     * Example:
+     *
+     * ```php
+     * public array $jsStrings = [
+     *     'alert(1);',
+     *     ['alert(2);'],
+     *     ['alert(3);', 3],
+     *     ['alert(4);', 3, 'id' => 'main'],
+     *     'key1' => 'alert(5);',
+     *     'key2' => ['alert(6);'],
+     *     'key3' => ['alert(7);', 3],
+     *     'key4' => ['alert(8);', 3, 'id' => 'second'],
+     * ];
+     * ```
+     *
+     * @psalm-var JsString[]
+     */
+    public array $jsStrings = [];
 
     /**
      * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
@@ -138,11 +214,6 @@ class AssetBundle
      * @var int|null The JS file position.
      */
     public ?int $jsPosition = null;
-
-    /**
-     * @var array JavaScript code blocks to be passed to {@see \Yiisoft\View\WebView::registerJs()}.
-     */
-    public array $jsStrings = [];
 
     /**
      * @var array JavaScript variables to be passed to {@see \Yiisoft\View\WebView::registerJsVar()}.

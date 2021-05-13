@@ -22,9 +22,9 @@ use function is_string;
  * AssetManager manages asset bundle configuration and loading.
  *
  * @psalm-type CssFile = array{0:string,1?:int}&array
- * @psalm-type CssString = array{0:string,1?:int}&array
+ * @psalm-type CssString = array{0:mixed,1?:int}&array
  * @psalm-type JsFile = array{0:string,1?:int}&array
- * @psalm-type JsString = array{0:string,1?:int}&array
+ * @psalm-type JsString = array{0:mixed,1?:int}&array
  */
 final class AssetManager
 {
