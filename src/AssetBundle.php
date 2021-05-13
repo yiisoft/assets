@@ -58,10 +58,10 @@ class AssetBundle
      * - An array, with the first entry being the URL or relative path as described before, and a list of key/value
      *   pairs that will be used to overwrite {@see $cssOptions} settings for this entry.
      *
-     * Note that only a forward slash `/` should be used as directory separator.
+     * Note that only `/` should be used as directory separator.
      *
-     * Optionally, use string keys for identifies the CSS file.
-     * If key not set, it will use full CSS file URL as the key.
+     * Optionally, string keys could be used for CSS file identifiers.
+     * If key is not set, full CSS file URL is used as the key.
      *
      * Example:
      *
@@ -83,12 +83,12 @@ class AssetBundle
     /**
      * @var array List of CSS blocks. Each CSS block can be specified in one of the following formats:
      *
-     *  - CSS block. For example, `a { color: red; }`.
-     *  - An array, with the first entry is CSS block, second entry is position on page (integer, optional) that
-     *    will be used to overwrite {@see $cssPosition} setting and a list of key/value pairs
-     *    that will be used to overwrite {@see $cssOptions} settings for this CSS block.
+     *  - CSS block string. For example, `a { color: red; }`.
+     *  - An array, with CSS block string as the first element and, optionally, position on the page as the second element.
+     *    Additionally, extra options could be specified. Position will overwrite {@see $cssPosition}. A list
+     *    of key-value options will overwrite {@see $cssOptions} for this CSS block.
      *
-     * Optionally, use string keys for identifies the CSS block.
+     * Optionally, string keys could be used for CSS blocks.
      *
      * Example:
      *
@@ -118,17 +118,18 @@ class AssetBundle
     /**
      * @var int|null Specifies where the `<style>` tag should be inserted in a page.
      *
-     * For use this package with [`yiisoft/view`](https://github.com/yiisoft/view) the possible values are:
-     *  - {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section. This is the default value.
-     *  - {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
-     *  - {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section.
+     * When this package is used with [`yiisoft/view`](https://github.com/yiisoft/view), the possible values are:
+     *
+     *  - {@see \Yiisoft\View\WebView::POSITION_HEAD} - in the head section. This is the default value.
+     *  - {@see \Yiisoft\View\WebView::POSITION_BEGIN} - at the beginning of the body section.
+     *  - {@see \Yiisoft\View\WebView::POSITION_END} - at the end of the body section.
      */
     public ?int $cssPosition = null;
 
     /**
-     * @var array The options line command from converter.
+     * @var array The command line options for converter.
      *
-     * Example: Dart SASS minify css.
+     * Example: Dart SASS CSS minifier.
      *
      * public array $converterOptions = [
      *      'scss' => [
@@ -183,12 +184,12 @@ class AssetBundle
     /**
      * @var array List of JS blocks. Each JS block can be specified in one of the following formats:
      *
-     *  - JS block. For example, `alert(42);`.
-     *  - An array, with the first entry is JS block, second entry is position on page (integer, optional) that
-     *    will be used to overwrite {@see $jsPosition} setting and a list of key/value pairs
-     *    that will be used to overwrite {@see $jsOptions} settings for this CSS block.
+     *  - JS block string. For example, `alert(42);`.
+     *  - An array, with JS block string as the first element and, optionally, position on the page as the second element.
+     *    Additionally, extra options could be specified. Position will overwrite {@see $jsPosition}. A list
+     *    of key-value options will overwrite {@see $jsOptions} for this JS block.
      *
-     * Optionally, use string keys for identifies the JS block.
+     * Optionally, string keys could be used for JS blocks.
      *
      * Example:
      *
@@ -218,15 +219,16 @@ class AssetBundle
     /**
      * @var int|null Specifies where the `<script>` tag should be inserted in a page.
      *
-     * For use this package with [`yiisoft/view`](https://github.com/yiisoft/view) the possible values are:
-     *  - {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section. This is the default value
+     * When this package is used with [`yiisoft/view`](https://github.com/yiisoft/view), the possible values are:
+     *
+     *  - {@see \Yiisoft\View\WebView::POSITION_HEAD} - in the head section. This is the default value
      *    for JavaScript variables.
-     *  - {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
-     *  - {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section. This is the default value
+     *  - {@see \Yiisoft\View\WebView::POSITION_BEGIN} - at the beginning of the body section.
+     *  - {@see \Yiisoft\View\WebView::POSITION_END} - at the end of the body section. This is the default value
      *    for JavaScript files and blocks.
-     *  - {@see \Yiisoft\View\WebView::POSITION_READY} At the end of the body section (only for JavaScript strings and
+     *  - {@see \Yiisoft\View\WebView::POSITION_READY} - at the end of the body section (only for JavaScript strings and
      *    variables). This means the JavaScript code block will be executed when HTML document composition is ready.
-     *  - {@see \Yiisoft\View\WebView::POSITION_LOAD} At the end of the body section (only for JavaScript strings and
+     *  - {@see \Yiisoft\View\WebView::POSITION_LOAD} - at the end of the body section (only for JavaScript strings and
      *    variables). This means the JavaScript code block will be executed when HTML page is completely loaded.
      */
     public ?int $jsPosition = null;
@@ -234,9 +236,9 @@ class AssetBundle
     /**
      * @var array JavaScript variables. Each JavaScript variable can be specified in one of the following formats:
      *
-     *  - A key/value pair that key is variable name and value is variable value.
-     *  - An array, with the first entry is variable name, second entry is variable value and third entry is position
-     *    on page (integer, optional) that will be used to overwrite {@see $jsPosition} setting.
+     *  - A key/value pair where the key is variable name and the value is variable value.
+     *  - An array, with the variable name as the first element and, optionally, position on the page as the second element.
+     *    Position will overwrite {@see $jsPosition} for this set of variables.
      *
      * Example:
      *
