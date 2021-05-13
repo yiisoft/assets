@@ -24,23 +24,23 @@ as public properties:
 
   Name              | Type       | Default | Description
 ------------------- |-------------|---------|------------
-`$basePath`         |`string<code>&#124;</code>null`| `null`  | The web public directory that contains the asset files in this bundle.
-`$baseUrl`          |`string<code>&#124;</code>null`| `null`  | The base URL for the relative asset files listed in `$js` and `$css`.
+`$basePath`         |`string\|null`| `null`  | The web public directory that contains the asset files in this bundle.
+`$baseUrl`          |`string\|null`| `null`  | The base URL for the relative asset files listed in `$js` and `$css`.
 `$cdn`              |`bool`       | `false` | Indicates if we are going to use CDN exclusively.
 `$css`              |`array`      | `[]`    | List of CSS files that this bundle contains.
 `$cssOptions`       |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setCssFiles()`.
 `$cssStrings`       |`array`      | `[]`    | List of CSS blocks.
-`$cssPosition`      |`int<code>&#124;</code>null`   | `null`  | Specifies where the `<style>` tag should be inserted in a page.
+`$cssPosition`      |`int\|null`   | `null`  | Specifies where the `<style>` tag should be inserted in a page.
 `$converterOptions` |`array`      | `[]`    | The options line command from converter
 `$depends`          |`array`      | `[]`    | List of bundle class names that this bundle depends on.
 `$js`               |`array`      | `[]`    | List of JavaScript files that this bundle contains.
 `$jsStrings`        |`array`      | `[]`    | List of JavaScript blocks.
 `$jsOptions`        |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setJsFiles()`.
-`$jsPosition`       |`int<code>&#124;</code>null`   | `null`  | Specifies where the `<style>` tag should be inserted in a page.
+`$jsPosition`       |`int\|null`   | `null`  | Specifies where the `<style>` tag should be inserted in a page.
 `$jsVars`           |`array`      | `[]`    | JavaScript variables.
 `$publishOptions`   |`array`      | `[]`    | The options to be passed to `\Yiisoft\Assets\AssetPublisher::publish()` when the asset bundle is being published.
 `$export`           |`array`      | `[]`    | List of file paths to export into a format readable by third party tools such as [Webpack](https://webpack.js.org/). If the array is empty, the file paths from the `$css` and `$js` will be exported. 
-`$sourcePath`       |`string<code>&#124;</code>null`| `null`  | The directory that contains the source asset files for this asset bundle.
+`$sourcePath`       |`string\|null`| `null`  | The directory that contains the source asset files for this asset bundle.
 
 ### JS/CSS Positions for [`yiisoft/view`](https://github.com/yiisoft/view)
 
