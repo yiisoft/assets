@@ -116,7 +116,7 @@ class AssetBundle
     public array $cssOptions = [];
 
     /**
-     * @var int|null The CSS file position.
+     * @var int|null CSS files and blocks position.
      */
     public ?int $cssPosition = null;
 
@@ -211,12 +211,25 @@ class AssetBundle
     public array $jsOptions = [];
 
     /**
-     * @var int|null The JS file position.
+     * @var int|null JavaScript files and blocks position.
      */
     public ?int $jsPosition = null;
 
     /**
-     * @var array JavaScript variables to be passed to {@see \Yiisoft\View\WebView::registerJsVar()}.
+     * @var array JavaScript variables. Each JavaScript variable can be specified in one of the following formats:
+     *
+     *  - A key/value pair that key is variable name and value is variable value.
+     *  - An array, with the first entry is variable name, second entry is variable value and third entry is position
+     *    on page (integer, optional) that will be used to overwrite {@see $jsPosition} setting.
+     *
+     * Example:
+     *
+     * ```php
+     * public array $jsVars = [
+     *     'var1' => 'value1',
+     *     ['var2', 'value2', 3],
+     * ];
+     * ```
      */
     public array $jsVars = [];
 

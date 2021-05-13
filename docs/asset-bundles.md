@@ -22,19 +22,25 @@ Combinations of these types could be used as well.
 In order to define your own asset, create a class that extends from `Asset` and define any of the options below
 as public properties:
 
-  Name            | Type       | Default | Description
----------------- |-------------|---------|------------
-`$basePath`      |`string/null`| `null`  | The web public directory that contains the asset files in this bundle.
-`$baseUrl`       |`string/null`| `null`  | The base URL for the relative asset files listed in `$js` and `$css`.
-`$cdn`           |`bool`       | `false` | Indicates if we are going to use CDN exclusively.
-`$css`           |`array`      | `[]`    | List of CSS files that this bundle contains.
-`$cssOptions`    |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setCssFiles()`.
-`$depends`       |`array`      | `[]`    | List of bundle class names that this bundle depends on.
-`$js`            |`array`      | `[]`    | List of JavaScript files that this bundle contains.
-`$jsOptions`     |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setJsFiles()`.
-`$publishOptions`|`array`      | `[]`    | The options to be passed to `\Yiisoft\Assets\AssetPublisher::publish()` when the asset bundle is being published.
-`$export`        |`array`      | `[]`    | List of file paths to export into a format readable by third party tools such as [Webpack](https://webpack.js.org/). If the array is empty, the file paths from the `$css` and `$js` will be exported. 
-`$sourcePath`    |`string/null`| `null`  | The directory that contains the source asset files for this asset bundle.
+  Name              | Type       | Default | Description
+------------------- |-------------|---------|------------
+`$basePath`         |`string|null`| `null`  | The web public directory that contains the asset files in this bundle.
+`$baseUrl`          |`string|null`| `null`  | The base URL for the relative asset files listed in `$js` and `$css`.
+`$cdn`              |`bool`       | `false` | Indicates if we are going to use CDN exclusively.
+`$css`              |`array`      | `[]`    | List of CSS files that this bundle contains.
+`$cssOptions`       |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setCssFiles()`.
+`$cssStrings`       |`array`      | `[]`    | List of CSS blocks.
+`$cssPosition`      |`int|null`   | `null`  | CSS files and blocks position.
+`$converterOptions` |`array`      | `[]`    | The options line command from converter
+`$depends`          |`array`      | `[]`    | List of bundle class names that this bundle depends on.
+`$js`               |`array`      | `[]`    | List of JavaScript files that this bundle contains.
+`$jsStrings`        |`array`      | `[]`    | List of JavaScript blocks.
+`$jsOptions`        |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setJsFiles()`.
+`$jsPosition`       |`int|null`   | `null`  | JavaScript files and blocks position.
+`$jsVars`           |`array`      | `[]`    | JavaScript variables.
+`$publishOptions`   |`array`      | `[]`    | The options to be passed to `\Yiisoft\Assets\AssetPublisher::publish()` when the asset bundle is being published.
+`$export`           |`array`      | `[]`    | List of file paths to export into a format readable by third party tools such as [Webpack](https://webpack.js.org/). If the array is empty, the file paths from the `$css` and `$js` will be exported. 
+`$sourcePath`       |`string/null`| `null`  | The directory that contains the source asset files for this asset bundle.
 
 
 ## Defining asset bundle for local assets
