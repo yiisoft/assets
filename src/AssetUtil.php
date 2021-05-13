@@ -9,7 +9,6 @@ use Yiisoft\Aliases\Aliases;
 
 use function array_merge;
 use function array_filter;
-use function array_shift;
 use function array_unique;
 use function dirname;
 use function file_put_contents;
@@ -137,7 +136,7 @@ final class AssetUtil
             }
 
             foreach (array_merge($bundle->css, $bundle->js) as $item) {
-                $filePath = is_array($item) ? array_shift($item) : $item;
+                $filePath = is_array($item) ? $item[0] : $item;
                 $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
             }
         }

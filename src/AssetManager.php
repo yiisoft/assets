@@ -9,15 +9,22 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 use function array_key_exists;
-use function array_merge;
-use function array_shift;
-use function array_unshift;
+use function get_class;
+use function gettype;
 use function in_array;
 use function is_array;
 use function is_file;
+use function is_int;
+use function is_object;
+use function is_string;
 
 /**
  * AssetManager manages asset bundle configuration and loading.
+ *
+ * @psalm-type CssFile = array{0:string,1?:int}&array
+ * @psalm-type CssString = array{0:mixed,1?:int}&array
+ * @psalm-type JsFile = array{0:string,1?:int}&array
+ * @psalm-type JsString = array{0:mixed,1?:int}&array
  */
 final class AssetManager
 {
@@ -41,9 +48,27 @@ final class AssetManager
 
     private array $loadedBundles = [];
     private array $dummyBundles = [];
+
+    /**
+     * @psalm-var CssFile[]
+     */
     private array $cssFiles = [];
+
+    /**
+     * @psalm-var CssString[]
+     */
+    private array $cssStrings = [];
+
+    /**
+     * @psalm-var JsFile[]
+     */
     private array $jsFiles = [];
+
+    /**
+     * @psalm-var JsString[]
+     */
     private array $jsStrings = [];
+
     private array $jsVars = [];
     private ?AssetConverterInterface $converter = null;
     private ?AssetPublisherInterface $publisher = null;
@@ -120,7 +145,7 @@ final class AssetManager
     /**
      * Return config array CSS AssetBundle.
      *
-     * @return array
+     * @psalm-return CssFile[]
      */
     public function getCssFiles(): array
     {
@@ -128,9 +153,20 @@ final class AssetManager
     }
 
     /**
-     * Returns config array JS AssetBundle.
+     * Returns CSS blocks.
      *
      * @return array
+     * @psalm-return CssString[]
+     */
+    public function getCssStrings(): array
+    {
+        return $this->cssStrings;
+    }
+
+    /**
+     * Returns config array JS AssetBundle.
+     *
+     * @psalm-return JsFile[]
      */
     public function getJsFiles(): array
     {
@@ -141,6 +177,7 @@ final class AssetManager
      * Returns JS code blocks.
      *
      * @return array
+     * @psalm-return JsString[]
      */
     public function getJsStrings(): array
     {
@@ -154,7 +191,7 @@ final class AssetManager
      */
     public function getJsVars(): array
     {
-        return $this->jsVars;
+        return array_values($this->jsVars);
     }
 
     /**
@@ -228,12 +265,11 @@ final class AssetManager
      * Registers asset bundles by names.
      *
      * @param string[] $names
-     * @param int|null $position
      *
      * @throws InvalidConfigException
      * @throws RuntimeException
      */
-    public function register(array $names, ?int $position = null): void
+    public function register(array $names, ?int $jsPosition = null, ?int $cssPosition = null): void
     {
         if (!empty($this->allowedBundleNames)) {
             foreach ($names as $name) {
@@ -242,7 +278,7 @@ final class AssetManager
         }
 
         foreach ($names as $name) {
-            $this->registerAssetBundle($name, $position);
+            $this->registerAssetBundle($name, $jsPosition, $cssPosition);
             $this->registerFiles($name);
         }
     }
@@ -278,46 +314,6 @@ final class AssetManager
     }
 
     /**
-     * Registers a CSS file.
-     *
-     * @param string $url The CSS file to be registered.
-     * @param array $options The HTML attributes for the link tag.
-     * @param string|null $key The key that identifies the CSS file.
-     */
-    private function registerCssFile(string $url, array $options = [], string $key = null): void
-    {
-        $key = $key ?: $url;
-
-        $this->cssFiles[$key]['url'] = $url;
-        $this->cssFiles[$key]['attributes'] = $options;
-    }
-
-    /**
-     * Registers a JS file.
-     *
-     * @param string $url The JS file to be registered.
-     * @param array $options The HTML attributes for the script tag. The following options are specially handled and
-     * are not treated as HTML attributes:
-     *
-     * - `position`: specifies where the JS script tag should be inserted in a page. The possible values are:
-     *     * {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section.
-     *     * {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
-     *     * {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section. This is the default value.
-     * @param string|null $key The key that identifies the JS file.
-     */
-    private function registerJsFile(string $url, array $options = [], string $key = null): void
-    {
-        $key = $key ?: $url;
-
-        if (!array_key_exists('position', $options)) {
-            $options = array_merge(['position' => 3], $options);
-        }
-
-        $this->jsFiles[$key]['url'] = $url;
-        $this->jsFiles[$key]['attributes'] = $options;
-    }
-
-    /**
      * Converter SASS, SCSS, Stylus and other formats to CSS.
      *
      * @param AssetBundle $bundle
@@ -326,20 +322,19 @@ final class AssetManager
     {
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
-                $file = array_shift($css);
+                $file = $css[0];
                 if (AssetUtil::isRelative($file)) {
-                    $css = array_merge($bundle->cssOptions, $css);
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
                         /**
                          * @psalm-suppress PossiblyNullArgument
                          * @psalm-suppress PossiblyNullReference
                          */
-                        array_unshift($css, $this->converter->convert(
+                        $css[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
                             $bundle->converterOptions,
-                        ));
+                        );
 
                         $bundle->css[$i] = $css;
                     }
@@ -370,20 +365,19 @@ final class AssetManager
     {
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
-                $file = array_shift($js);
+                $file = $js[0];
                 if (AssetUtil::isRelative($file)) {
-                    $js = array_merge($bundle->jsOptions, $js);
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
                         /**
                          * @psalm-suppress PossiblyNullArgument
                          * @psalm-suppress PossiblyNullReference
                          */
-                        array_unshift($js, $this->converter->convert(
+                        $js[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
                             $bundle->converterOptions
-                        ));
+                        );
 
                         $bundle->js[$i] = $js;
                     }
@@ -407,7 +401,7 @@ final class AssetManager
      * All dependent asset bundles will be registered.
      *
      * @param string $name The class name of the asset bundle (without the leading backslash).
-     * @param int|null $position If set, this forces a minimum position for javascript files.
+     * @param int|null $jsPosition If set, this forces a minimum position for javascript files.
      * This will adjust depending assets javascript file position or fail if requirement can not be met.
      * If this is null, asset bundles position settings will not be changed.
      *
@@ -416,17 +410,15 @@ final class AssetManager
      * @throws InvalidConfigException If the asset or the asset file paths to be published does not exist.
      * @throws RuntimeException If the asset bundle does not exist or a circular dependency is detected.
      */
-    private function registerAssetBundle(string $name, int $position = null): void
+    private function registerAssetBundle(string $name, ?int $jsPosition = null, ?int $cssPosition = null): void
     {
         if (!isset($this->registeredBundles[$name])) {
             $bundle = $this->publishBundle($this->loadBundle($name));
 
             $this->registeredBundles[$name] = false;
 
-            $pos = $bundle->jsOptions['position'] ?? null;
-
             foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $pos);
+                $this->registerAssetBundle($dep, $bundle->jsPosition, $bundle->cssPosition);
             }
 
             unset($this->registeredBundles[$name]);
@@ -437,21 +429,32 @@ final class AssetManager
             $bundle = $this->registeredBundles[$name];
         }
 
-        if ($position !== null) {
-            $pos = $bundle->jsOptions['position'] ?? null;
+        if ($jsPosition !== null || $cssPosition !== null) {
+            if ($jsPosition !== null) {
+                if ($bundle->jsPosition === null) {
+                    $bundle->jsPosition = $jsPosition;
+                } elseif ($bundle->jsPosition > $jsPosition) {
+                    throw new RuntimeException(
+                        "An asset bundle that depends on \"{$name}\" has a higher JavaScript file " .
+                        "position configured than \"{$name}\"."
+                    );
+                }
+            }
 
-            if ($pos === null) {
-                $bundle->jsOptions['position'] = $pos = $position;
-            } elseif ($pos > $position) {
-                throw new RuntimeException(
-                    "An asset bundle that depends on \"{$name}\" has a higher JavaScript file " .
-                    "position configured than \"{$name}\"."
-                );
+            if ($cssPosition !== null) {
+                if ($bundle->cssPosition === null) {
+                    $bundle->cssPosition = $cssPosition;
+                } elseif ($bundle->cssPosition > $cssPosition) {
+                    throw new RuntimeException(
+                        "An asset bundle that depends on \"{$name}\" has a higher CSS file " .
+                        "position configured than \"{$name}\"."
+                    );
+                }
             }
 
             // update position for all dependencies
             foreach ($bundle->depends as $dep) {
-                $this->registerAssetBundle($dep, $pos);
+                $this->registerAssetBundle($dep, $bundle->jsPosition, $bundle->cssPosition);
             }
         }
     }
@@ -488,28 +491,251 @@ final class AssetManager
             $this->convertJs($bundle);
         }
 
-        foreach ($bundle->js as $js) {
-            if (is_array($js)) {
-                $file = array_shift($js);
-                $options = array_merge($bundle->jsOptions, $js);
-                $this->registerJsFile($this->loader->getAssetUrl($bundle, $file), $options);
-            } elseif ($js !== null) {
-                $this->registerJsFile($this->loader->getAssetUrl($bundle, $js), $bundle->jsOptions);
+        foreach ($bundle->js as $key => $js) {
+            $this->registerJsFile(
+                $bundle,
+                is_string($key) ? $key : null,
+                $js,
+            );
+        }
+        foreach ($bundle->jsStrings as $key => $jsString) {
+            $this->registerJsString(
+                $bundle,
+                is_string($key) ? $key : null,
+                $jsString,
+            );
+        }
+        foreach ($bundle->jsVars as $name => $jsVar) {
+            if (is_string($name)) {
+                $this->registerJsVar($name, $jsVar, $bundle->jsPosition);
+            } else {
+                $this->registerJsVarByConfig($jsVar, $bundle->jsPosition);
             }
         }
 
-        $this->jsStrings = array_merge($this->jsStrings, $bundle->jsStrings);
-        $this->jsVars = array_merge($this->jsVars, $bundle->jsVars);
-
-        foreach ($bundle->css as $css) {
-            if (is_array($css)) {
-                $file = array_shift($css);
-                $options = array_merge($bundle->cssOptions, $css);
-                $this->registerCssFile($this->loader->getAssetUrl($bundle, $file), $options);
-            } elseif ($css !== null) {
-                $this->registerCssFile($this->loader->getAssetUrl($bundle, $css), $bundle->cssOptions);
-            }
+        foreach ($bundle->css as $key => $css) {
+            $this->registerCssFile(
+                $bundle,
+                is_string($key) ? $key : null,
+                $css,
+            );
         }
+        foreach ($bundle->cssStrings as $key => $cssString) {
+            $this->registerCssString(
+                $bundle,
+                is_string($key) ? $key : null,
+                $cssString,
+            );
+        }
+    }
+
+    /**
+     * Registers a CSS file.
+     *
+     * @param array|string $css
+     *
+     * @throws InvalidConfigException
+     */
+    private function registerCssFile(AssetBundle $bundle, ?string $key, $css): void
+    {
+        if (is_array($css)) {
+            if (!array_key_exists(0, $css)) {
+                throw new InvalidConfigException('Do not set in array CSS URL.');
+            }
+            $url = $css[0];
+        } else {
+            $url = $css;
+        }
+
+        if (!is_string($url)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'CSS file should be string. Got %s.',
+                    $this->getType($url),
+                )
+            );
+        }
+
+        if ($url === '') {
+            throw new InvalidConfigException('CSS file should be non empty string.');
+        }
+
+        $url = $this->loader->getAssetUrl($bundle, $url);
+
+        if (is_array($css)) {
+            $css[0] = $url;
+        } else {
+            $css = [$url];
+        }
+
+        if ($bundle->cssPosition !== null && !isset($css[1])) {
+            $css[1] = $bundle->cssPosition;
+        }
+
+        /** @psalm-var CssFile */
+        $css = $this->mergeWithReverseOrder($bundle->cssOptions, $css);
+
+        $this->cssFiles[$key ?: $url] = $css;
+    }
+
+    /**
+     * Registers a CSS string.
+     *
+     * @param mixed $cssString
+     *
+     * @throws InvalidConfigException
+     */
+    private function registerCssString(AssetBundle $bundle, ?string $key, $cssString): void
+    {
+        if (is_array($cssString)) {
+            $config = $cssString;
+            if (!array_key_exists(0, $config)) {
+                throw new InvalidConfigException('CSS string do not set in array.');
+            }
+        } else {
+            $config = [$cssString];
+        }
+
+        if ($bundle->cssPosition !== null && !isset($config[1])) {
+            $config[1] = $bundle->cssPosition;
+        }
+
+        /** @psalm-var CssString */
+        $config = $this->mergeWithReverseOrder($bundle->cssOptions, $config);
+
+        if ($key === null) {
+            $this->cssStrings[] = $config;
+        } else {
+            $this->cssStrings[$key] = $config;
+        }
+    }
+
+    /**
+     * Registers a JS file.
+     *
+     * @param array|string $js
+     *
+     * @throws InvalidConfigException
+     */
+    private function registerJsFile(AssetBundle $bundle, ?string $key, $js): void
+    {
+        if (is_array($js)) {
+            if (!array_key_exists(0, $js)) {
+                throw new InvalidConfigException('Do not set in array JS URL.');
+            }
+            $url = $js[0];
+        } else {
+            $url = $js;
+        }
+
+        if (!is_string($url)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'JS file should be string. Got %s.',
+                    $this->getType($url),
+                )
+            );
+        }
+
+        if ($url === '') {
+            throw new InvalidConfigException('JS file should be non empty string.');
+        }
+
+        $url = $this->loader->getAssetUrl($bundle, $url);
+
+        if (is_array($js)) {
+            $js[0] = $url;
+        } else {
+            $js = [$url];
+        }
+
+        if ($bundle->jsPosition !== null && !isset($js[1])) {
+            $js[1] = $bundle->jsPosition;
+        }
+
+        /** @psalm-var JsFile */
+        $js = $this->mergeWithReverseOrder($bundle->jsOptions, $js);
+
+        $this->jsFiles[$key ?: $url] = $js;
+    }
+
+    /**
+     * Registers a JS string.
+     *
+     * @param array|string $jsString
+     *
+     * @throws InvalidConfigException
+     */
+    private function registerJsString(AssetBundle $bundle, ?string $key, $jsString): void
+    {
+        if (is_array($jsString)) {
+            if (!array_key_exists(0, $jsString)) {
+                throw new InvalidConfigException('JavaScript string do not set in array.');
+            }
+        } else {
+            $jsString = [$jsString];
+        }
+
+        if ($bundle->jsPosition !== null && !isset($jsString[1])) {
+            $jsString[1] = $bundle->jsPosition;
+        }
+
+        /** @psalm-var JsString */
+        $jsString = $this->mergeWithReverseOrder($bundle->jsOptions, $jsString);
+
+        if ($key === null) {
+            $this->jsStrings[] = $jsString;
+        } else {
+            $this->jsStrings[$key] = $jsString;
+        }
+    }
+
+    /**
+     * Registers a JavaScript variable.
+     *
+     * @param mixed $value
+     */
+    private function registerJsVar(string $name, $value, ?int $position): void
+    {
+        $config = [$name, $value];
+
+        if ($position !== null) {
+            $config[2] = $position;
+        }
+
+        $this->jsVars[$name] = $config;
+    }
+
+    /**
+     * Registers a JavaScript variable by config.
+     *
+     * @throws InvalidConfigException
+     */
+    private function registerJsVarByConfig(array $config, ?int $bundleJsPosition): void
+    {
+        if (!array_key_exists(0, $config)) {
+            throw new InvalidConfigException('Do not set JavaScript variable name.');
+        }
+        $name = $config[0];
+
+        if (!is_string($name)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'JavaScript variable name should be string. Got %s.',
+                    $this->getType($name),
+                )
+            );
+        }
+
+        if (!array_key_exists(1, $config)) {
+            throw new InvalidConfigException('Do not set JavaScript variable value.');
+        }
+        /** @var mixed */
+        $value = $config[1];
+
+        $position = $config[2] ?? $bundleJsPosition;
+
+        $this->registerJsVar($name, $value, $position);
     }
 
     /**
@@ -606,5 +832,25 @@ final class AssetManager
         }
 
         return false;
+    }
+
+    private function mergeWithReverseOrder(array $a, array $b): array
+    {
+        foreach ($a as $key => $value) {
+            if (is_int($key)) {
+                $b[] = $value;
+            } elseif (!array_key_exists($key, $b)) {
+                $b[$key] = $value;
+            }
+        }
+        return $b;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private function getType($value): string
+    {
+        return is_object($value) ? get_class($value) : gettype($value);
     }
 }

@@ -13,6 +13,11 @@ namespace Yiisoft\Assets;
  *
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
+ *
+ * @psalm-type CssFile = string|array{0:string,1?:int}&array
+ * @psalm-type CssString = string|array{0:mixed,1?:int}&array
+ * @psalm-type JsFile = string|array{0:string,1?:int}&array
+ * @psalm-type JsString = string|array{0:mixed,1?:int}&array
  */
 class AssetBundle
 {
@@ -42,12 +47,67 @@ class AssetBundle
     public bool $cdn = false;
 
     /**
-     * @var array List of CSS files that this bundle contains. Each CSS file can be specified in one of the three
-     * formats as explained in {@see $js}.
+     * @var array List of CSS files. Each CSS file can be specified in one of the following formats:
      *
-     * Note that only a forward slash "/" should be used as directory separator.
+     * - An absolute URL representing an external asset. For example,
+     *   `https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css` or
+     *   `//cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css`.
+     * - A relative path representing a local asset (e.g. `css/main.css`). The actual file path of a local asset can be
+     *   determined by prefixing {@see $basePath} to the relative path, and the actual URL of the asset can be
+     *   determined by prefixing {@see $baseUrl} to the relative path.
+     * - An array, with the first entry being the URL or relative path as described before, and a list of key/value
+     *   pairs that will be used to overwrite {@see $cssOptions} settings for this entry.
+     *
+     * Note that only `/` should be used as directory separator.
+     *
+     * Optionally, string keys could be used for CSS file identifiers.
+     * If key is not set, full CSS file URL is used as the key.
+     *
+     * Example:
+     *
+     * ```php
+     * public array $css = [
+     *     'https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css',
+     *     'css/main.css',
+     *     ['css/a.css'],
+     *     ['css/b.css', 3],
+     *     ['css/c.css', 3, 'crossorigin' => 'any'],
+     *     'key' => 'css/d.css',
+     * ]
+     * ```
+     *
+     * @psalm-var CssFile[]
      */
     public array $css = [];
+
+    /**
+     * @var array List of CSS blocks. Each CSS block can be specified in one of the following formats:
+     *
+     *  - CSS block string. For example, `a { color: red; }`.
+     *  - An array, with CSS block string as the first element and, optionally, position on the page as the second element.
+     *    Additionally, extra options could be specified. Position will overwrite {@see $cssPosition}. A list
+     *    of key-value options will overwrite {@see $cssOptions} for this CSS block.
+     *
+     * Optionally, string keys could be used for CSS blocks.
+     *
+     * Example:
+     *
+     * ```php
+     * public array $cssString = [
+     *     'a { color: red; }',
+     *     ['a { color: red; }'],
+     *     ['a { color: red; }', 3],
+     *     ['a { color: red; }', 3, 'crossorigin' => 'any'],
+     *     'key1' => 'a { color: red; }',
+     *     'key2' => ['a { color: red; }'],
+     *     'key3' => ['a { color: red; }', 3],
+     *     'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any'],
+     * ];
+     * ```
+     *
+     * @psalm-var CssString[]
+     */
+    public array $cssStrings = [];
 
     /**
      * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
@@ -56,9 +116,20 @@ class AssetBundle
     public array $cssOptions = [];
 
     /**
-     * @var array The options line command from converter.
+     * @var int|null Specifies where the `<style>` tag should be inserted in a page.
      *
-     * Example: Dart SASS minify css.
+     * When this package is used with [`yiisoft/view`](https://github.com/yiisoft/view), the possible values are:
+     *
+     *  - {@see \Yiisoft\View\WebView::POSITION_HEAD} - in the head section. This is the default value.
+     *  - {@see \Yiisoft\View\WebView::POSITION_BEGIN} - at the beginning of the body section.
+     *  - {@see \Yiisoft\View\WebView::POSITION_END} - at the end of the body section.
+     */
+    public ?int $cssPosition = null;
+
+    /**
+     * @var array The command line options for converter.
+     *
+     * Example: Dart SASS CSS minifier.
      *
      * public array $converterOptions = [
      *      'scss' => [
@@ -105,8 +176,39 @@ class AssetBundle
      *   pairs that will be used to overwrite {@see $jsOptions} settings for this entry.
      *
      * Note that only a forward slash "/" should be used as directory separator.
+     *
+     * @psalm-var JsFile[]
      */
     public array $js = [];
+
+    /**
+     * @var array List of JS blocks. Each JS block can be specified in one of the following formats:
+     *
+     *  - JS block string. For example, `alert(42);`.
+     *  - An array, with JS block string as the first element and, optionally, position on the page as the second element.
+     *    Additionally, extra options could be specified. Position will overwrite {@see $jsPosition}. A list
+     *    of key-value options will overwrite {@see $jsOptions} for this JS block.
+     *
+     * Optionally, string keys could be used for JS blocks.
+     *
+     * Example:
+     *
+     * ```php
+     * public array $jsStrings = [
+     *     'alert(1);',
+     *     ['alert(2);'],
+     *     ['alert(3);', 3],
+     *     ['alert(4);', 3, 'id' => 'main'],
+     *     'key1' => 'alert(5);',
+     *     'key2' => ['alert(6);'],
+     *     'key3' => ['alert(7);', 3],
+     *     'key4' => ['alert(8);', 3, 'id' => 'second'],
+     * ];
+     * ```
+     *
+     * @psalm-var JsString[]
+     */
+    public array $jsStrings = [];
 
     /**
      * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
@@ -115,12 +217,37 @@ class AssetBundle
     public array $jsOptions = [];
 
     /**
-     * @var array JavaScript code blocks to be passed to {@see \Yiisoft\View\WebView::registerJs()}.
+     * @var int|null Specifies where the `<script>` tag should be inserted in a page.
+     *
+     * When this package is used with [`yiisoft/view`](https://github.com/yiisoft/view), the possible values are:
+     *
+     *  - {@see \Yiisoft\View\WebView::POSITION_HEAD} - in the head section. This is the default value
+     *    for JavaScript variables.
+     *  - {@see \Yiisoft\View\WebView::POSITION_BEGIN} - at the beginning of the body section.
+     *  - {@see \Yiisoft\View\WebView::POSITION_END} - at the end of the body section. This is the default value
+     *    for JavaScript files and blocks.
+     *  - {@see \Yiisoft\View\WebView::POSITION_READY} - at the end of the body section (only for JavaScript strings and
+     *    variables). This means the JavaScript code block will be executed when HTML document composition is ready.
+     *  - {@see \Yiisoft\View\WebView::POSITION_LOAD} - at the end of the body section (only for JavaScript strings and
+     *    variables). This means the JavaScript code block will be executed when HTML page is completely loaded.
      */
-    public array $jsStrings = [];
+    public ?int $jsPosition = null;
 
     /**
-     * @var array JavaScript variables to be passed to {@see \Yiisoft\View\WebView::registerJsVar()}.
+     * @var array JavaScript variables. Each JavaScript variable can be specified in one of the following formats:
+     *
+     *  - A key/value pair where the key is variable name and the value is variable value.
+     *  - An array, with the variable name as the first element and, optionally, position on the page as the second element.
+     *    Position will overwrite {@see $jsPosition} for this set of variables.
+     *
+     * Example:
+     *
+     * ```php
+     * public array $jsVars = [
+     *     'var1' => 'value1',
+     *     ['var2', 'value2', 3],
+     * ];
+     * ```
      */
     public array $jsVars = [];
 

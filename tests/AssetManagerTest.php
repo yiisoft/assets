@@ -5,22 +5,142 @@ declare(strict_types=1);
 namespace Yiisoft\Assets\Tests;
 
 use RuntimeException;
+use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetBundle;
+use Yiisoft\Assets\AssetLoader;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
+use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
 use Yiisoft\Assets\Tests\stubs\ExportAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
+use Yiisoft\Assets\Tests\stubs\PureAsset;
+use Yiisoft\Assets\Tests\stubs\RepeatAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
+use Yiisoft\Assets\Tests\stubs\UnicodeAsset;
 use Yiisoft\Files\FileHelper;
 
-use function ucfirst;
+use function dirname;
 
 final class AssetManagerTest extends TestCase
 {
+    public function testRegister(): void
+    {
+        $manager = $this->createManager([
+            '@root' => dirname(__DIR__),
+            '@assetUrl' => '/',
+        ]);
+
+        $manager->register([BaseAsset::class]);
+
+        $this->assertSame([
+            '/css/basePath.css' => [
+                '/css/basePath.css',
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+            ],
+            '/css/main.css' => [
+                '/css/main.css',
+                1,
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+            ],
+        ], $manager->getCssFiles());
+        $this->assertSame([
+            ['a { color: red; }', 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 3, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 3, 'crossorigin' => 'any', 'integrity' => 'integrity-hash',],
+            'key1' => ['a { color: red; }', 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key2' => ['a { color: red; }', 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key3' => ['a { color: red; }', 3, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any', 'integrity' => 'integrity-hash'],
+        ], $manager->getCssStrings());
+        $this->assertSame([
+            '/js/basePath.js' => [
+                '/js/basePath.js',
+                'data-test' => 'one',
+            ],
+            '/js/main.js' => [
+                '/js/main.js',
+                1,
+                'data-test' => 'one',
+            ],
+        ], $manager->getJsFiles());
+        $this->assertSame([
+            'uniqueName' => ['app1.start();', 'data-test' => 'one'],
+            ['app2.start();', 'data-test' => 'one'],
+            'uniqueName2' => ['app3.start();', 3, 'data-test' => 'one'],
+            ['app4.start();', 3, 'data-test' => 'one'],
+        ], $manager->getJsStrings());
+        $this->assertSame([
+            ['var1', 'value1'],
+            ['var2', [1, 2]],
+            ['var3', 'value3', 3],
+        ], $manager->getJsVars());
+    }
+
+    public function testRegisterWithCustomPosition(): void
+    {
+        $manager = $this->createManager([
+            '@root' => dirname(__DIR__),
+            '@assetUrl' => '/',
+        ]);
+
+        $manager->register([BaseAsset::class], 7, 42);
+
+        $this->assertSame([
+            '/css/basePath.css' => [
+                '/css/basePath.css',
+                42,
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+            ],
+            '/css/main.css' => [
+                '/css/main.css',
+                1,
+                'integrity' => 'integrity-hash',
+                'crossorigin' => 'anonymous',
+            ],
+        ], $manager->getCssFiles());
+        $this->assertSame([
+            ['a { color: red; }', 42, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 42, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 3, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            ['a { color: red; }', 3, 'crossorigin' => 'any', 'integrity' => 'integrity-hash',],
+            'key1' => ['a { color: red; }', 42, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key2' => ['a { color: red; }', 42, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key3' => ['a { color: red; }', 3, 'integrity' => 'integrity-hash', 'crossorigin' => 'anonymous'],
+            'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any', 'integrity' => 'integrity-hash'],
+        ], $manager->getCssStrings());
+        $this->assertSame([
+            '/js/basePath.js' => [
+                '/js/basePath.js',
+                7,
+                'data-test' => 'one',
+            ],
+            '/js/main.js' => [
+                '/js/main.js',
+                1,
+                'data-test' => 'one',
+            ],
+        ], $manager->getJsFiles());
+        $this->assertSame([
+            'uniqueName' => ['app1.start();', 7, 'data-test' => 'one'],
+            ['app2.start();', 7, 'data-test' => 'one'],
+            'uniqueName2' => ['app3.start();', 3, 'data-test' => 'one'],
+            ['app4.start();', 3, 'data-test' => 'one'],
+        ], $manager->getJsStrings());
+        $this->assertSame([
+            ['var1', 'value1', 7],
+            ['var2', [1, 2], 7],
+            ['var3', 'value3', 3],
+        ], $manager->getJsVars());
+    }
+
     public function testGetPublishedPathLinkAssetsFalse(): void
     {
         $bundle = new SourceAsset();
@@ -89,17 +209,13 @@ final class AssetManagerTest extends TestCase
 
         $manager->register([JqueryAsset::class]);
 
-        $this->assertStringContainsString(
-            $urlJs,
-            $manager->getJsFiles()[$urlJs]['url'],
-        );
-        $this->assertEquals(
+        $this->assertSame(
             [
+                $urlJs,
                 'integrity' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
                 'crossorigin' => 'anonymous',
-                'position' => 3,
             ],
-            $manager->getJsFiles()[$urlJs]['attributes'],
+            $manager->getJsFiles()[$urlJs],
         );
     }
 
@@ -128,9 +244,7 @@ final class AssetManagerTest extends TestCase
     {
         $manager = new AssetManager($this->aliases, $this->loader, [], [
             PositionAsset::class => [
-                'jsOptions' => [
-                    'position' => $pos,
-                ],
+                'jsPosition' => $pos,
             ],
         ]);
 
@@ -151,17 +265,12 @@ final class AssetManagerTest extends TestCase
         $this->assertInstanceOf(AssetBundle::class, $this->getRegisteredBundles($manager)[JqueryAsset::class]);
         $this->assertInstanceOf(AssetBundle::class, $this->getRegisteredBundles($manager)[Level3Asset::class]);
 
-        $this->assertArrayHasKey('position', $this->getRegisteredBundles($manager)[PositionAsset::class]->jsOptions);
-        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[PositionAsset::class]->jsOptions['position']);
+        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[PositionAsset::class]->jsPosition);
+        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[JqueryAsset::class]->jsPosition);
+        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[Level3Asset::class]->jsPosition);
 
-        $this->assertArrayHasKey('position', $this->getRegisteredBundles($manager)[JqueryAsset::class]->jsOptions);
-        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[JqueryAsset::class]->jsOptions['position']);
-
-        $this->assertArrayHasKey('position', $this->getRegisteredBundles($manager)[Level3Asset::class]->jsOptions);
-        $this->assertEquals($pos, $this->getRegisteredBundles($manager)[Level3Asset::class]->jsOptions['position']);
-
-        $this->assertEquals(['position' => $pos], $manager->getJsFiles()['/js/jquery.js']['attributes']);
-        $this->assertEquals(['position' => $pos], $manager->getJsFiles()['/files/jsFile.js']['attributes']);
+        $this->assertEquals($pos, $manager->getJsFiles()['/js/jquery.js'][1]);
+        $this->assertEquals($pos, $manager->getJsFiles()['/files/jsFile.js'][1]);
     }
 
     /**
@@ -179,9 +288,6 @@ final class AssetManagerTest extends TestCase
 
     /**
      * @dataProvider positionProviderConflict
-     *
-     * @param int $pos
-     * @param bool $jqAlreadyRegistered
      */
     public function testPositionDependencyConflict(int $pos, bool $jqAlreadyRegistered): void
     {
@@ -189,14 +295,10 @@ final class AssetManagerTest extends TestCase
 
         $manager = new AssetManager($this->aliases, $this->loader, [], [
             PositionAsset::class => [
-                'jsOptions' => [
-                    'position' => $pos - 1,
-                ],
+                'jsPosition' => $pos - 1,
             ],
             JqueryAsset::class => [
-                'jsOptions' => [
-                    'position' => $pos,
-                ],
+                'jsPosition' => $pos,
             ],
         ]);
 
@@ -266,141 +368,6 @@ final class AssetManagerTest extends TestCase
         $this->assertNotSame($jqueryBundle, $bundle);
         $this->assertEquals($jqueryBundle, $bundle);
         $this->assertNotSame($bundle, $manager->getBundle(JqueryAsset::class));
-    }
-
-    /**
-     * @return array
-     */
-    public function registerFileDataProvider(): array
-    {
-        return [
-            // Custom alias repeats in the asset URL
-            [
-                'css', '@assetUrl/assetSources/repeat/css/stub.css', false,
-                '/repeat/assetSources/repeat/css/stub.css',
-                '/repeat',
-            ],
-            [
-                'js', '@assetUrl/assetSources/repeat/js/jquery.js', false,
-                '/repeat/assetSources/repeat/js/jquery.js',
-                '/repeat',
-            ],
-            // JS files registration
-            [
-                'js', '@assetUrl/assetSources/js/missing-file.js', true,
-                '/baseUrl/assetSources/js/missing-file.js',
-            ],
-            [
-                'js', '@assetUrl/assetSources/js/jquery.js', false,
-                '/baseUrl/assetSources/js/jquery.js',
-            ],
-            [
-                'js', 'http://example.com/assetSources/js/jquery.js', false,
-                'http://example.com/assetSources/js/jquery.js',
-            ],
-            [
-                'js', '//example.com/assetSources/js/jquery.js', false,
-                '//example.com/assetSources/js/jquery.js',
-            ],
-            [
-                'js', 'assetSources/js/jquery.js', false,
-                'assetSources/js/jquery.js',
-            ],
-            [
-                'js', '/assetSources/js/jquery.js', false,
-                '/assetSources/js/jquery.js',
-            ],
-            // CSS file registration
-            [
-                'css', '@assetUrl/assetSources/css/missing-file.css', true,
-                '/baseUrl/assetSources/css/missing-file.css',
-            ],
-            [
-                'css', '@assetUrl/assetSources/css/stub.css', false,
-                '/baseUrl/assetSources/css/stub.css',
-            ],
-            [
-                'css', 'http://example.com/assetSources/css/stub.css', false,
-                'http://example.com/assetSources/css/stub.css',
-            ],
-            [
-                'css', '//example.com/assetSources/css/stub.css', false,
-                '//example.com/assetSources/css/stub.css',
-            ],
-            [
-                'css', 'assetSources/css/stub.css', false,
-                'assetSources/css/stub.css',
-            ],
-            [
-                'css', '/assetSources/css/stub.css', false,
-                '/assetSources/css/stub.css',
-            ],
-            // Custom `@assetUrl` aliases
-            [
-                'js', '@assetUrl/assetSources/js/missing-file1.js', true,
-                '/backend/assetSources/js/missing-file1.js',
-                '/backend',
-            ],
-            [
-                'js', 'http://full-url.example.com/backend/assetSources/js/missing-file.js', true,
-                'http://full-url.example.com/backend/assetSources/js/missing-file.js',
-                '/backend',
-            ],
-            [
-                'css', '//backend/backend/assetSources/js/missing-file.js', true,
-                '//backend/backend/assetSources/js/missing-file.js',
-                '/backend',
-            ],
-            [
-                'css', '@assetUrl/assetSources/css/stub.css', false,
-                '/en/blog/backend/assetSources/css/stub.css',
-                '/en/blog/backend',
-            ],
-            // UTF-8 chars
-            [
-                'css', '@assetUrl/assetSources/css/stub.css', false,
-                '/рус/сайт/assetSources/css/stub.css',
-                '/рус/сайт',
-            ],
-            [
-                'js', '@assetUrl/assetSources/js/jquery.js', false,
-                '/汉语/漢語/assetSources/js/jquery.js',
-                '/汉语/漢語',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider registerFileDataProvider
-     *
-     * @param string $type either `js` or `css`
-     * @param string $path
-     * @param bool $appendTimestamp
-     * @param string $expected
-     * @param string|null $webAlias
-     */
-    public function testRegisterFileAppendTimestamp(
-        string $type,
-        string $path,
-        bool $appendTimestamp,
-        string $expected,
-        ?string $webAlias = null
-    ): void {
-        $originalAlias = $this->aliases->get('@assetUrl');
-
-        if ($webAlias === null) {
-            $webAlias = $originalAlias;
-        }
-
-        $this->aliases->set('@assetUrl', $webAlias);
-        $path = $this->aliases->get($path);
-        $manager = $this->manager->withLoader($this->loader->withAppendTimestamp($appendTimestamp));
-        $this->invokeMethod($manager, 'register' . ucfirst($type) . 'File', [$path, [], null]);
-
-        $this->assertStringContainsString(
-            $expected,
-            $type === 'css' ? $manager->getCssFiles()[$expected]['url'] : $manager->getJsFiles()[$expected]['url'],
-        );
     }
 
     public function testRegisterWithAllowedBundlesWithCustomizedBundles(): void
@@ -530,6 +497,54 @@ final class AssetManagerTest extends TestCase
         );
     }
 
+    public function testRegisterWithCustomBaseUrl(): void
+    {
+        $manager = $this->createManagerWithAliasesAndBaseUrl(['@web' => 'https://example.com/assets/'], '@web');
+
+        $manager->register([PureAsset::class]);
+
+        $this->assertSame(
+            ['https://example.com/assets/pure/main.css' => ['https://example.com/assets/pure/main.css']],
+            $manager->getCssFiles(),
+        );
+        $this->assertSame(
+            ['https://example.com/assets/pure/main.js' => ['https://example.com/assets/pure/main.js']],
+            $manager->getJsFiles(),
+        );
+    }
+
+    public function testRepeatsAliasInAssetUrl(): void
+    {
+        $manager = $this->createManagerWithAliasesAndBaseUrl(['@web' => '/repeat'], '@web');
+
+        $manager->register([RepeatAsset::class]);
+
+        $this->assertSame(
+            ['/repeat/repeat/assets/repeat/main.css' => ['/repeat/repeat/assets/repeat/main.css']],
+            $manager->getCssFiles(),
+        );
+        $this->assertSame(
+            ['/repeat/repeat/assets/repeat/main.js' => ['/repeat/repeat/assets/repeat/main.js']],
+            $manager->getJsFiles(),
+        );
+    }
+
+    public function testUnicodeInPath(): void
+    {
+        $manager = $this->createManager();
+
+        $manager->register([UnicodeAsset::class]);
+
+        $this->assertSame(
+            ['/unicode/русский/main.css' => ['/unicode/русский/main.css']],
+            $manager->getCssFiles(),
+        );
+        $this->assertSame(
+            ['/unicode/汉语漢語/main.js' => ['/unicode/汉语漢語/main.js']],
+            $manager->getJsFiles(),
+        );
+    }
+
     public function testSettersImmutability(): void
     {
         $manager = $this->manager->withConverter($this->converter);
@@ -543,5 +558,49 @@ final class AssetManagerTest extends TestCase
         $manager = $this->manager->withPublisher($this->publisher);
         $this->assertInstanceOf(AssetManager::class, $manager);
         $this->assertNotSame($this->manager, $manager);
+    }
+
+    public function testAppendTimestamp(): void
+    {
+        $manager = $this->createManagerWithAppendTimestamp();
+
+        $manager->register([PureAsset::class]);
+
+        $this->assertMatchesRegularExpression(
+            '~/pure/main\.css\?v=\d+~',
+            array_key_first($manager->getCssFiles()),
+        );
+
+        $this->assertMatchesRegularExpression(
+            '~/pure/main\.js\?v=\d+~',
+            array_key_first($manager->getJsFiles()),
+        );
+    }
+
+    private function createManager(array $aliases = []): AssetManager
+    {
+        $aliases = new Aliases($aliases);
+        return new AssetManager(
+            $aliases,
+            new AssetLoader($aliases, false, [], __DIR__ . '/public', ''),
+        );
+    }
+
+    private function createManagerWithAppendTimestamp(): AssetManager
+    {
+        $aliases = new Aliases();
+        return new AssetManager(
+            $aliases,
+            new AssetLoader($aliases, true, [], __DIR__ . '/public', ''),
+        );
+    }
+
+    private function createManagerWithAliasesAndBaseUrl(array $aliases, string $baseUrl): AssetManager
+    {
+        $aliases = new Aliases($aliases);
+        return new AssetManager(
+            $aliases,
+            new AssetLoader($aliases, false, [], __DIR__ . '/public', $baseUrl),
+        );
     }
 }
