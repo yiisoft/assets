@@ -30,18 +30,35 @@ as public properties:
 `$css`              |`array`      | `[]`    | List of CSS files that this bundle contains.
 `$cssOptions`       |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setCssFiles()`.
 `$cssStrings`       |`array`      | `[]`    | List of CSS blocks.
-`$cssPosition`      |`int|null`   | `null`  | CSS files and blocks position.
+`$cssPosition`      |`int|null`   | `null`  | Specifies where the `<style>` tag should be inserted in a page.
 `$converterOptions` |`array`      | `[]`    | The options line command from converter
 `$depends`          |`array`      | `[]`    | List of bundle class names that this bundle depends on.
 `$js`               |`array`      | `[]`    | List of JavaScript files that this bundle contains.
 `$jsStrings`        |`array`      | `[]`    | List of JavaScript blocks.
 `$jsOptions`        |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setJsFiles()`.
-`$jsPosition`       |`int|null`   | `null`  | JavaScript files and blocks position.
+`$jsPosition`       |`int|null`   | `null`  | Specifies where the `<style>` tag should be inserted in a page.
 `$jsVars`           |`array`      | `[]`    | JavaScript variables.
 `$publishOptions`   |`array`      | `[]`    | The options to be passed to `\Yiisoft\Assets\AssetPublisher::publish()` when the asset bundle is being published.
 `$export`           |`array`      | `[]`    | List of file paths to export into a format readable by third party tools such as [Webpack](https://webpack.js.org/). If the array is empty, the file paths from the `$css` and `$js` will be exported. 
 `$sourcePath`       |`string/null`| `null`  | The directory that contains the source asset files for this asset bundle.
 
+### JS/CSS Positions for [`yiisoft/view`](https://github.com/yiisoft/view)
+
+For use this package with `yiisoft/view` the possible values of `$jsPosition` are:
+- `\Yiisoft\View\WebView::POSITION_HEAD` In the head section. This is the default value
+  for JavaScript variables.
+- `\Yiisoft\View\WebView::POSITION_BEGIN` At the beginning of the body section.
+- `\Yiisoft\View\WebView::POSITION_END` At the end of the body section. This is the default value
+  for JavaScript files and blocks.
+- `\Yiisoft\View\WebView::POSITION_READY` At the end of the body section (only for JavaScript strings and
+  variables). This means the JavaScript code block will be executed when HTML document composition is ready.
+- `\Yiisoft\View\WebView::POSITION_LOAD` At the end of the body section (only for JavaScript strings and
+   variables). This means the JavaScript code block will be executed when HTML page is completely loaded.
+
+The possible values of `$cssPosition`:
+- `\Yiisoft\View\WebView::POSITION_HEAD` In the head section. This is the default value.
+- `\Yiisoft\View\WebView::POSITION_BEGIN` At the beginning of the body section.
+- `\Yiisoft\View\WebView::POSITION_END` At the end of the body section.
 
 ## Defining asset bundle for local assets
 

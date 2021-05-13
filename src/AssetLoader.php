@@ -233,6 +233,11 @@ final class AssetLoader implements AssetLoaderInterface
         return $new;
     }
 
+    /**
+     * @param int|null $position Specifies where the `<style>` tag should be inserted in a page.
+     *
+     * @see AssetBundle::$cssPosition
+     */
     public function withCssDefaultPosition(?int $position): self
     {
         $new = clone $this;
@@ -255,6 +260,11 @@ final class AssetLoader implements AssetLoaderInterface
         return $new;
     }
 
+    /**
+     * @param int|null $position Specifies where the `<script>` tag should be inserted in a page.
+     *
+     * @see AssetBundle::$jsPosition
+     */
     public function withJsDefaultPosition(?int $position): self
     {
         $new = clone $this;

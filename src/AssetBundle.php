@@ -116,7 +116,12 @@ class AssetBundle
     public array $cssOptions = [];
 
     /**
-     * @var int|null CSS files and blocks position.
+     * @var int|null Specifies where the `<style>` tag should be inserted in a page.
+     *
+     * For use this package with [`yiisoft/view`](https://github.com/yiisoft/view) the possible values are:
+     *  - {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section. This is the default value.
+     *  - {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
+     *  - {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section.
      */
     public ?int $cssPosition = null;
 
@@ -211,7 +216,18 @@ class AssetBundle
     public array $jsOptions = [];
 
     /**
-     * @var int|null JavaScript files and blocks position.
+     * @var int|null Specifies where the `<script>` tag should be inserted in a page.
+     *
+     * For use this package with [`yiisoft/view`](https://github.com/yiisoft/view) the possible values are:
+     *  - {@see \Yiisoft\View\WebView::POSITION_HEAD} In the head section. This is the default value
+     *    for JavaScript variables.
+     *  - {@see \Yiisoft\View\WebView::POSITION_BEGIN} At the beginning of the body section.
+     *  - {@see \Yiisoft\View\WebView::POSITION_END} At the end of the body section. This is the default value
+     *    for JavaScript files and blocks.
+     *  - {@see \Yiisoft\View\WebView::POSITION_READY} At the end of the body section (only for JavaScript strings and
+     *    variables). This means the JavaScript code block will be executed when HTML document composition is ready.
+     *  - {@see \Yiisoft\View\WebView::POSITION_LOAD} At the end of the body section (only for JavaScript strings and
+     *    variables). This means the JavaScript code block will be executed when HTML page is completely loaded.
      */
     public ?int $jsPosition = null;
 
