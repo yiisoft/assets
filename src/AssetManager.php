@@ -45,7 +45,6 @@ final class AssetManager
     private ?AssetPublisherInterface $publisher = null;
     private AssetLoaderInterface $loader;
     private AssetRegistrar $registrar;
-    private Aliases $aliases;
 
     /**
      * @param Aliases $aliases The aliases instance.
@@ -66,11 +65,10 @@ final class AssetManager
         array $allowedBundleNames = [],
         array $customizedBundles = []
     ) {
-        $this->aliases = $aliases;
         $this->loader = $loader;
         $this->allowedBundleNames = $allowedBundleNames;
         $this->customizedBundles = $customizedBundles;
-        $this->registrar = new AssetRegistrar($this->aliases, $this->loader);
+        $this->registrar = new AssetRegistrar($aliases, $this->loader);
     }
 
     /**

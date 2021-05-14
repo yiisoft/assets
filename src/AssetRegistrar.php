@@ -18,7 +18,9 @@ use function is_string;
 use function sprintf;
 
 /**
- * AssetRegistrar registers asset files from a bundle considering dependencies.
+ * AssetRegistrar registers asset files, code blocks and variables from a bundle considering dependencies.
+ *
+ * @internal
  *
  * @psalm-type CssFile = array{0:string,1?:int}&array
  * @psalm-type CssString = array{0:mixed,1?:int}&array
@@ -496,6 +498,7 @@ final class AssetRegistrar
                     'JavaScript or CSS options should be list of key/value pairs with string keys. Got integer key.'
                 );
             }
+
             if (!array_key_exists($key, $array)) {
                 $array[$key] = $value;
             }
