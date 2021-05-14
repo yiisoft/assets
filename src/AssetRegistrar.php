@@ -156,6 +156,7 @@ final class AssetRegistrar
             $this->convertJs($bundle);
         }
 
+        /** @var JsFile|string $js */
         foreach ($bundle->js as $key => $js) {
             $this->registerJsFile(
                 $bundle,
@@ -418,7 +419,7 @@ final class AssetRegistrar
     /**
      * Registers a JS string.
      *
-     * @param array|string $jsString
+     * @param mixed $jsString
      *
      * @throws InvalidConfigException
      */
