@@ -175,6 +175,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             '@assetUrl' => '/baseUrl',
             '@converter' => '@root/tests/public/assetconverter',
             '@exporter' => '@root/tests/public/assetexporter',
+            '@util' => '@root/tests/public/asset-util',
             '@npm' => '@root/node_modules',
             '@sourcePath' => '@root/tests/public/sourcepath',
         ]);
