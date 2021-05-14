@@ -55,6 +55,9 @@ final class AssetRegistrar
      */
     private array $jsStrings = [];
 
+    /**
+     * @psalm-var JsVar[]
+     */
     private array $jsVars = [];
 
     public function __construct(Aliases $aliases, AssetLoaderInterface $loader)
@@ -64,8 +67,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Return config array CSS AssetBundle.
-     *
+     * @return array Config array of CSS files.
      * @psalm-return CssFile[]
      */
     public function getCssFiles(): array
@@ -74,9 +76,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Returns CSS blocks.
-     *
-     * @return array
+     * @return array CSS blocks.
      * @psalm-return CssString[]
      */
     public function getCssStrings(): array
@@ -85,8 +85,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Returns config array JS AssetBundle.
-     *
+     * @return array Config array of JavaScript files.
      * @psalm-return JsFile[]
      */
     public function getJsFiles(): array
@@ -95,9 +94,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Returns JS code blocks.
-     *
-     * @return array
+     * @return array JavaScript code blocks.
      * @psalm-return JsString[]
      */
     public function getJsStrings(): array
@@ -106,9 +103,8 @@ final class AssetRegistrar
     }
 
     /**
-     * Returns JS variables.
-     *
-     * @return array
+     * @return array JavaScript variables.
+     * @psalm-return list<JsVar>
      */
     public function getJsVars(): array
     {
@@ -116,11 +112,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Returns a new instance with the specified converter.
-     *
-     * @param AssetConverterInterface $converter
-     *
-     * @return self
+     * @return self A new instance with the specified converter.
      */
     public function withConverter(AssetConverterInterface $converter): self
     {
@@ -130,11 +122,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Returns a new instance with the specified loader.
-     *
-     * @param AssetLoaderInterface $loader
-     *
-     * @return self
+     * @return self A new instance with the specified loader.
      */
     public function withLoader(AssetLoaderInterface $loader): self
     {
@@ -144,9 +132,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Registers asset files from a bundle considering dependencies.
-     *
-     * @param AssetBundle $bundle
+     * Registers assets from a bundle considering dependencies.
      *
      * @throws InvalidConfigException If asset files are not found.
      */
@@ -205,19 +191,22 @@ final class AssetRegistrar
 
     /**
      * Converter SASS, SCSS, Stylus and other formats to CSS.
-     *
-     * @param AssetBundle $bundle
      */
     private function convertCss(AssetBundle $bundle): void
     {
-        /** @var CssFile|string $css */
+        /**
+         * @psalm-var AssetConverterInterface $this->converter
+         * @psalm-var string $bundle->basePath
+         * @psalm-var ConverterOptions $bundle->converterOptions
+         *
+         * @var CssFile|string $css
+         */
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
                 $file = $css[0];
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference,MixedArgumentTypeCoercion */
                         $css[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -230,7 +219,6 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($css)) {
                 $baseCss = $this->aliases->get("{$bundle->basePath}/{$css}");
                 if (is_file("$baseCss")) {
-                    /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference,MixedArgumentTypeCoercion */
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
                         $bundle->basePath,
@@ -243,19 +231,22 @@ final class AssetRegistrar
 
     /**
      * Convert files from TypeScript and other formats into JavaScript.
-     *
-     * @param AssetBundle $bundle
      */
     private function convertJs(AssetBundle $bundle): void
     {
-        /** @var JsFile|string $js */
+        /**
+         * @psalm-var AssetConverterInterface $this->converter
+         * @psalm-var string $bundle->basePath
+         * @psalm-var ConverterOptions $bundle->converterOptions
+         *
+         * @var JsFile|string $js
+         */
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
                 $file = $js[0];
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference,MixedArgumentTypeCoercion */
                         $js[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -268,7 +259,6 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($js)) {
                 $baseJs = $this->aliases->get("{$bundle->basePath}/{$js}");
                 if (is_file($baseJs)) {
-                    /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference */
                     $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
             }
@@ -357,7 +347,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Registers a JS file.
+     * Registers a JavaScript file.
      *
      * @param array|string $js
      *
@@ -367,7 +357,7 @@ final class AssetRegistrar
     {
         if (is_array($js)) {
             if (!array_key_exists(0, $js)) {
-                throw new InvalidConfigException('Do not set in array JS URL.');
+                throw new InvalidConfigException('Do not set in array JavaScript URL.');
             }
             $url = $js[0];
         } else {
@@ -377,14 +367,14 @@ final class AssetRegistrar
         if (!is_string($url)) {
             throw new InvalidConfigException(
                 sprintf(
-                    'JS file should be string. Got %s.',
+                    'JavaScript file should be string. Got %s.',
                     $this->getType($url),
                 )
             );
         }
 
         if ($url === '') {
-            throw new InvalidConfigException('JS file should be non empty string.');
+            throw new InvalidConfigException('JavaScript file should be non empty string.');
         }
 
         $url = $this->loader->getAssetUrl($bundle, $url);
@@ -406,7 +396,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Registers a JS string.
+     * Registers a JavaScript string.
      *
      * @param mixed $jsString
      *

@@ -11,7 +11,7 @@ all its dependent asset bundles will be recursively registered.
 
 There are three types of asset bundles:
 
-- When the asset folder is not accessible from the `'@baseUrl'` we use the `$sourcePath` option
+- When the asset folder is not accessible from the `$baseUrl` we use the `$sourcePath` option
 - When we have the public directory accessible folder we use the `$basePath` option
 - When we only want to use CDN we set `$cdn` option of our AssetBundle to `true`.
 

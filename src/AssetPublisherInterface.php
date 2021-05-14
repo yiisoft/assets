@@ -30,7 +30,7 @@ interface AssetPublisherInterface
      * non-critical problem in the creation of the directory that holds the published assets. This problem can be
      * avoided altogether by 'requesting' in advance all the resources that are supposed to trigger a 'publish()' call,
      * and doing that in the application deployment phase, before system goes live. See more in the following
-     * discussion: http://code.google.com/p/yii/issues/detail?id=2579
+     * discussion: {@link https://code.google.com/archive/p/yii/issues/2579}
      *
      * @param AssetBundle $bundle The asset (file or directory) to be read.
      *

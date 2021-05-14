@@ -38,11 +38,10 @@ final class AssetUtil
      * @psalm-param array<string,mixed> $config
      *
      * @return AssetBundle The created asset bundle.
-     *
-     * @psalm-suppress UnsafeInstantiation
      */
     public static function createAsset(string $name, array $config = []): AssetBundle
     {
+        /** @psalm-suppress UnsafeInstantiation */
         $bundle = is_subclass_of($name, AssetBundle::class) ? new $name() : new AssetBundle();
 
         /** @var mixed $value */
