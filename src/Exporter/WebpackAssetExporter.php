@@ -12,7 +12,7 @@ use Yiisoft\Assets\AssetUtil;
  * Exports the file paths of asset bundles {@see AssetBundle::$export}, converting them to `import '/path/to/file';`
  * expressions and placing them in the specified JavaScript file for later loading into Webpack.
  *
- * {@see https://webpack.js.org/concepts/#entry}
+ * {@link https://webpack.js.org/concepts/#entry}
  */
 final class WebpackAssetExporter implements AssetExporterInterface
 {
