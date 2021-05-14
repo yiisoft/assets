@@ -13,6 +13,8 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
+use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\OneAsset;
+use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\TwoAsset;
 use Yiisoft\Assets\Tests\stubs\ExportAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
@@ -273,10 +275,7 @@ final class AssetManagerTest extends TestCase
         $this->assertEquals($pos, $manager->getJsFiles()['/files/jsFile.js'][1]);
     }
 
-    /**
-     * @return array
-     */
-    public function positionProviderConflict(): array
+    public function dataJsPositionDependencyConflict(): array
     {
         return [
             [1, true],
@@ -287,11 +286,11 @@ final class AssetManagerTest extends TestCase
     }
 
     /**
-     * @dataProvider positionProviderConflict
+     * @dataProvider dataJsPositionDependencyConflict
      */
-    public function testPositionDependencyConflict(int $pos, bool $jqAlreadyRegistered): void
+    public function testJsPositionDependencyConflict(int $pos, bool $jQueryAlreadyRegistered): void
     {
-        $jqAsset = JqueryAsset::class;
+        $jQueryAsset = JqueryAsset::class;
 
         $manager = new AssetManager($this->aliases, $this->loader, [], [
             PositionAsset::class => [
@@ -302,20 +301,52 @@ final class AssetManagerTest extends TestCase
             ],
         ]);
 
-        $message = "An asset bundle that depends on \"{$jqAsset}\" has a higher"
-            . " JavaScript file position configured than \"{$jqAsset}\".";
+        $message = "An asset bundle that depends on \"{$jQueryAsset}\" has a higher"
+            . " JavaScript file position configured than \"{$jQueryAsset}\".";
 
-        if ($jqAlreadyRegistered) {
-            $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage($message);
 
-            $manager->register([JqueryAsset::class, PositionAsset::class]);
-        } else {
-            $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage($message);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage($message);
+        $jQueryAlreadyRegistered
+            ? $manager->register([JqueryAsset::class, PositionAsset::class])
+            : $manager->register([PositionAsset::class]);
+    }
 
-            $manager->register([PositionAsset::class]);
-        }
+    public function dataCssPositionDependencyConflict(): array
+    {
+        return [
+            [1, true],
+            [1, false],
+            [2, true],
+            [2, false],
+        ];
+    }
+
+    /**
+     * @dataProvider dataCssPositionDependencyConflict
+     */
+    public function testCssPositionDependencyConflict(int $pos, bool $oneAlreadyRegistered): void
+    {
+        $oneAsset = OneAsset::class;
+
+        $manager = new AssetManager($this->aliases, $this->loader, [], [
+            TwoAsset::class => [
+                'cssPosition' => $pos - 1,
+            ],
+            OneAsset::class => [
+                'cssPosition' => $pos,
+            ],
+        ]);
+
+        $message = "An asset bundle that depends on \"{$oneAsset}\" has a higher"
+            . " CSS file position configured than \"{$oneAsset}\".";
+
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage($message);
+        $oneAlreadyRegistered
+            ? $manager->register([OneAsset::class, TwoAsset::class])
+            : $manager->register([TwoAsset::class]);
     }
 
     public function testLoadDummyBundle(): void
