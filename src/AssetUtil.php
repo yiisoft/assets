@@ -35,6 +35,8 @@ final class AssetUtil
      * @param string $name The asset bundle name. Usually the asset bundle class name (without leading backslash).
      * @param array $config The asset bundle instance configuration. If specified, it will be applied to the instance.
      *
+     * @psalm-param array<string,mixed> $config
+     *
      * @return AssetBundle The created asset bundle.
      *
      * @psalm-suppress UnsafeInstantiation
@@ -43,6 +45,7 @@ final class AssetUtil
     {
         $bundle = is_subclass_of($name, AssetBundle::class) ? new $name() : new AssetBundle();
 
+        /** @var mixed $value */
         foreach ($config as $property => $value) {
             $bundle->{$property} = $value;
         }
@@ -58,6 +61,8 @@ final class AssetUtil
      * in {@see AssetBundle::$js} or {@see AssetBundle::$css}.
      * @param array $assetMap Mapping from source asset files (keys) to target asset files (values)
      * {@see AssetPublisher::$assetMap}.
+     *
+     * @psalm-param array<string, string> $assetMap
      *
      * @return string|null The actual URL for the specified asset, or null if there is no mapping.
      */
@@ -135,7 +140,9 @@ final class AssetUtil
                 continue;
             }
 
+            /** @var array|string $item */
             foreach (array_merge($bundle->css, $bundle->js) as $item) {
+                /** @var string */
                 $filePath = is_array($item) ? $item[0] : $item;
                 $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
             }
