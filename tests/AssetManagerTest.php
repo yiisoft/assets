@@ -13,7 +13,19 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
+use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\OneAsset;
+use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\TwoAsset;
 use Yiisoft\Assets\Tests\stubs\ExportAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithEmptyUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithIntegerUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithoutUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithEmptyUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithIntegerUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithoutUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsOptionsWithIntegerKeyAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithIntegerNameAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithoutNameAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithoutValueAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
@@ -273,10 +285,7 @@ final class AssetManagerTest extends TestCase
         $this->assertEquals($pos, $manager->getJsFiles()['/files/jsFile.js'][1]);
     }
 
-    /**
-     * @return array
-     */
-    public function positionProviderConflict(): array
+    public function dataJsPositionDependencyConflict(): array
     {
         return [
             [1, true],
@@ -287,11 +296,11 @@ final class AssetManagerTest extends TestCase
     }
 
     /**
-     * @dataProvider positionProviderConflict
+     * @dataProvider dataJsPositionDependencyConflict
      */
-    public function testPositionDependencyConflict(int $pos, bool $jqAlreadyRegistered): void
+    public function testJsPositionDependencyConflict(int $pos, bool $jQueryAlreadyRegistered): void
     {
-        $jqAsset = JqueryAsset::class;
+        $jQueryAsset = JqueryAsset::class;
 
         $manager = new AssetManager($this->aliases, $this->loader, [], [
             PositionAsset::class => [
@@ -302,20 +311,52 @@ final class AssetManagerTest extends TestCase
             ],
         ]);
 
-        $message = "An asset bundle that depends on \"{$jqAsset}\" has a higher"
-            . " JavaScript file position configured than \"{$jqAsset}\".";
+        $message = "An asset bundle that depends on \"{$jQueryAsset}\" has a higher"
+            . " JavaScript file position configured than \"{$jQueryAsset}\".";
 
-        if ($jqAlreadyRegistered) {
-            $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage($message);
 
-            $manager->register([JqueryAsset::class, PositionAsset::class]);
-        } else {
-            $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage($message);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage($message);
+        $jQueryAlreadyRegistered
+            ? $manager->register([JqueryAsset::class, PositionAsset::class])
+            : $manager->register([PositionAsset::class]);
+    }
 
-            $manager->register([PositionAsset::class]);
-        }
+    public function dataCssPositionDependencyConflict(): array
+    {
+        return [
+            [1, true],
+            [1, false],
+            [2, true],
+            [2, false],
+        ];
+    }
+
+    /**
+     * @dataProvider dataCssPositionDependencyConflict
+     */
+    public function testCssPositionDependencyConflict(int $pos, bool $oneAlreadyRegistered): void
+    {
+        $oneAsset = OneAsset::class;
+
+        $manager = new AssetManager($this->aliases, $this->loader, [], [
+            TwoAsset::class => [
+                'cssPosition' => $pos - 1,
+            ],
+            OneAsset::class => [
+                'cssPosition' => $pos,
+            ],
+        ]);
+
+        $message = "An asset bundle that depends on \"{$oneAsset}\" has a higher"
+            . " CSS file position configured than \"{$oneAsset}\".";
+
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage($message);
+        $oneAlreadyRegistered
+            ? $manager->register([OneAsset::class, TwoAsset::class])
+            : $manager->register([TwoAsset::class]);
     }
 
     public function testLoadDummyBundle(): void
@@ -575,6 +616,98 @@ final class AssetManagerTest extends TestCase
             '~/pure/main\.js\?v=\d+~',
             array_key_first($manager->getJsFiles()),
         );
+    }
+
+    public function testCssAsArrayWithoutUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Do not set in array CSS URL.');
+        $manager->register([CssAsArrayWithoutUrlAsset::class]);
+    }
+
+    public function testCssAsArrayWithIntegerUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('CSS file should be string. Got integer.');
+        $manager->register([CssAsArrayWithIntegerUrlAsset::class]);
+    }
+
+    public function testCssAsArrayWithEmptyUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('CSS file should be non empty string.');
+        $manager->register([CssAsArrayWithEmptyUrlAsset::class]);
+    }
+
+    public function testJsAsArrayWithoutUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Do not set in array JS URL.');
+        $manager->register([JsAsArrayWithoutUrlAsset::class]);
+    }
+
+    public function testJsAsArrayWithIntegerUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('JS file should be string. Got integer.');
+        $manager->register([JsAsArrayWithIntegerUrlAsset::class]);
+    }
+
+    public function testJsAsArrayWithEmptyUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('JS file should be non empty string.');
+        $manager->register([JsAsArrayWithEmptyUrlAsset::class]);
+    }
+
+    public function testJsVarAsArrayWithoutName(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Do not set JavaScript variable name.');
+        $manager->register([JsVarAsArrayWithoutNameAsset::class]);
+    }
+
+    public function testsVarAsArrayWithIntegerName(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('JavaScript variable name should be string. Got integer.');
+        $manager->register([JsVarAsArrayWithIntegerNameAsset::class]);
+    }
+
+    public function testJsOptionsWithIntegerKey(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage(
+            'JavaScript or CSS options should be list of key/value pairs with string keys. Got integer key.'
+        );
+        $manager->register([JsOptionsWithIntegerKeyAsset::class]);
+    }
+
+    public function testJsVarAsArrayWithoutValue(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Do not set JavaScript variable value.');
+        $manager->register([JsVarAsArrayWithoutValueAsset::class]);
     }
 
     private function createManager(array $aliases = []): AssetManager

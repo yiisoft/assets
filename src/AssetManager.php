@@ -573,7 +573,7 @@ final class AssetManager
         }
 
         /** @psalm-var CssFile */
-        $css = $this->mergeWithReverseOrder($bundle->cssOptions, $css);
+        $css = $this->mergeOptionsWithArray($bundle->cssOptions, $css);
 
         $this->cssFiles[$key ?: $url] = $css;
     }
@@ -601,7 +601,7 @@ final class AssetManager
         }
 
         /** @psalm-var CssString */
-        $config = $this->mergeWithReverseOrder($bundle->cssOptions, $config);
+        $config = $this->mergeOptionsWithArray($bundle->cssOptions, $config);
 
         if ($key === null) {
             $this->cssStrings[] = $config;
@@ -654,7 +654,7 @@ final class AssetManager
         }
 
         /** @psalm-var JsFile */
-        $js = $this->mergeWithReverseOrder($bundle->jsOptions, $js);
+        $js = $this->mergeOptionsWithArray($bundle->jsOptions, $js);
 
         $this->jsFiles[$key ?: $url] = $js;
     }
@@ -681,7 +681,7 @@ final class AssetManager
         }
 
         /** @psalm-var JsString */
-        $jsString = $this->mergeWithReverseOrder($bundle->jsOptions, $jsString);
+        $jsString = $this->mergeOptionsWithArray($bundle->jsOptions, $jsString);
 
         if ($key === null) {
             $this->jsStrings[] = $jsString;
@@ -834,16 +834,22 @@ final class AssetManager
         return false;
     }
 
-    private function mergeWithReverseOrder(array $a, array $b): array
+    /**
+     * @throws InvalidConfigException
+     */
+    private function mergeOptionsWithArray(array $options, array $array): array
     {
-        foreach ($a as $key => $value) {
+        foreach ($options as $key => $value) {
             if (is_int($key)) {
-                $b[] = $value;
-            } elseif (!array_key_exists($key, $b)) {
-                $b[$key] = $value;
+                throw new InvalidConfigException(
+                    'JavaScript or CSS options should be list of key/value pairs with string keys. Got integer key.'
+                );
+            }
+            if (!array_key_exists($key, $array)) {
+                $array[$key] = $value;
             }
         }
-        return $b;
+        return $array;
     }
 
     /**
