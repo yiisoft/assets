@@ -26,7 +26,8 @@ final class AssetLoader implements AssetLoaderInterface
     private bool $appendTimestamp;
 
     /**
-     * @var array<string, string> Mapping from source asset files (keys) to target asset files (values).
+     * @var array Mapping from source asset files (keys) to target asset files (values).
+     * @psalm-var array<string, string>
      */
     private array $assetMap;
 
