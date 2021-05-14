@@ -76,7 +76,7 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array Array of CSS blocks.
+     * @return array CSS blocks.
      * @psalm-return CssString[]
      */
     public function getCssStrings(): array
@@ -94,7 +94,7 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array Array of JavaScript code blocks.
+     * @return array JavaScript code blocks.
      * @psalm-return JsString[]
      */
     public function getJsStrings(): array
@@ -103,7 +103,7 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array Array of JavaScript variables.
+     * @return array JavaScript variables.
      * @psalm-return list<JsVar>
      */
     public function getJsVars(): array

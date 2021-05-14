@@ -148,8 +148,6 @@ final class AssetLoader implements AssetLoaderInterface
      * When this is true, the URL of a published asset may look like `/path/to/asset?v=timestamp`, where `timestamp`
      * is the last modification time of the published asset file. You normally would want to set this property to true
      * when you have enabled HTTP caching for assets, because it allows you to bust caching when the assets are updated.
-     *
-     * @return self
      */
     public function withAppendTimestamp(bool $appendTimestamp): self
     {
@@ -181,8 +179,6 @@ final class AssetLoader implements AssetLoaderInterface
      *     'jquery.min.js' => 'jquery/dist/jquery.js',
      * ]
      * ```
-     *
-     * @return self
      */
     public function withAssetMap(array $assetMap): self
     {
@@ -195,8 +191,6 @@ final class AssetLoader implements AssetLoaderInterface
      * Returns a new instance with the specified base path.
      *
      * @param string|null $basePath The root directory storing the asset files. Default is `null`.
-     *
-     * @return self
      */
     public function withBasePath(?string $basePath): self
     {
@@ -209,8 +203,6 @@ final class AssetLoader implements AssetLoaderInterface
      * Returns a new instance with the specified base URL.
      *
      * @param string|null $baseUrl The base URL that can be used to access the asset files. Default is `null`.
-     *
-     * @return self
      */
     public function withBaseUrl(?string $baseUrl): self
     {
@@ -222,10 +214,8 @@ final class AssetLoader implements AssetLoaderInterface
     /**
      * Returns a new instance with the specified global `$css` default options for all assets bundle.
      *
-     * @param array $cssDefaultOptions The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
-     * when registering the CSS files all assets bundle.
-     *
-     * @return self
+     * @param array $cssDefaultOptions The options that will be passed to
+     * {@see \Yiisoft\View\WebView::registerCssFile()} when registering the CSS files all assets bundle.
      */
     public function withCssDefaultOptions(array $cssDefaultOptions): self
     {
@@ -276,10 +266,6 @@ final class AssetLoader implements AssetLoaderInterface
     /**
      * If the asset bundle does not have a {@see AssetBundle::$basePath} set, the value set with {@see withBasePath()}
      * is returned.
-     *
-     * @param AssetBundle $bundle
-     *
-     * @return string|null
      */
     private function getBundleBasePath(AssetBundle $bundle): ?string
     {
@@ -293,10 +279,6 @@ final class AssetLoader implements AssetLoaderInterface
     /**
      * If the asset bundle does not have a {@see AssetBundle::$baseUrl} set, the value set with {@see withBaseUrl()}
      * is returned.
-     *
-     * @param AssetBundle $bundle
-     *
-     * @return string|null
      */
     private function getBundleBaseUrl(AssetBundle $bundle): ?string
     {

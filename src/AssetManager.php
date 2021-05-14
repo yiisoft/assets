@@ -136,8 +136,7 @@ final class AssetManager
     }
 
     /**
-     * Return config array CSS AssetBundle.
-     *
+     * @return array Config array of CSS files.
      * @psalm-return CssFile[]
      */
     public function getCssFiles(): array
@@ -146,9 +145,7 @@ final class AssetManager
     }
 
     /**
-     * Returns CSS blocks.
-     *
-     * @return array
+     * @return array CSS blocks.
      * @psalm-return CssString[]
      */
     public function getCssStrings(): array
@@ -157,8 +154,7 @@ final class AssetManager
     }
 
     /**
-     * Returns config array JS AssetBundle.
-     *
+     * @return array Config array of JavaScript files.
      * @psalm-return JsFile[]
      */
     public function getJsFiles(): array
@@ -167,9 +163,7 @@ final class AssetManager
     }
 
     /**
-     * Returns JS code blocks.
-     *
-     * @return array
+     * @return array JavaScript code blocks.
      * @psalm-return JsString[]
      */
     public function getJsStrings(): array
@@ -178,9 +172,8 @@ final class AssetManager
     }
 
     /**
-     * Returns JS variables.
-     *
-     * @return array
+     * @return array JavaScript variables.
+     * @psalm-return list<JsVar>
      */
     public function getJsVars(): array
     {
@@ -189,10 +182,6 @@ final class AssetManager
 
     /**
      * Returns a new instance with the specified converter.
-     *
-     * @param AssetConverterInterface $converter
-     *
-     * @return self
      */
     public function withConverter(AssetConverterInterface $converter): self
     {
@@ -203,10 +192,6 @@ final class AssetManager
 
     /**
      * Returns a new instance with the specified loader.
-     *
-     * @param AssetLoaderInterface $loader
-     *
-     * @return self
      */
     public function withLoader(AssetLoaderInterface $loader): self
     {
@@ -220,8 +205,6 @@ final class AssetManager
      * Returns a new instance with the specified publisher.
      *
      * @param AssetPublisherInterface $publisher
-     *
-     * @return self
      */
     public function withPublisher(AssetPublisherInterface $publisher): self
     {

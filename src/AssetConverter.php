@@ -126,9 +126,9 @@ final class AssetConverter implements AssetConverterInterface
      *
      * Example:
      *
+     * ```php
      * $converter = $converter->withCommand('scss', 'css', 'sass {options} {from} {to}');
-     *
-     * @return self
+     *```
      */
     public function withCommand(string $from, string $to, string $command): self
     {
@@ -144,8 +144,6 @@ final class AssetConverter implements AssetConverterInterface
      * Default is `false`. You may want to set this to be `true` during the development stage to make
      * sure the converted assets are always up-to-date. Do not set this to true on production servers
      * as it will significantly degrade the performance.
-     *
-     * @return self
      */
     public function withForceConvert(bool $forceConvert): self
     {

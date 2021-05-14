@@ -136,8 +136,6 @@ final class AssetPublisher implements AssetPublisherInterface
      * @param int $dirMode The permission to be set for newly generated asset directories. This value will be used
      * by PHP `chmod()` function. No umask will be applied. Defaults to 0775, meaning the directory is read-writable
      * by owner and group, but read-only for other users.
-     *
-     * @return self
      */
     public function withDirMode(int $dirMode): self
     {
@@ -152,8 +150,6 @@ final class AssetPublisher implements AssetPublisherInterface
      * @param int $fileMode he permission to be set for newly published asset files. This value will be used
      * by PHP `chmod()` function. No umask will be applied. If not set, the permission will be determined
      * by the current environment.
-     *
-     * @return self
      */
     public function withFileMode(int $fileMode): self
     {
@@ -169,8 +165,6 @@ final class AssetPublisher implements AssetPublisherInterface
      * directory. This option is used only when publishing a directory. You may want to set this to be `true` during
      * the development stage to make sure the published directory is always up-to-date. Do not set this to `true`
      * on production servers as it will significantly degrade the performance.
-     *
-     * @return self
      */
     public function withForceCopy(bool $forceCopy): self
     {
@@ -228,8 +222,6 @@ final class AssetPublisher implements AssetPublisherInterface
      * ```apache
      * Options FollowSymLinks
      * ```
-     *
-     * @return self
      */
     public function withLinkAssets(bool $linkAssets): self
     {
