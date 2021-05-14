@@ -844,7 +844,8 @@ final class AssetManager
                 throw new InvalidConfigException(
                     'JavaScript or CSS options should be list of key/value pairs with string ketys. Got integer key.'
                 );
-            } elseif (!array_key_exists($key, $array)) {
+            }
+            if (!array_key_exists($key, $array)) {
                 $array[$key] = $value;
             }
         }
