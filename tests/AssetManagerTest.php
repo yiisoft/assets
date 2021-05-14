@@ -22,6 +22,7 @@ use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithoutUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithEmptyUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithIntegerUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithoutUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsOptionsWithIntegerKeyAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithIntegerNameAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithoutNameAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithoutValueAsset;
@@ -687,6 +688,17 @@ final class AssetManagerTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('JavaScript variable name should be string. Got integer.');
         $manager->register([JsVarAsArrayWithIntegerNameAsset::class]);
+    }
+
+    public function testJsOptionsWithIntegerKey(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage(
+            'JavaScript or CSS options should be list of key/value pairs with string ketys. Got integer key.'
+        );
+        $manager->register([JsOptionsWithIntegerKeyAsset::class]);
     }
 
     public function testJsVarAsArrayWithoutValue(): void
