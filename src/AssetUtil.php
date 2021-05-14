@@ -134,6 +134,7 @@ final class AssetUtil
             }
 
             if (!empty($bundle->export)) {
+                /** @var string $filePath */
                 foreach ($bundle->export as $filePath) {
                     $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
                 }

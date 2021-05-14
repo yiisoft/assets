@@ -13,16 +13,11 @@ namespace Yiisoft\Assets;
  *
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
- *
- * @psalm-type CssFile = string|array{0:string,1?:int}&array
- * @psalm-type CssString = string|array{0:mixed,1?:int}&array
- * @psalm-type JsFile = string|array{0:string,1?:int}&array
- * @psalm-type JsString = string|array{0:mixed,1?:int}&array
  */
 class AssetBundle
 {
     /**
-     * @var string|null The Web-accessible directory that contains the asset files in this bundle.
+     * The Web-accessible directory that contains the asset files in this bundle.
      *
      * If {@see $sourcePath} is set, this property will be *overwritten* by {@see AssetManager} when it publishes the
      * asset files from {@see $sourcePath}.
@@ -32,7 +27,7 @@ class AssetBundle
     public ?string $basePath = null;
 
     /**
-     * @var string|null The base URL for the relative asset files listed in {@see $js} and {@see $css}.
+     * The base URL for the relative asset files listed in {@see $js} and {@see $css}.
      *
      * If {@see $sourcePath} is set, this property will be *overwritten* by {@see AssetManager} when it publishes the
      * asset files from {@see $sourcePath}.
@@ -42,12 +37,12 @@ class AssetBundle
     public ?string $baseUrl = null;
 
     /**
-     * @var bool Indicates whether the AssetBundle uses CDN exclusively.
+     * Indicates whether the AssetBundle uses CDN exclusively.
      */
     public bool $cdn = false;
 
     /**
-     * @var array List of CSS files. Each CSS file can be specified in one of the following formats:
+     * List of CSS files. Each CSS file can be specified in one of the following formats:
      *
      * - An absolute URL representing an external asset. For example,
      *   `https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css` or
@@ -75,13 +70,11 @@ class AssetBundle
      *     'key' => 'css/d.css',
      * ]
      * ```
-     *
-     * @psalm-var CssFile[]
      */
     public array $css = [];
 
     /**
-     * @var array List of CSS blocks. Each CSS block can be specified in one of the following formats:
+     * List of CSS blocks. Each CSS block can be specified in one of the following formats:
      *
      *  - CSS block string. For example, `a { color: red; }`.
      *  - An array, with CSS block string as the first element and, optionally, position on the page as the second element.
@@ -104,19 +97,17 @@ class AssetBundle
      *     'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any'],
      * ];
      * ```
-     *
-     * @psalm-var CssString[]
      */
     public array $cssStrings = [];
 
     /**
-     * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
+     * The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
      * when registering the CSS files in this bundle.
      */
     public array $cssOptions = [];
 
     /**
-     * @var int|null Specifies where the `<style>` tag should be inserted in a page.
+     * Specifies where the `<style>` tag should be inserted in a page.
      *
      * When this package is used with [`yiisoft/view`](https://github.com/yiisoft/view), the possible values are:
      *
@@ -127,7 +118,7 @@ class AssetBundle
     public ?int $cssPosition = null;
 
     /**
-     * @var array The command line options for converter.
+     * The command line options for converter.
      *
      * Example: Dart SASS CSS minifier.
      *
@@ -148,7 +139,7 @@ class AssetBundle
     ];
 
     /**
-     * @var array List of asset bundle class names that this bundle depends on.
+     * List of asset bundle class names that this bundle depends on.
      *
      * For example:
      *
@@ -162,7 +153,7 @@ class AssetBundle
     public array $depends = [];
 
     /**
-     * @var array List of JavaScript files that this bundle contains.
+     * List of JavaScript files that this bundle contains.
      *
      * Each JavaScript file can be specified in one of the following formats:
      *
@@ -176,13 +167,11 @@ class AssetBundle
      *   pairs that will be used to overwrite {@see $jsOptions} settings for this entry.
      *
      * Note that only a forward slash "/" should be used as directory separator.
-     *
-     * @psalm-var JsFile[]
      */
     public array $js = [];
 
     /**
-     * @var array List of JS blocks. Each JS block can be specified in one of the following formats:
+     * List of JS blocks. Each JS block can be specified in one of the following formats:
      *
      *  - JS block string. For example, `alert(42);`.
      *  - An array, with JS block string as the first element and, optionally, position on the page as the second element.
@@ -205,19 +194,17 @@ class AssetBundle
      *     'key4' => ['alert(8);', 3, 'id' => 'second'],
      * ];
      * ```
-     *
-     * @psalm-var JsString[]
      */
     public array $jsStrings = [];
 
     /**
-     * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
+     * The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
      * when registering the JS files in this bundle.
      */
     public array $jsOptions = [];
 
     /**
-     * @var int|null Specifies where the `<script>` tag should be inserted in a page.
+     * Specifies where the `<script>` tag should be inserted in a page.
      *
      * When this package is used with [`yiisoft/view`](https://github.com/yiisoft/view), the possible values are:
      *
@@ -234,7 +221,7 @@ class AssetBundle
     public ?int $jsPosition = null;
 
     /**
-     * @var array JavaScript variables. Each JavaScript variable can be specified in one of the following formats:
+     * JavaScript variables. Each JavaScript variable can be specified in one of the following formats:
      *
      *  - A key/value pair where the key is variable name and the value is variable value.
      *  - An array, with the variable name as the first element and, optionally, position on the page as the second element.
@@ -252,13 +239,13 @@ class AssetBundle
     public array $jsVars = [];
 
     /**
-     * @var array The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
+     * The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
      * is being published. This property is used only when {@see $sourcePath} is set.
      */
     public array $publishOptions = [];
 
     /**
-     * @var string[] List of file paths to export into a format readable
+     * List of file paths to export into a format readable
      * by third party tools such as Webpack. See {@see AssetManager::export()}.
      *
      * If the array is empty, the file paths from the {@see $css} and {@see $js}
@@ -277,7 +264,7 @@ class AssetBundle
     public array $export = [];
 
     /**
-     * @var string|null The directory that contains the source asset files for this asset bundle.
+     * The directory that contains the source asset files for this asset bundle.
      * A source asset file is a file that is part of your source code repository of your Web application.
      * You must set this property if the directory containing the source asset files is not Web accessible.
      *
