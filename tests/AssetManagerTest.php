@@ -696,7 +696,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage(
-            'JavaScript or CSS options should be list of key/value pairs with string ketys. Got integer key.'
+            'JavaScript or CSS options should be list of key/value pairs with string keys. Got integer key.'
         );
         $manager->register([JsOptionsWithIntegerKeyAsset::class]);
     }

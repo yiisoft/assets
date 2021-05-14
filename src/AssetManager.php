@@ -842,7 +842,7 @@ final class AssetManager
         foreach ($options as $key => $value) {
             if (is_int($key)) {
                 throw new InvalidConfigException(
-                    'JavaScript or CSS options should be list of key/value pairs with string ketys. Got integer key.'
+                    'JavaScript or CSS options should be list of key/value pairs with string keys. Got integer key.'
                 );
             }
             if (!array_key_exists($key, $array)) {
