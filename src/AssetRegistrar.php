@@ -210,14 +210,18 @@ final class AssetRegistrar
      */
     private function convertCss(AssetBundle $bundle): void
     {
-        /** @var CssFile|string $css */
+        /**
+         * @psalm-var AssetConverterInterface $this->converter
+         * @psalm-var string $bundle->basePath
+         * @psalm-var ConverterOptions $bundle->converterOptions
+         * @var CssFile|string $css
+         */
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
                 $file = $css[0];
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference,MixedArgumentTypeCoercion */
                         $css[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -230,7 +234,6 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($css)) {
                 $baseCss = $this->aliases->get("{$bundle->basePath}/{$css}");
                 if (is_file("$baseCss")) {
-                    /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference,MixedArgumentTypeCoercion */
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
                         $bundle->basePath,
@@ -248,14 +251,18 @@ final class AssetRegistrar
      */
     private function convertJs(AssetBundle $bundle): void
     {
-        /** @var JsFile|string $js */
+        /**
+         * @psalm-var AssetConverterInterface $this->converter
+         * @psalm-var string $bundle->basePath
+         * @psalm-var ConverterOptions $bundle->converterOptions
+         * @var JsFile|string $js
+         */
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
                 $file = $js[0];
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference,MixedArgumentTypeCoercion */
                         $js[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -268,7 +275,6 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($js)) {
                 $baseJs = $this->aliases->get("{$bundle->basePath}/{$js}");
                 if (is_file($baseJs)) {
-                    /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference */
                     $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
             }
