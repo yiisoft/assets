@@ -483,6 +483,14 @@ final class AssetRegistrar
         $value = $config[1];
 
         $position = $config[2] ?? $bundleJsPosition;
+        if (!is_int($position)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'JavaScript variable position should be integer. Got %s.',
+                    $this->getType($position),
+                )
+            );
+        }
 
         $this->registerJsVar($name, $value, $position);
     }
@@ -492,6 +500,7 @@ final class AssetRegistrar
      */
     private function mergeOptionsWithArray(array $options, array $array): array
     {
+        /** @var mixed $value */
         foreach ($options as $key => $value) {
             if (is_int($key)) {
                 throw new InvalidConfigException(
@@ -500,6 +509,7 @@ final class AssetRegistrar
             }
 
             if (!array_key_exists($key, $array)) {
+                /** @var mixed */
                 $array[$key] = $value;
             }
         }
