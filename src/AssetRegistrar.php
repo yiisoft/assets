@@ -26,6 +26,7 @@ use function sprintf;
  * @psalm-type CssString = array{0:mixed,1?:int}&array
  * @psalm-type JsFile = array{0:string,1?:int}&array
  * @psalm-type JsString = array{0:mixed,1?:int}&array
+ * @psalm-type JsVar = array{0:string,1:mixed,2?:int}
  */
 final class AssetRegistrar
 {
@@ -163,6 +164,7 @@ final class AssetRegistrar
             );
         }
 
+        /** @var mixed $jsString */
         foreach ($bundle->jsStrings as $key => $jsString) {
             $this->registerJsString(
                 $bundle,
@@ -171,6 +173,7 @@ final class AssetRegistrar
             );
         }
 
+        /** @var JsVar|string $jsVar */
         foreach ($bundle->jsVars as $name => $jsVar) {
             if (is_string($name)) {
                 $this->registerJsVar($name, $jsVar, $bundle->jsPosition);
@@ -179,6 +182,7 @@ final class AssetRegistrar
             }
         }
 
+        /** @var CssFile|string $css */
         foreach ($bundle->css as $key => $css) {
             $this->registerCssFile(
                 $bundle,
@@ -187,6 +191,7 @@ final class AssetRegistrar
             );
         }
 
+        /** @var mixed $cssString */
         foreach ($bundle->cssStrings as $key => $cssString) {
             $this->registerCssString(
                 $bundle,
@@ -203,6 +208,7 @@ final class AssetRegistrar
      */
     private function convertCss(AssetBundle $bundle): void
     {
+        /** @var CssFile|string $css */
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
                 $file = $css[0];
@@ -246,6 +252,7 @@ final class AssetRegistrar
      */
     private function convertJs(AssetBundle $bundle): void
     {
+        /** @var JsFile|string $js */
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
                 $file = $js[0];
@@ -458,10 +465,21 @@ final class AssetRegistrar
     /**
      * Registers a JavaScript variable by config.
      *
+     * @param mixed $config
+     *
      * @throws InvalidConfigException
      */
-    private function registerJsVarByConfig(array $config, ?int $bundleJsPosition): void
+    private function registerJsVarByConfig($config, ?int $bundleJsPosition): void
     {
+        if (!is_array($config)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'Without string key JavaScript variable should be array. Got %s.',
+                    $this->getType($config),
+                )
+            );
+        }
+
         if (!array_key_exists(0, $config)) {
             throw new InvalidConfigException('Do not set JavaScript variable name.');
         }
