@@ -16,6 +16,15 @@ use Yiisoft\Assets\Tests\stubs\CdnAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\OneAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\TwoAsset;
 use Yiisoft\Assets\Tests\stubs\ExportAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithEmptyUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithIntegerUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithoutUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithEmptyUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithIntegerUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithoutUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithIntegerNameAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithoutNameAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithoutValueAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
@@ -606,6 +615,87 @@ final class AssetManagerTest extends TestCase
             '~/pure/main\.js\?v=\d+~',
             array_key_first($manager->getJsFiles()),
         );
+    }
+
+    public function testCssAsArrayWithoutUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Do not set in array CSS URL.');
+        $manager->register([CssAsArrayWithoutUrlAsset::class]);
+    }
+
+    public function testCssAsArrayWithIntegerUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('CSS file should be string. Got integer.');
+        $manager->register([CssAsArrayWithIntegerUrlAsset::class]);
+    }
+
+    public function testCssAsArrayWithEmptyUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('CSS file should be non empty string.');
+        $manager->register([CssAsArrayWithEmptyUrlAsset::class]);
+    }
+
+    public function testJsAsArrayWithoutUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Do not set in array JS URL.');
+        $manager->register([JsAsArrayWithoutUrlAsset::class]);
+    }
+
+    public function testJsAsArrayWithIntegerUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('JS file should be string. Got integer.');
+        $manager->register([JsAsArrayWithIntegerUrlAsset::class]);
+    }
+
+    public function testJsAsArrayWithEmptyUrl(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('JS file should be non empty string.');
+        $manager->register([JsAsArrayWithEmptyUrlAsset::class]);
+    }
+
+    public function testJsVarAsArrayWithoutName(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Do not set JavaScript variable name.');
+        $manager->register([JsVarAsArrayWithoutNameAsset::class]);
+    }
+
+    public function testsVarAsArrayWithIntegerName(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('JavaScript variable name should be string. Got integer.');
+        $manager->register([JsVarAsArrayWithIntegerNameAsset::class]);
+    }
+
+    public function testJsVarAsArrayWithoutValue(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Do not set JavaScript variable value.');
+        $manager->register([JsVarAsArrayWithoutValueAsset::class]);
     }
 
     private function createManager(array $aliases = []): AssetManager
