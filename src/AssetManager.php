@@ -18,6 +18,8 @@ use function is_array;
  * @psalm-type CssString = array{0:mixed,1?:int}&array
  * @psalm-type JsFile = array{0:string,1?:int}&array
  * @psalm-type JsString = array{0:mixed,1?:int}&array
+ * @psalm-type JsVar = array{0:string,1:mixed,2?:int}
+ * @psalm-type CustomizedBundles = array<string, AssetBundle|array<string, mixed>|false>
  */
 final class AssetManager
 {
@@ -28,18 +30,36 @@ final class AssetManager
 
     /**
      * @var array The asset bundle configurations. This property is provided to customize asset bundles.
+     * @psalm-var CustomizedBundles
      */
     private array $customizedBundles;
 
     /**
-     * @var array AssetBundle[] list of the registered asset bundles.
+     * @var AssetBundle[] list of the registered asset bundles.
      * The keys are the bundle names, and the values are the registered {@see AssetBundle} objects.
      *
      * {@see registerAssetBundle()}
+     *
+     * @psalm-var array<string, AssetBundle>
      */
     private array $registeredBundles = [];
 
+    /**
+     * @var true[] List of the asset bundles in register process. Use for detect circular dependency.
+     * @psalm-var array<string, true>
+     */
+    private array $bundlesInRegisterProcess = [];
+
+    /**
+     * @var AssetBundle[]
+     * @psalm-var array<string, AssetBundle>
+     */
     private array $loadedBundles = [];
+
+    /**
+     * @var AssetBundle[]
+     * @psalm-var array<string, AssetBundle>
+     */
     private array $dummyBundles = [];
 
     private ?AssetPublisherInterface $publisher = null;
@@ -58,6 +78,8 @@ final class AssetManager
      * here, the configuration will be applied to the bundle. The array keys are the asset class bundle names
      * (without leading backslash). If a value is false, it means the corresponding asset bundle is disabled
      * and {@see getBundle()} should return an instance of the specified asset bundle with empty property values.
+     *
+     * @psalm-param CustomizedBundles $customizedBundles
      */
     public function __construct(
         Aliases $aliases,
@@ -302,19 +324,26 @@ final class AssetManager
      */
     private function registerAssetBundle(string $name, ?int $jsPosition = null, ?int $cssPosition = null): void
     {
+        if (isset($this->bundlesInRegisterProcess[$name])) {
+            throw new RuntimeException("A circular dependency is detected for bundle \"{$name}\".");
+        }
+
         if (!isset($this->registeredBundles[$name])) {
             $bundle = $this->publishBundle($this->loadBundle($name));
 
-            $this->registeredBundles[$name] = false;
+            $this->bundlesInRegisterProcess[$name] = true;
 
+            /** @var string $dep */
             foreach ($bundle->depends as $dep) {
                 $this->registerAssetBundle($dep, $bundle->jsPosition, $bundle->cssPosition);
             }
 
-            unset($this->registeredBundles[$name]);
+            unset(
+                $this->bundlesInRegisterProcess[$name], // Remove bundle from list bundles in register process
+                $this->registeredBundles[$name], // Remove bundle from registered bundles for add him to end of list in next code
+            );
+
             $this->registeredBundles[$name] = $bundle;
-        } elseif ($this->registeredBundles[$name] === false) {
-            throw new RuntimeException("A circular dependency is detected for bundle \"{$name}\".");
         } else {
             $bundle = $this->registeredBundles[$name];
         }
@@ -343,6 +372,7 @@ final class AssetManager
             }
 
             // update position for all dependencies
+            /** @var string $dep */
             foreach ($bundle->depends as $dep) {
                 $this->registerAssetBundle($dep, $bundle->jsPosition, $bundle->cssPosition);
             }
@@ -360,6 +390,7 @@ final class AssetManager
     {
         $bundle = $this->registeredBundles[$bundleName];
 
+        /** @var string $dep */
         foreach ($bundle->depends as $dep) {
             $this->registerFiles($dep);
         }
@@ -394,7 +425,9 @@ final class AssetManager
             return $this->loadedBundles[$name] = $this->loader->loadBundle($name, $this->customizedBundles[$name]);
         }
 
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         if ($this->customizedBundles[$name] === false) {
+            /** @psalm-suppress MixedArgumentTypeCoercion */
             return $this->dummyBundles[$name] ??= $this->loader->loadBundle($name, (array) (new AssetBundle()));
         }
 
@@ -454,6 +487,7 @@ final class AssetManager
      */
     private function isAllowedBundleDependencies(string $name, AssetBundle $bundle): bool
     {
+        /** @var string $depend */
         foreach ($bundle->depends as $depend) {
             if ($name === $depend || $this->isAllowedBundleDependencies($name, $this->loadBundle($depend))) {
                 return true;

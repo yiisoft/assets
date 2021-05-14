@@ -22,11 +22,11 @@ use function sprintf;
  *
  * @internal
  *
- * @psalm-type CssFile = array{0:string,1?:int}&array
- * @psalm-type CssString = array{0:mixed,1?:int}&array
- * @psalm-type JsFile = array{0:string,1?:int}&array
- * @psalm-type JsString = array{0:mixed,1?:int}&array
- * @psalm-type JsVar = array{0:string,1:mixed,2?:int}
+ * @psalm-import-type CssFile from AssetManager
+ * @psalm-import-type CssString from AssetManager
+ * @psalm-import-type JsFile from AssetManager
+ * @psalm-import-type JsString from AssetManager
+ * @psalm-import-type JsVar from AssetManager
  */
 final class AssetRegistrar
 {
