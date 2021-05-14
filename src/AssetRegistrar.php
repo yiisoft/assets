@@ -22,10 +22,12 @@ use function sprintf;
  *
  * @internal
  *
- * @psalm-type CssFile = array{0:string,1?:int}&array
- * @psalm-type CssString = array{0:mixed,1?:int}&array
- * @psalm-type JsFile = array{0:string,1?:int}&array
- * @psalm-type JsString = array{0:mixed,1?:int}&array
+ * @psalm-import-type CssFile from AssetManager
+ * @psalm-import-type CssString from AssetManager
+ * @psalm-import-type JsFile from AssetManager
+ * @psalm-import-type JsString from AssetManager
+ * @psalm-import-type JsVar from AssetManager
+ * @psalm-import-type ConverterOptions from AssetConverterInterface
  */
 final class AssetRegistrar
 {
@@ -155,6 +157,7 @@ final class AssetRegistrar
             $this->convertJs($bundle);
         }
 
+        /** @var JsFile|string $js */
         foreach ($bundle->js as $key => $js) {
             $this->registerJsFile(
                 $bundle,
@@ -163,6 +166,7 @@ final class AssetRegistrar
             );
         }
 
+        /** @var mixed $jsString */
         foreach ($bundle->jsStrings as $key => $jsString) {
             $this->registerJsString(
                 $bundle,
@@ -171,6 +175,7 @@ final class AssetRegistrar
             );
         }
 
+        /** @var JsVar|string $jsVar */
         foreach ($bundle->jsVars as $name => $jsVar) {
             if (is_string($name)) {
                 $this->registerJsVar($name, $jsVar, $bundle->jsPosition);
@@ -179,6 +184,7 @@ final class AssetRegistrar
             }
         }
 
+        /** @var CssFile|string $css */
         foreach ($bundle->css as $key => $css) {
             $this->registerCssFile(
                 $bundle,
@@ -187,6 +193,7 @@ final class AssetRegistrar
             );
         }
 
+        /** @var mixed $cssString */
         foreach ($bundle->cssStrings as $key => $cssString) {
             $this->registerCssString(
                 $bundle,
@@ -203,16 +210,14 @@ final class AssetRegistrar
      */
     private function convertCss(AssetBundle $bundle): void
     {
+        /** @var CssFile|string $css */
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
                 $file = $css[0];
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        /**
-                         * @psalm-suppress PossiblyNullArgument
-                         * @psalm-suppress PossiblyNullReference
-                         */
+                        /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference,MixedArgumentTypeCoercion */
                         $css[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -225,10 +230,7 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($css)) {
                 $baseCss = $this->aliases->get("{$bundle->basePath}/{$css}");
                 if (is_file("$baseCss")) {
-                    /**
-                     * @psalm-suppress PossiblyNullArgument
-                     * @psalm-suppress PossiblyNullReference
-                     */
+                    /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference,MixedArgumentTypeCoercion */
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
                         $bundle->basePath,
@@ -246,16 +248,14 @@ final class AssetRegistrar
      */
     private function convertJs(AssetBundle $bundle): void
     {
+        /** @var JsFile|string $js */
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
                 $file = $js[0];
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        /**
-                         * @psalm-suppress PossiblyNullArgument
-                         * @psalm-suppress PossiblyNullReference
-                         */
+                        /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference,MixedArgumentTypeCoercion */
                         $js[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -268,10 +268,7 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($js)) {
                 $baseJs = $this->aliases->get("{$bundle->basePath}/{$js}");
                 if (is_file($baseJs)) {
-                    /**
-                     * @psalm-suppress PossiblyNullArgument
-                     * @psalm-suppress PossiblyNullReference
-                     */
+                    /** @psalm-suppress PossiblyNullArgument,PossiblyNullReference */
                     $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
             }
@@ -411,7 +408,7 @@ final class AssetRegistrar
     /**
      * Registers a JS string.
      *
-     * @param array|string $jsString
+     * @param mixed $jsString
      *
      * @throws InvalidConfigException
      */
@@ -458,10 +455,21 @@ final class AssetRegistrar
     /**
      * Registers a JavaScript variable by config.
      *
+     * @param mixed $config
+     *
      * @throws InvalidConfigException
      */
-    private function registerJsVarByConfig(array $config, ?int $bundleJsPosition): void
+    private function registerJsVarByConfig($config, ?int $bundleJsPosition): void
     {
+        if (!is_array($config)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'Without string key JavaScript variable should be array. Got %s.',
+                    $this->getType($config),
+                )
+            );
+        }
+
         if (!array_key_exists(0, $config)) {
             throw new InvalidConfigException('Do not set JavaScript variable name.');
         }
@@ -483,6 +491,14 @@ final class AssetRegistrar
         $value = $config[1];
 
         $position = $config[2] ?? $bundleJsPosition;
+        if (!is_int($position)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'JavaScript variable position should be integer. Got %s.',
+                    $this->getType($position),
+                )
+            );
+        }
 
         $this->registerJsVar($name, $value, $position);
     }
@@ -492,6 +508,7 @@ final class AssetRegistrar
      */
     private function mergeOptionsWithArray(array $options, array $array): array
     {
+        /** @var mixed $value */
         foreach ($options as $key => $value) {
             if (is_int($key)) {
                 throw new InvalidConfigException(
@@ -500,6 +517,7 @@ final class AssetRegistrar
             }
 
             if (!array_key_exists($key, $array)) {
+                /** @var mixed */
                 $array[$key] = $value;
             }
         }

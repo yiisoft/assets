@@ -26,6 +26,8 @@ use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsOptionsWithIntegerKeyAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithIntegerNameAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithoutNameAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithoutValueAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarAsArrayWithStringPositionAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsVarWithIntegerKeyAndNotArrayValueAsset;
 use Yiisoft\Assets\Tests\stubs\JqueryAsset;
 use Yiisoft\Assets\Tests\stubs\Level3Asset;
 use Yiisoft\Assets\Tests\stubs\PositionAsset;
@@ -708,6 +710,24 @@ final class AssetManagerTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('Do not set JavaScript variable value.');
         $manager->register([JsVarAsArrayWithoutValueAsset::class]);
+    }
+
+    public function testJsVarAsArrayWithStringPosition(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('JavaScript variable position should be integer. Got string.');
+        $manager->register([JsVarAsArrayWithStringPositionAsset::class]);
+    }
+
+    public function testJsVarWithIntegerKeyAndNotArrayValue(): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('Without string key JavaScript variable should be array. Got integer.');
+        $manager->register([JsVarWithIntegerKeyAndNotArrayValueAsset::class]);
     }
 
     private function createManager(array $aliases = []): AssetManager

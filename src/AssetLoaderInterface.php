@@ -32,6 +32,8 @@ interface AssetLoaderInterface
      * @param string $name The asset bundle name.
      * @param array $config The asset bundle instance configuration.
      *
+     * @psalm-param array<string, mixed> $config
+     *
      * @throws InvalidConfigException For invalid asset bundle configuration.
      *
      * @return AssetBundle The asset bundle instance.
