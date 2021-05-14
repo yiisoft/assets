@@ -652,7 +652,7 @@ final class AssetManagerTest extends TestCase
         $manager = $this->createManager();
 
         $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage('Do not set in array JS URL.');
+        $this->expectExceptionMessage('Do not set in array JavaScript URL.');
         $manager->register([JsAsArrayWithoutUrlAsset::class]);
     }
 
@@ -661,7 +661,7 @@ final class AssetManagerTest extends TestCase
         $manager = $this->createManager();
 
         $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage('JS file should be string. Got integer.');
+        $this->expectExceptionMessage('JavaScript file should be string. Got integer.');
         $manager->register([JsAsArrayWithIntegerUrlAsset::class]);
     }
 
@@ -670,7 +670,7 @@ final class AssetManagerTest extends TestCase
         $manager = $this->createManager();
 
         $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage('JS file should be non empty string.');
+        $this->expectExceptionMessage('JavaScript file should be non empty string.');
         $manager->register([JsAsArrayWithEmptyUrlAsset::class]);
     }
 
