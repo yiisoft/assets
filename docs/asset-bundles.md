@@ -100,7 +100,7 @@ return [
 ];
 ```
 
-Now create asset bundle classes. `BoostrapAsset.php`:
+Now create asset bundle classes. First, `BoostrapAsset.php`:
 
 ```php
 namespace App\Assets;

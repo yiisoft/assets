@@ -15,8 +15,8 @@
 [![static analysis](https://github.com/yiisoft/assets/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/assets/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/assets/coverage.svg)](https://shepherd.dev/github/yiisoft/assets)
 
-The package impements client-side asset (such as CSS and JavaScript) management for PHP.
-It helps resolving dependencies and getting lists of files ready for generating HTML `<script>` and `<link>` tags.
+The package implements client-side asset (such as CSS and JavaScript) management for PHP.
+It helps resolve dependencies and get lists of files ready for generating HTML `<script>` and `<link>` tags.
 
 ## Requirements
 
@@ -38,7 +38,8 @@ There are three main steps using the package:
 1. [Define asset bundles](docs/asset-bundles.md). These are config classes defining where your assets
    are and how they should be used.
 2. [Register bundles to asset manager](docs/asset-manager.md) and obtain list of files to include.
-3. Optionally [use asset converter with asset bundle](docs/asset-converter.md) for asset format conversion (such as TypeScript to JavaScript).
+3. Optionally [use asset converter with asset bundle](docs/asset-converter.md) for asset format conversion
+   (such as TypeScript to JavaScript).
 4. Use your favorite method to include files into HTML (out of scope of this package).
 
 ## Testing
