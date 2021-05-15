@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Assets\Tests\Exporter;
 
 use RuntimeException;
+use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetUtil;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
@@ -129,6 +130,22 @@ final class JsonAssetExporterTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage("Target directory \"{$targetDirectory}\" does not exist or is not writable.");
 
-        $exporter->export([ExportAsset::class => new ExportAsset()]);
+        $exporter->export([new ExportAsset()]);
+    }
+
+    public function testExportToJsonFileThrowExceptionForErrorOccurredDuringJsonEncoding(): void
+    {
+        $targetFile = $this->aliases->get('@exporter/test.json');
+        $exporter = new JsonAssetExporter($targetFile);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('An error occurred during JSON encoding of asset bundles.');
+
+        $exporter->export([new class extends AssetBundle {
+            public ?string $basePath = '@asset';
+            public ?string $baseUrl = '@assetUrl';
+            public ?string $sourcePath = '@sourcePath';
+            public array $css = ["\xB1\x31"];
+        }]);
     }
 }
