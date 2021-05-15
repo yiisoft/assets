@@ -36,12 +36,11 @@ final class JsonAssetExporter implements AssetExporterInterface
     public function export(array $assetBundles): void
     {
         try {
-            AssetUtil::exportToFile(
-                $this->targetFile,
-                Json::encode(AssetUtil::extractFilePathsForExport($assetBundles)),
-            );
+            $data = Json::encode(AssetUtil::extractFilePathsForExport($assetBundles));
         } catch (JsonException $e) {
             throw new RuntimeException('An error occurred during JSON encoding of asset bundles.', 0, $e);
         }
+
+        AssetUtil::exportToFile($this->targetFile, $data);
     }
 }
