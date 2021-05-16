@@ -191,7 +191,7 @@ final class AssetManagerTest extends TestCase
 
         $this->manager->register([SourceAsset::class]);
 
-        $this->assertEquals($this->publisher->getPublishedUrl($bundle->sourcePath), "/baseUrl/{$hash}");
+        $this->assertEquals("/baseUrl/{$hash}", $this->publisher->getPublishedUrl($bundle->sourcePath));
     }
 
     public function testGetPublishedUrlWrong(): void
