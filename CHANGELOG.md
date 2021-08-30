@@ -1,6 +1,6 @@
 # Yii Assets Change Log
 
-## 1.0.1 under development
+## 1.0.1 August 30, 2021
 
 - Chg #86: Use definitions from `yiisoft/definitions` in configuration (vjik)
 
