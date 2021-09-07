@@ -141,7 +141,7 @@ final class JsonAssetExporterTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('An error occurred during JSON encoding of asset bundles.');
 
-        $exporter->export([new class() extends AssetBundle {
+        $exporter->export([new class () extends AssetBundle {
             public ?string $basePath = '@asset';
             public ?string $baseUrl = '@assetUrl';
             public ?string $sourcePath = '@sourcePath';
