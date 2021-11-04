@@ -239,6 +239,10 @@ final class AssetManager
     /**
      * Registers asset bundle by name.
      *
+     * @param string $name The class name of the asset bundle (without the leading backslash).
+     * @param int|null $jsPosition {@see AssetBundle::$jsPosition}
+     * @param int|null $cssPosition {@see AssetBundle::$cssPosition}
+     *
      * @throws InvalidConfigException
      * @throws RuntimeException
      */
@@ -255,7 +259,9 @@ final class AssetManager
     /**
      * Registers many asset bundles by names.
      *
-     * @param string[] $names
+     * @param string[] $names The many class names of the asset bundles (without the leading backslash).
+     * @param int|null $jsPosition {@see AssetBundle::$jsPosition}
+     * @param int|null $cssPosition {@see AssetBundle::$cssPosition}
      *
      * @throws InvalidConfigException
      * @throws RuntimeException
