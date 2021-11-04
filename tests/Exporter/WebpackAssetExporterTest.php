@@ -42,7 +42,7 @@ final class WebpackAssetExporterTest extends TestCase
             . "import '{$this->aliases->get($webpackBundle->sourcePath)}/{$webpackBundle->js[0][0]}';\n"
         ;
 
-        $this->manager->register([CdnAsset::class, PositionAsset::class, WebpackAsset::class]);
+        $this->manager->registerMany([CdnAsset::class, PositionAsset::class, WebpackAsset::class]);
         $this->manager->export(new WebpackAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);

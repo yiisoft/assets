@@ -1,9 +1,8 @@
 # Yii Assets Change Log
 
+## 2.0.0 under development
 
-## 1.0.2 under development
-
-- no changes in this release.
+- New #88: Make `Yiisoft\Assets\AssetManager::register()` accept a single class, add `Yiisoft\Assets\AssetManager::registerMany()` (devanych)
 
 ## 1.0.1 August 30, 2021
 

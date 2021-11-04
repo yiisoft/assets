@@ -39,7 +39,7 @@ final class AssetLoaderTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->register([BaseAsset::class]);
+        $manager->register(BaseAsset::class);
 
         $this->assertSame(
             [
@@ -67,7 +67,7 @@ final class AssetLoaderTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->register([JqueryAsset::class]);
+        $manager->register(JqueryAsset::class);
 
         $this->assertSame([$urlJs], $manager->getJsFiles()[$urlJs]);
     }
@@ -80,7 +80,7 @@ final class AssetLoaderTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->register([JqueryAsset::class]);
+        $manager->register(JqueryAsset::class);
 
         $this->assertSame([$urlJs], $manager->getJsFiles()[$urlJs]);
     }

@@ -203,8 +203,6 @@ final class AssetManager
 
     /**
      * Returns a new instance with the specified publisher.
-     *
-     * @param AssetPublisherInterface $publisher
      */
     public function withPublisher(AssetPublisherInterface $publisher): self
     {
@@ -239,24 +237,39 @@ final class AssetManager
     }
 
     /**
-     * Registers asset bundles by names.
+     * Registers asset bundle by name.
      *
-     * @param string[] $names
+     * @param string $name The class name of the asset bundle (without the leading backslash).
+     * @param int|null $jsPosition {@see AssetBundle::$jsPosition}
+     * @param int|null $cssPosition {@see AssetBundle::$cssPosition}
      *
      * @throws InvalidConfigException
      * @throws RuntimeException
      */
-    public function register(array $names, ?int $jsPosition = null, ?int $cssPosition = null): void
+    public function register(string $name, ?int $jsPosition = null, ?int $cssPosition = null): void
     {
         if (!empty($this->allowedBundleNames)) {
-            foreach ($names as $name) {
-                $this->checkAllowedBundleName($name);
-            }
+            $this->checkAllowedBundleName($name);
         }
 
+        $this->registerAssetBundle($name, $jsPosition, $cssPosition);
+        $this->registerFiles($name);
+    }
+
+    /**
+     * Registers many asset bundles by names.
+     *
+     * @param string[] $names The many class names of the asset bundles (without the leading backslash).
+     * @param int|null $jsPosition {@see AssetBundle::$jsPosition}
+     * @param int|null $cssPosition {@see AssetBundle::$cssPosition}
+     *
+     * @throws InvalidConfigException
+     * @throws RuntimeException
+     */
+    public function registerMany(array $names, ?int $jsPosition = null, ?int $cssPosition = null): void
+    {
         foreach ($names as $name) {
-            $this->registerAssetBundle($name, $jsPosition, $cssPosition);
-            $this->registerFiles($name);
+            $this->register($name, $jsPosition, $cssPosition);
         }
     }
 

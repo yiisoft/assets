@@ -30,7 +30,7 @@ final class AssetBundleTest extends TestCase
     {
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
-        $this->manager->register([BaseAsset::class]);
+        $this->manager->register(BaseAsset::class);
 
         $this->assertSame(
             [
@@ -66,7 +66,7 @@ final class AssetBundleTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
 
-        $manager->register([BaseAsset::class]);
+        $manager->register(BaseAsset::class);
     }
 
     public function testBaseUrlEmptyString(): void
@@ -79,7 +79,7 @@ final class AssetBundleTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->register([RootAsset::class]);
+        $manager->register(RootAsset::class);
     }
 
     public function testBaseUrlIsNotSetException(): void
@@ -99,7 +99,7 @@ final class AssetBundleTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
 
-        $manager->register([BaseAsset::class]);
+        $manager->register(BaseAsset::class);
     }
 
     public function testBasePathEmptyWithAssetManagerWithBasePath(): void
@@ -132,7 +132,7 @@ final class AssetBundleTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($message);
 
-        $this->manager->register([BaseWrongAsset::class]);
+        $this->manager->register(BaseWrongAsset::class);
     }
 
     public function testCircularDependency(): void
@@ -144,14 +144,14 @@ final class AssetBundleTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage($message);
 
-        $this->manager->register([CircleAsset::class]);
+        $this->manager->register(CircleAsset::class);
     }
 
     public function testDuplicateAssetFile(): void
     {
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
-        $this->manager->register([JqueryAsset::class, SimpleAsset::class]);
+        $this->manager->registerMany([JqueryAsset::class, SimpleAsset::class]);
 
         $this->assertCount(3, $this->getRegisteredBundles($this->manager));
         $this->assertArrayHasKey(SimpleAsset::class, $this->getRegisteredBundles($this->manager));
@@ -165,7 +165,7 @@ final class AssetBundleTest extends TestCase
 
     public function testJsString(): void
     {
-        $this->manager->register([BaseAsset::class]);
+        $this->manager->register(BaseAsset::class);
 
         $this->assertSame(
             [
@@ -180,7 +180,7 @@ final class AssetBundleTest extends TestCase
 
     public function testJsVars(): void
     {
-        $this->manager->register([BaseAsset::class]);
+        $this->manager->register(BaseAsset::class);
 
         $this->assertSame(
             [
@@ -196,7 +196,7 @@ final class AssetBundleTest extends TestCase
     {
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
-        $this->manager->register([FileOptionsAsset::class]);
+        $this->manager->register(FileOptionsAsset::class);
 
         $this->assertSame(
             [

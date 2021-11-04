@@ -256,9 +256,7 @@ If we want bootstrap 4 in all our views, we simply register it to asset manager 
 
 ```php
 // register an asset
-$assetManager->register([
-    \App\Assets\BootstrapAsset::class
-]);
+$assetManager->register(\App\Assets\BootstrapAsset::class);
 
 // resolve files and pass them to view
 $this->setCssFiles($assetManager->getCssFiles());

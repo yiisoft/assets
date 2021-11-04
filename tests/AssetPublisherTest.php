@@ -43,7 +43,7 @@ final class AssetPublisherTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->register([SourceAsset::class]);
+        $manager->register(SourceAsset::class);
 
         $this->assertEquals(
             [
@@ -62,7 +62,7 @@ final class AssetPublisherTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->register([SourceAsset::class]);
+        $manager->register(SourceAsset::class);
 
         $this->assertSame(
             ['/baseUrl/hash/css/stub.css'],
