@@ -205,7 +205,7 @@ $assetManager = (new \Yiisoft\Assets\AssetManager($aliases, $loader))
 
 $assetManager->register(\App\Assets\MainAsset::class);
 // Or several in one pack:
-$assetManager->register([
+$assetManager->registerMany([
     \App\Assets\BootstrapAsset::class,
     \App\Assets\MainAsset::class,
 ]);

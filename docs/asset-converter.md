@@ -107,7 +107,5 @@ to minify resulting CSS.
 Now, registering asset bundle as usual would result in asset conversion taking place:
 
 ```php
-$assetManager->register([
-    \App\Assets\BootstrapAsset::class,
-]);
+$assetManager->register(\App\Assets\BootstrapAsset::class);
 ```
