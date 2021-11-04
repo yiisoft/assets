@@ -208,7 +208,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $params['yiisoft/assets']['assetManager']['customizedBundles'],
         );
         $manager = $manager->withConverter($converter)->withPublisher($publisher);
-        $manager->register($params['yiisoft/assets']['assetManager']['register']);
+        $manager->registerMany($params['yiisoft/assets']['assetManager']['register']);
 
         return new SimpleContainer([
             Aliases::class => $aliases,

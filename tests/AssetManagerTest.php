@@ -48,7 +48,7 @@ final class AssetManagerTest extends TestCase
             '@assetUrl' => '/',
         ]);
 
-        $manager->register([BaseAsset::class]);
+        $manager->register(BaseAsset::class);
 
         $this->assertSame([
             '/css/basePath.css' => [
@@ -104,7 +104,7 @@ final class AssetManagerTest extends TestCase
             '@assetUrl' => '/',
         ]);
 
-        $manager->register([BaseAsset::class], 7, 42);
+        $manager->register(BaseAsset::class, 7, 42);
 
         $this->assertSame([
             '/css/basePath.css' => [
@@ -163,7 +163,7 @@ final class AssetManagerTest extends TestCase
         $hash = $this->getPublishedHash($sourcePath . FileHelper::lastModifiedTime($sourcePath), $this->publisher);
 
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
-        $this->manager->register([SourceAsset::class]);
+        $this->manager->register(SourceAsset::class);
 
         $this->assertEquals(
             $this->publisher->getPublishedPath($bundle->sourcePath),
@@ -175,7 +175,7 @@ final class AssetManagerTest extends TestCase
     {
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
-        $this->manager->register([SourceAsset::class]);
+        $this->manager->register(SourceAsset::class);
 
         $this->assertNull($this->publisher->getPublishedPath('/wrong'));
     }
@@ -189,7 +189,7 @@ final class AssetManagerTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
-        $this->manager->register([SourceAsset::class]);
+        $this->manager->register(SourceAsset::class);
 
         $this->assertEquals("/baseUrl/{$hash}", $this->publisher->getPublishedUrl($bundle->sourcePath));
     }
@@ -198,7 +198,7 @@ final class AssetManagerTest extends TestCase
     {
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
-        $this->manager->register([SourceAsset::class]);
+        $this->manager->register(SourceAsset::class);
 
         $this->assertNull($this->publisher->getPublishedUrl('/wrong'));
     }
@@ -221,7 +221,7 @@ final class AssetManagerTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->register([JqueryAsset::class]);
+        $manager->register(JqueryAsset::class);
 
         $this->assertSame(
             [
@@ -265,9 +265,9 @@ final class AssetManagerTest extends TestCase
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
         if ($jqAlreadyRegistered) {
-            $manager->register([JqueryAsset::class, PositionAsset::class]);
+            $manager->registerMany([JqueryAsset::class, PositionAsset::class]);
         } else {
-            $manager->register([PositionAsset::class]);
+            $manager->register(PositionAsset::class);
         }
 
         $this->assertCount(3, $this->getRegisteredBundles($manager));
@@ -320,8 +320,8 @@ final class AssetManagerTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage($message);
         $jQueryAlreadyRegistered
-            ? $manager->register([JqueryAsset::class, PositionAsset::class])
-            : $manager->register([PositionAsset::class]);
+            ? $manager->registerMany([JqueryAsset::class, PositionAsset::class])
+            : $manager->register(PositionAsset::class);
     }
 
     public function dataCssPositionDependencyConflict(): array
@@ -357,8 +357,8 @@ final class AssetManagerTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage($message);
         $oneAlreadyRegistered
-            ? $manager->register([OneAsset::class, TwoAsset::class])
-            : $manager->register([TwoAsset::class]);
+            ? $manager->registerMany([OneAsset::class, TwoAsset::class])
+            : $manager->register(TwoAsset::class);
     }
 
     public function testLoadDummyBundle(): void
@@ -371,7 +371,7 @@ final class AssetManagerTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->register([JqueryAsset::class]);
+        $manager->register(JqueryAsset::class);
 
         $this->assertNotSame($jqueryBundle, $manager->getBundle(JqueryAsset::class));
         $this->assertEmpty($manager->getCssFiles());
@@ -391,7 +391,7 @@ final class AssetManagerTest extends TestCase
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage("Invalid configuration of the \"{$jqueryBundle}\" asset bundle.");
 
-        $manager->register([JqueryAsset::class]);
+        $manager->register(JqueryAsset::class);
     }
 
     public function testGetAssetBundleInstanceOfAssetBundle(): void
@@ -404,7 +404,7 @@ final class AssetManagerTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->register([JqueryAsset::class]);
+        $manager->register(JqueryAsset::class);
 
         $bundle = $manager->getBundle(JqueryAsset::class);
 
@@ -420,7 +420,7 @@ final class AssetManagerTest extends TestCase
                 'js' => [],
             ],
         ]);
-        $manager->register([CdnAsset::class]);
+        $manager->register(CdnAsset::class);
 
         $this->assertTrue($manager->isRegisteredBundle(CdnAsset::class));
         $this->assertCount(1, $this->getRegisteredBundles($manager));
@@ -429,14 +429,14 @@ final class AssetManagerTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('The "' . PositionAsset::class . '" asset bundle is not allowed.');
 
-        $manager->register([PositionAsset::class]);
+        $manager->register(PositionAsset::class);
     }
 
     public function testRegisterWithAllowedBundlesWithDependencies(): void
     {
         $manager = new AssetManager($this->aliases, $this->loader, [JqueryAsset::class]);
         $manager = $manager->withPublisher($this->publisher);
-        $manager->register([JqueryAsset::class]);
+        $manager->register(JqueryAsset::class);
 
         $this->assertTrue($manager->isRegisteredBundle(JqueryAsset::class));
         $this->assertTrue($manager->isRegisteredBundle(Level3Asset::class));
@@ -457,7 +457,7 @@ final class AssetManagerTest extends TestCase
     {
         $manager = new AssetManager($this->aliases, $this->loader, [PositionAsset::class]);
         $manager = $manager->withPublisher($this->publisher);
-        $manager->register([JqueryAsset::class]);
+        $manager->register(JqueryAsset::class);
 
         $this->assertFalse($manager->isRegisteredBundle(PositionAsset::class));
         $this->assertTrue($manager->isRegisteredBundle(JqueryAsset::class));
@@ -467,7 +467,7 @@ final class AssetManagerTest extends TestCase
         $this->assertInstanceOf(JqueryAsset::class, $manager->getBundle(JqueryAsset::class));
         $this->assertInstanceOf(Level3Asset::class, $manager->getBundle(Level3Asset::class));
 
-        $manager->register([PositionAsset::class]);
+        $manager->register(PositionAsset::class);
 
         $this->assertCount(3, $this->getRegisteredBundles($manager));
         $this->assertTrue($manager->isRegisteredBundle(PositionAsset::class));
@@ -544,7 +544,7 @@ final class AssetManagerTest extends TestCase
     {
         $manager = $this->createManagerWithAliasesAndBaseUrl(['@web' => 'https://example.com/assets/'], '@web');
 
-        $manager->register([PureAsset::class]);
+        $manager->register(PureAsset::class);
 
         $this->assertSame(
             ['https://example.com/assets/pure/main.css' => ['https://example.com/assets/pure/main.css']],
@@ -560,7 +560,7 @@ final class AssetManagerTest extends TestCase
     {
         $manager = $this->createManagerWithAliasesAndBaseUrl(['@web' => '/repeat'], '@web');
 
-        $manager->register([RepeatAsset::class]);
+        $manager->register(RepeatAsset::class);
 
         $this->assertSame(
             ['/repeat/repeat/assets/repeat/main.css' => ['/repeat/repeat/assets/repeat/main.css']],
@@ -576,7 +576,7 @@ final class AssetManagerTest extends TestCase
     {
         $manager = $this->createManager();
 
-        $manager->register([UnicodeAsset::class]);
+        $manager->register(UnicodeAsset::class);
 
         $this->assertSame(
             ['/unicode/русский/main.css' => ['/unicode/русский/main.css']],
@@ -607,7 +607,7 @@ final class AssetManagerTest extends TestCase
     {
         $manager = $this->createManagerWithAppendTimestamp();
 
-        $manager->register([PureAsset::class]);
+        $manager->register(PureAsset::class);
 
         $this->assertMatchesRegularExpression(
             '~/pure/main\.css\?v=\d+~',
@@ -626,7 +626,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('Do not set in array CSS URL.');
-        $manager->register([CssAsArrayWithoutUrlAsset::class]);
+        $manager->register(CssAsArrayWithoutUrlAsset::class);
     }
 
     public function testCssAsArrayWithIntegerUrl(): void
@@ -635,7 +635,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('CSS file should be string. Got integer.');
-        $manager->register([CssAsArrayWithIntegerUrlAsset::class]);
+        $manager->register(CssAsArrayWithIntegerUrlAsset::class);
     }
 
     public function testCssAsArrayWithEmptyUrl(): void
@@ -644,7 +644,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('CSS file should be non empty string.');
-        $manager->register([CssAsArrayWithEmptyUrlAsset::class]);
+        $manager->register(CssAsArrayWithEmptyUrlAsset::class);
     }
 
     public function testJsAsArrayWithoutUrl(): void
@@ -653,7 +653,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('Do not set in array JavaScript URL.');
-        $manager->register([JsAsArrayWithoutUrlAsset::class]);
+        $manager->register(JsAsArrayWithoutUrlAsset::class);
     }
 
     public function testJsAsArrayWithIntegerUrl(): void
@@ -662,7 +662,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('JavaScript file should be string. Got integer.');
-        $manager->register([JsAsArrayWithIntegerUrlAsset::class]);
+        $manager->register(JsAsArrayWithIntegerUrlAsset::class);
     }
 
     public function testJsAsArrayWithEmptyUrl(): void
@@ -671,7 +671,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('JavaScript file should be non empty string.');
-        $manager->register([JsAsArrayWithEmptyUrlAsset::class]);
+        $manager->register(JsAsArrayWithEmptyUrlAsset::class);
     }
 
     public function testJsVarAsArrayWithoutName(): void
@@ -680,7 +680,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('Do not set JavaScript variable name.');
-        $manager->register([JsVarAsArrayWithoutNameAsset::class]);
+        $manager->register(JsVarAsArrayWithoutNameAsset::class);
     }
 
     public function testsVarAsArrayWithIntegerName(): void
@@ -689,7 +689,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('JavaScript variable name should be string. Got integer.');
-        $manager->register([JsVarAsArrayWithIntegerNameAsset::class]);
+        $manager->register(JsVarAsArrayWithIntegerNameAsset::class);
     }
 
     public function testJsOptionsWithIntegerKey(): void
@@ -700,7 +700,7 @@ final class AssetManagerTest extends TestCase
         $this->expectExceptionMessage(
             'JavaScript or CSS options should be list of key/value pairs with string keys. Got integer key.'
         );
-        $manager->register([JsOptionsWithIntegerKeyAsset::class]);
+        $manager->register(JsOptionsWithIntegerKeyAsset::class);
     }
 
     public function testJsVarAsArrayWithoutValue(): void
@@ -709,7 +709,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('Do not set JavaScript variable value.');
-        $manager->register([JsVarAsArrayWithoutValueAsset::class]);
+        $manager->register(JsVarAsArrayWithoutValueAsset::class);
     }
 
     public function testJsVarAsArrayWithStringPosition(): void
@@ -718,7 +718,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('JavaScript variable position should be integer. Got string.');
-        $manager->register([JsVarAsArrayWithStringPositionAsset::class]);
+        $manager->register(JsVarAsArrayWithStringPositionAsset::class);
     }
 
     public function testJsVarWithIntegerKeyAndNotArrayValue(): void
@@ -727,7 +727,7 @@ final class AssetManagerTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('Without string key JavaScript variable should be array. Got integer.');
-        $manager->register([JsVarWithIntegerKeyAndNotArrayValueAsset::class]);
+        $manager->register(JsVarWithIntegerKeyAndNotArrayValueAsset::class);
     }
 
     private function createManager(array $aliases = []): AssetManager

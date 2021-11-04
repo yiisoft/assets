@@ -60,7 +60,7 @@ return [
             ->withPublisher($container->get(AssetPublisherInterface::class))
         ;
 
-        $assetManager->register($params['yiisoft/assets']['assetManager']['register']);
+        $assetManager->registerMany($params['yiisoft/assets']['assetManager']['register']);
         return $assetManager;
     },
 ];

@@ -1,9 +1,8 @@
 # Yii Assets Change Log
 
+## 2.0.0 under development
 
-## 1.0.2 under development
-
-- no changes in this release.
+- New #88: Add `registerMany()` method to `Yiisoft\Assets\AssetManager` (devanych)
 
 ## 1.0.1 August 30, 2021
 

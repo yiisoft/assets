@@ -203,6 +203,8 @@ $assetManager = (new \Yiisoft\Assets\AssetManager($aliases, $loader))
     ->withPublisher($publisher)
 ;
 
+$assetManager->register(\App\Assets\MainAsset::class);
+// Or several in one pack:
 $assetManager->register([
     \App\Assets\BootstrapAsset::class,
     \App\Assets\MainAsset::class,
@@ -243,7 +245,7 @@ class PublishCommand extends Command
     
     protected function execute(InputInterface $input, OutputInterface $output): int
     {        
-        $this->assetManager->register([/* asset bundle names */]);
+        $this->assetManager->registerMany([/* asset bundle names */]);
         // To register all bundles if the allowed asset bundle names are used.
         //$this->assetManager->registerAllAllowed();
         
@@ -285,7 +287,7 @@ class PublishCommand extends Command
     
     protected function execute(InputInterface $input, OutputInterface $output): int
     {   
-        $this->assetManager->register([/* asset bundle names */]);
+        $this->assetManager->registerMany([/* asset bundle names */]);
         // To register all bundles if the allowed asset bundle names are used.
         //$this->assetManager->registerAllAllowed();
         
@@ -340,7 +342,7 @@ use Yiisoft\Assets\AssetManager;
 
 $assetManager = new AssetManager($aliases, $loader);
 
-$assetManager->register([
+$assetManager->registerMany([
     \App\Assets\BootstrapAsset::class,
     \App\Assets\MainAsset::class,
 ]);

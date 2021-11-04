@@ -40,7 +40,7 @@ final class JsonAssetExporterTest extends TestCase
             "{$exportBundle->sourcePath}/{$exportBundle->export[1]}",
         ]);
 
-        $this->manager->register([ExportAsset::class]);
+        $this->manager->register(ExportAsset::class);
         $this->manager->export(new JsonAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
@@ -104,7 +104,7 @@ final class JsonAssetExporterTest extends TestCase
     public function testExportWithCdnBundle(): void
     {
         $targetFile = $this->aliases->get('@exporter/test.json');
-        $this->manager->register([CdnAsset::class]);
+        $this->manager->register(CdnAsset::class);
         $this->manager->export(new JsonAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
@@ -114,7 +114,7 @@ final class JsonAssetExporterTest extends TestCase
     public function testExportWithBundleWithoutSourcePath(): void
     {
         $targetFile = $this->aliases->get('@exporter/test.json');
-        $this->manager->register([PositionAsset::class]);
+        $this->manager->register(PositionAsset::class);
         $this->manager->export(new JsonAssetExporter($targetFile));
 
         $this->assertFileExists($targetFile);
