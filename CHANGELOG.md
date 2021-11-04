@@ -2,7 +2,7 @@
 
 ## 2.0.0 under development
 
-- New #88: Add `registerMany()` method to `Yiisoft\Assets\AssetManager` (devanych)
+- New #88: Make `Yiisoft\Assets\AssetManager::register()` accept a single class, add `Yiisoft\Assets\AssetManager::registerMany()` (devanych)
 
 ## 1.0.1 August 30, 2021
 
