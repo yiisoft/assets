@@ -243,7 +243,7 @@ final class AssetRegistrar
          */
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
-                $file = $js[0];
+                $file = $i;
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
