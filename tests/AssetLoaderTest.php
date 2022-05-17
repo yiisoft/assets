@@ -19,7 +19,9 @@ final class AssetLoaderTest extends TestCase
 {
     public function testLoadBundleWithDefaultPathAndUrl(): void
     {
-        $loader = $this->loader->withBasePath('@asset')->withBaseUrl('@assetUrl');
+        $loader = $this->loader
+            ->withBasePath('@asset')
+            ->withBaseUrl('@assetUrl');
         $bundle = $loader->loadBundle(WithoutBaseAsset::class);
 
         $this->assertSame($this->aliases->get('@asset'), $bundle->basePath);
