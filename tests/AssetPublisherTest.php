@@ -38,7 +38,9 @@ final class AssetPublisherTest extends TestCase
         );
 
         $manager = $this->manager->withLoader(
-            $this->loader->withCssDefaultOptions(['media' => 'none'])->withJsDefaultPosition(2),
+            $this->loader
+                ->withCssDefaultOptions(['media' => 'none'])
+                ->withJsDefaultPosition(2),
         );
 
         $this->assertEmpty($this->getRegisteredBundles($manager));

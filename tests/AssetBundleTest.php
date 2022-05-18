@@ -113,7 +113,11 @@ final class AssetBundleTest extends TestCase
 
     public function testBasePathEmptyBaseUrlEmptyWithAssetManagerWithBasePathWithBaseUrl(): void
     {
-        $manager = $this->manager->withLoader($this->loader->withBasePath('@asset')->withBaseUrl('@assetUrl'));
+        $manager = $this->manager->withLoader(
+            $this->loader
+                ->withBasePath('@asset')
+                ->withBaseUrl('@assetUrl')
+        );
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
         $this->assertIsObject($manager->getBundle(BaseAsset::class));
