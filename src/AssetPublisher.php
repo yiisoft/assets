@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Assets;
 
 use Exception;
+use RecursiveDirectoryIterator;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
@@ -244,7 +245,9 @@ final class AssetPublisher implements AssetPublisherInterface
             return ($this->hashCallback)($path);
         }
 
-        $path = (is_file($path) ? dirname($path) : $path) . FileHelper::lastModifiedTime($path);
+        $dirname = is_file($path) ? dirname($path) : $path;
+        $iterator = new RecursiveDirectoryIterator($dirname, RecursiveDirectoryIterator::SKIP_DOTS);
+        $path = $dirname . FileHelper::lastModifiedTime($path) . iterator_count($iterator);
 
         return sprintf('%x', crc32($path . '|' . $this->linkAssets));
     }

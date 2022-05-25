@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
+use RecursiveDirectoryIterator;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Assets\Exception\InvalidConfigException;
@@ -12,8 +13,8 @@ use Yiisoft\Assets\Tests\stubs\WithoutBaseAsset;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Files\PathMatcher\PathMatcher;
 
-use function dirname;
 use function crc32;
+use function dirname;
 use function is_file;
 use function is_link;
 use function sprintf;
@@ -32,8 +33,10 @@ final class AssetPublisherTest extends TestCase
         $bundle = new SourceAsset();
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
+        $dirname = is_file($sourcePath) ? dirname($sourcePath) : $sourcePath;
+        $iterator = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS);
         $hash = $this->getPublishedHash(
-            (is_file($sourcePath) ? dirname($sourcePath) : $sourcePath) . FileHelper::lastModifiedTime($sourcePath),
+            $dirname . FileHelper::lastModifiedTime($sourcePath) . iterator_count($iterator),
             $this->publisher,
         );
 

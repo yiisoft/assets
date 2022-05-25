@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
+use RecursiveDirectoryIterator;
 use RuntimeException;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetBundle;
@@ -37,6 +38,7 @@ use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\stubs\UnicodeAsset;
 use Yiisoft\Files\FileHelper;
 
+use function array_key_first;
 use function dirname;
 
 final class AssetManagerTest extends TestCase
@@ -160,7 +162,11 @@ final class AssetManagerTest extends TestCase
         $bundle = new SourceAsset();
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
-        $hash = $this->getPublishedHash($sourcePath . FileHelper::lastModifiedTime($sourcePath), $this->publisher);
+        $iterator = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS);
+        $hash = $this->getPublishedHash(
+            $sourcePath . FileHelper::lastModifiedTime($sourcePath) . iterator_count($iterator),
+            $this->publisher
+        );
 
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
         $this->manager->register(SourceAsset::class);
@@ -185,7 +191,11 @@ final class AssetManagerTest extends TestCase
         $bundle = new SourceAsset();
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
-        $hash = $this->getPublishedHash($sourcePath . FileHelper::lastModifiedTime($sourcePath), $this->publisher);
+        $iterator = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS);
+        $hash = $this->getPublishedHash(
+            $sourcePath . FileHelper::lastModifiedTime($sourcePath) . iterator_count($iterator),
+            $this->publisher
+        );
 
         $this->assertEmpty($this->getRegisteredBundles($this->manager));
 
@@ -516,7 +526,11 @@ final class AssetManagerTest extends TestCase
     {
         $bundle = new ExportAsset();
         $sourcePath = $this->aliases->get($bundle->sourcePath);
-        $hash = $this->getPublishedHash($sourcePath . FileHelper::lastModifiedTime($sourcePath), $this->publisher);
+        $iterator = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS);
+        $hash = $this->getPublishedHash(
+            $sourcePath . FileHelper::lastModifiedTime($sourcePath) . iterator_count($iterator),
+            $this->publisher
+        );
 
         $this->assertSame(
             $this->aliases->get("@assetUrl/{$hash}/css/stub.css"),
