@@ -34,7 +34,7 @@ final class AssetPublisherTest extends TestCase
 
         $sourcePath = $this->aliases->get($bundle->sourcePath);
         $dirname = is_file($sourcePath) ? dirname($sourcePath) : $sourcePath;
-        $iterator = new RecursiveDirectoryIterator($sourcePath, RecursiveDirectoryIterator::SKIP_DOTS);
+        $iterator = new RecursiveDirectoryIterator($dirname, RecursiveDirectoryIterator::SKIP_DOTS);
         $hash = $this->getPublishedHash(
             $dirname . FileHelper::lastModifiedTime($sourcePath) . iterator_count($iterator),
             $this->publisher,
