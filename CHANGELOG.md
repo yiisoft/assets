@@ -1,9 +1,9 @@
 # Yii Assets Change Log
 
 
-## 2.0.1 under development
+## 2.1.0 under development
 
-- no changes in this release.
+- Enh #96: Add support for `2.0`, `3.0` versions of `psr/log` (rustamwin)
 
 ## 2.0.0 November 04, 2021
 
