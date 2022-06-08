@@ -247,7 +247,7 @@ final class AssetPublisher implements AssetPublisherInterface
 
         $dirname = is_file($path) ? dirname($path) : $path;
         $iterator = new RecursiveDirectoryIterator($dirname, RecursiveDirectoryIterator::SKIP_DOTS);
-        $path = $dirname . FileHelper::lastModifiedTime($path) . iterator_count($iterator);
+        $path = $dirname . (string) FileHelper::lastModifedFromIterator($iterator) . iterator_count($iterator);
 
         return sprintf('%x', crc32($path . '|' . $this->linkAssets));
     }
