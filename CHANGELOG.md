@@ -3,7 +3,7 @@
 
 ## 2.0.1 under development
 
-- Chg #96: Add support for `2.0`, `3.0` versions of `psr/log` (rustamwin)
+- Enh #96: Add support for `2.0`, `3.0` versions of `psr/log` (rustamwin)
 
 ## 2.0.0 November 04, 2021
 
