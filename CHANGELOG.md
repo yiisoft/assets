@@ -3,7 +3,7 @@
 
 ## 2.0.1 under development
 
-- no changes in this release.
+- Change generate hash logic to `filemtime + filecount`
 
 ## 2.0.0 November 04, 2021
 
