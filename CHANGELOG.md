@@ -3,7 +3,7 @@
 
 ## 2.0.1 under development
 
-- Change path hash logic to `filemtime + filecount`
+- Bug #91: Raise the minimum PHP version to 8.0 and change path hash logic to `filemtime + filecount` (@Gerych1984)
 
 ## 2.0.0 November 04, 2021
 
