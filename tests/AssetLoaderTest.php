@@ -104,7 +104,9 @@ final class AssetLoaderTest extends TestCase
 
     public function testCssDefaultPosition(): void
     {
-        $loader = $this->createLoader()->withCssDefaultPosition(5);
+        $loader = $this
+            ->createLoader()
+            ->withCssDefaultPosition(5);
 
         $bundle = $loader->loadBundle('test', (array)(new AssetBundle()));
 
@@ -114,7 +116,9 @@ final class AssetLoaderTest extends TestCase
 
     public function testCssDefaultPostionForBundleWithPosition(): void
     {
-        $loader = $this->createLoader()->withCssDefaultPosition(5);
+        $loader = $this
+            ->createLoader()
+            ->withCssDefaultPosition(5);
 
         $config = (array)(new AssetBundle());
         $config['cssPosition'] = 7;
@@ -126,7 +130,9 @@ final class AssetLoaderTest extends TestCase
 
     public function testJsDefaultPosition(): void
     {
-        $loader = $this->createLoader()->withJsDefaultPosition(5);
+        $loader = $this
+            ->createLoader()
+            ->withJsDefaultPosition(5);
 
         $bundle = $loader->loadBundle('test', (array)(new AssetBundle()));
 
@@ -136,7 +142,9 @@ final class AssetLoaderTest extends TestCase
 
     public function testJsDefaultPostionForBundleWithPosition(): void
     {
-        $loader = $this->createLoader()->withJsDefaultPosition(5);
+        $loader = $this
+            ->createLoader()
+            ->withJsDefaultPosition(5);
 
         $config = (array)(new AssetBundle());
         $config['jsPosition'] = 7;

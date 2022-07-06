@@ -1,10 +1,14 @@
 # Yii Assets Change Log
 
-
 ## 2.1.0 under development
 
 - Chg #91: Change path hash logic to `filemtime + filecount` (@Gerych1984)
 - Chg #94: Raise the minimum PHP version to 8.0 (@Gerych1984)
+
+
+## 2.0.1 June 15, 2022
+
+- Enh #96: Add support for `2.0`, `3.0` versions of `psr/log` (rustamwin)
 
 ## 2.0.0 November 04, 2021
 
