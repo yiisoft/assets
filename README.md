@@ -20,7 +20,7 @@ It helps resolve dependencies and get lists of files ready for generating HTML `
 
 ## Requirements
 
-- PHP 7.4 or higher.
+- PHP 8.0 or higher.
 - `mbstring` PHP extension.
 
 ## Installation

@@ -1,8 +1,9 @@
 # Yii Assets Change Log
 
-## 2.0.2 under development
+## 2.1.0 under development
 
-- no changes in this release.
+- Chg #91: Change path hash logic to `filemtime + filecount` (@Gerych1984)
+- Chg #94: Raise the minimum PHP version to 8.0 (@Gerych1984)
 
 
 ## 2.0.1 June 15, 2022
