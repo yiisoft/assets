@@ -243,9 +243,6 @@ final class AssetManagerTest extends TestCase
         );
     }
 
-    /**
-     * @return array
-     */
     public function positionProvider(): array
     {
         return [
@@ -260,9 +257,6 @@ final class AssetManagerTest extends TestCase
 
     /**
      * @dataProvider positionProvider
-     *
-     * @param int $pos
-     * @param bool $jqAlreadyRegistered
      */
     public function testPositionDependency(int $pos, bool $jqAlreadyRegistered): void
     {

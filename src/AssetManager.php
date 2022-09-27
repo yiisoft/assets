@@ -24,17 +24,6 @@ use function is_array;
 final class AssetManager
 {
     /**
-     * @var string[] List of names of allowed asset bundles. If the array is empty, then any asset bundles are allowed.
-     */
-    private array $allowedBundleNames;
-
-    /**
-     * @var array The asset bundle configurations. This property is provided to customize asset bundles.
-     * @psalm-var CustomizedBundles
-     */
-    private array $customizedBundles;
-
-    /**
      * @var AssetBundle[] list of the registered asset bundles.
      * The keys are the bundle names, and the values are the registered {@see AssetBundle} objects.
      *
@@ -63,7 +52,6 @@ final class AssetManager
     private array $dummyBundles = [];
 
     private ?AssetPublisherInterface $publisher = null;
-    private AssetLoaderInterface $loader;
     private AssetRegistrar $registrar;
 
     /**
@@ -83,13 +71,10 @@ final class AssetManager
      */
     public function __construct(
         Aliases $aliases,
-        AssetLoaderInterface $loader,
-        array $allowedBundleNames = [],
-        array $customizedBundles = []
+        private AssetLoaderInterface $loader,
+        private array $allowedBundleNames = [],
+        private array $customizedBundles = []
     ) {
-        $this->loader = $loader;
-        $this->allowedBundleNames = $allowedBundleNames;
-        $this->customizedBundles = $customizedBundles;
         $this->registrar = new AssetRegistrar($aliases, $this->loader);
     }
 

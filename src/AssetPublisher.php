@@ -29,18 +29,6 @@ use function symlink;
  */
 final class AssetPublisher implements AssetPublisherInterface
 {
-    private Aliases $aliases;
-
-    /**
-     * @var bool Whether the directory being published should be copied even if it is found in the target directory.
-     */
-    private bool $forceCopy;
-
-    /**
-     * @var bool Whether to use symbolic link to publish asset files.
-     */
-    private bool $linkAssets;
-
     /**
      * @var int The permission to be set for newly generated asset directories.
      */
@@ -69,11 +57,8 @@ final class AssetPublisher implements AssetPublisherInterface
      * if it is found in the target directory. See {@see withForceCopy()}.
      * @param bool $linkAssets Whether to use symbolic link to publish asset files. See {@see withLinkAssets()}.
      */
-    public function __construct(Aliases $aliases, bool $forceCopy = false, bool $linkAssets = false)
+    public function __construct(private Aliases $aliases, private bool $forceCopy = false, private bool $linkAssets = false)
     {
-        $this->aliases = $aliases;
-        $this->forceCopy = $forceCopy;
-        $this->linkAssets = $linkAssets;
     }
 
     public function publish(AssetBundle $bundle): array
