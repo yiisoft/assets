@@ -56,7 +56,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Returns the registered asset bundles.
      *
-     *
      * @return array The registered asset bundles {@see AssetManager::$registeredBundles}.
      */
     protected function getRegisteredBundles(AssetManager $manager): array
@@ -71,7 +70,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Returns a published hash which is the name of the directory.
-     *
      *
      * @return string The published hash which is the name of the directory.
      */
@@ -137,7 +135,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Invokes a inaccessible method.
-     *
      *
      * @throws ReflectionException
      *

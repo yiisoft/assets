@@ -18,7 +18,6 @@ use function is_subclass_of;
 use function is_writable;
 use function mb_strlen;
 use function strncmp;
-use function strpos;
 use function substr_compare;
 
 /**

@@ -10,7 +10,6 @@ use Yiisoft\Files\FileHelper;
 
 use function array_merge;
 use function is_file;
-use function strncmp;
 
 /**
  * AssetLoader is responsible for executing the loading of the assets

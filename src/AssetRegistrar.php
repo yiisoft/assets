@@ -9,11 +9,8 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 
 use function array_key_exists;
 use function array_values;
-use function get_class;
-use function gettype;
 use function is_array;
 use function is_int;
-use function is_object;
 use function is_string;
 use function sprintf;
 
@@ -264,7 +261,6 @@ final class AssetRegistrar
     /**
      * Registers a CSS file.
      *
-     *
      * @throws InvalidConfigException
      */
     private function registerCssFile(AssetBundle $bundle, ?string $key, array|string $css): void
@@ -312,7 +308,6 @@ final class AssetRegistrar
     /**
      * Registers a CSS string.
      *
-     *
      * @throws InvalidConfigException
      */
     private function registerCssString(AssetBundle $bundle, ?string $key, mixed $cssString): void
@@ -342,7 +337,6 @@ final class AssetRegistrar
 
     /**
      * Registers a JavaScript file.
-     *
      *
      * @throws InvalidConfigException
      */
@@ -391,7 +385,6 @@ final class AssetRegistrar
     /**
      * Registers a JavaScript string.
      *
-     *
      * @throws InvalidConfigException
      */
     private function registerJsString(AssetBundle $bundle, ?string $key, mixed $jsString): void
@@ -434,7 +427,6 @@ final class AssetRegistrar
 
     /**
      * Registers a JavaScript variable by config.
-     *
      *
      * @throws InvalidConfigException
      */
