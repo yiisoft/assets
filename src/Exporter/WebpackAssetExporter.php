@@ -17,16 +17,10 @@ use Yiisoft\Assets\AssetUtil;
 final class WebpackAssetExporter implements AssetExporterInterface
 {
     /**
-     * @var string The full path to the target JavaScript file.
-     */
-    private string $targetFile;
-
-    /**
      * @param string $targetFile The full path to the target JavaScript file.
      */
-    public function __construct(string $targetFile)
+    public function __construct(private string $targetFile)
     {
-        $this->targetFile = $targetFile;
     }
 
     /**

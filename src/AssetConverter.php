@@ -30,9 +30,6 @@ use function substr;
  */
 final class AssetConverter implements AssetConverterInterface
 {
-    private Aliases $aliases;
-    private LoggerInterface $logger;
-
     /**
      * @var array The commands that are used to perform the asset conversion.
      * The keys are the asset file extension names, and the values are the corresponding
@@ -48,11 +45,6 @@ final class AssetConverter implements AssetConverterInterface
         'coffee' => ['js', 'coffee -p {from} > {to}'],
         'ts' => ['js', 'tsc --out {to} {from}'],
     ];
-
-    /**
-     * @var bool Whether the source asset file should be converted even if its result already exists.
-     */
-    private bool $forceConvert;
 
     /**
      * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is outdated.
@@ -81,15 +73,12 @@ final class AssetConverter implements AssetConverterInterface
      * @psalm-param array<string, array{0:string,1:string}> $commands
      */
     public function __construct(
-        Aliases $aliases,
-        LoggerInterface $logger,
+        private Aliases $aliases,
+        private LoggerInterface $logger,
         array $commands = [],
-        bool $forceConvert = false
+        private bool $forceConvert = false
     ) {
-        $this->aliases = $aliases;
-        $this->logger = $logger;
         $this->commands = array_merge($this->commands, $commands);
-        $this->forceConvert = $forceConvert;
     }
 
     public function convert(string $asset, string $basePath, array $optionsConverter = []): string

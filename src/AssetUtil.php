@@ -183,6 +183,6 @@ final class AssetUtil
      */
     public static function isRelative(string $url): bool
     {
-        return strncmp($url, '//', 2) && strpos($url, '://') === false;
+        return strncmp($url, '//', 2) && !str_contains($url, '://');
     }
 }
