@@ -2,7 +2,7 @@
 
 ## 3.0.0 under development
 
-- Enh #101: Refactoring with PHP 8 availabilities usage (@xepozz, @vjik)
+- Enh #101: Refactoring with PHP 8 features usage (@xepozz, @vjik)
 
 ## 2.1.0 July 18, 2022
 
