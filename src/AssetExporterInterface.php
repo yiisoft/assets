@@ -7,7 +7,7 @@ namespace Yiisoft\Assets;
 use RuntimeException;
 
 /**
- * The AssetExporterInterface must be implemented by asset exporter classes. The job of such class is to export
+ * The `AssetExporterInterface` must be implemented by asset exporter classes. The job of such class is to export
  * asset bundles provided into a format readable by third party tools such as Webpack.
  */
 interface AssetExporterInterface

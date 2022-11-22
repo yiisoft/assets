@@ -7,7 +7,7 @@ namespace Yiisoft\Assets;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
- * The AssetLoaderInterface must be implemented by asset loader classes. The job of such class is executing the loading
+ * The `AssetLoaderInterface` must be implemented by asset loader classes. The job of such class is executing the loading
  * of the assets from {@see AssetBundle::$basePath} to {@see AssetBundle::$baseUrl}.
  */
 interface AssetLoaderInterface

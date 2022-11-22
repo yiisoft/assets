@@ -15,7 +15,7 @@ use function is_string;
 use function sprintf;
 
 /**
- * AssetRegistrar registers asset files, code blocks and variables from a bundle considering dependencies.
+ * `AssetRegistrar` registers asset files, code blocks and variables from a bundle considering dependencies.
  *
  * @internal
  *

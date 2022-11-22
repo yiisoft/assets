@@ -23,7 +23,7 @@ final class JsonAssetExporter implements AssetExporterInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      *
      * @throws RuntimeException If an error occurred while writing to the JSON file.
      */

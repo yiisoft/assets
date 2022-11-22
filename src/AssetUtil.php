@@ -21,7 +21,7 @@ use function strncmp;
 use function substr_compare;
 
 /**
- * AssetUtil shared functions.
+ * `AssetUtil` shared functions.
  */
 final class AssetUtil
 {

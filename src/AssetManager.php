@@ -12,7 +12,7 @@ use function in_array;
 use function is_array;
 
 /**
- * AssetManager manages asset bundle configuration and loading.
+ * `AssetManager` manages asset bundle configuration and loading.
  *
  * @psalm-type CssFile = array{0:string,1?:int}&array
  * @psalm-type CssString = array{0:mixed,1?:int}&array

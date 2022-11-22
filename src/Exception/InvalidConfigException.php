@@ -7,7 +7,7 @@ namespace Yiisoft\Assets\Exception;
 use Exception;
 
 /**
- * InvalidConfigException is thrown when configuration of asset bundle is not valid.
+ * `InvalidConfigException` is thrown when configuration of asset bundle is not valid.
  */
 class InvalidConfigException extends Exception
 {

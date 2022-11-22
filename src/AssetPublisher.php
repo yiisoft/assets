@@ -21,8 +21,8 @@ use function sprintf;
 use function symlink;
 
 /**
- * AssetPublisher is responsible for executing the publication of the assets
- * from {@see AssetBundle::$sourcePath} to {@see AssetBundle::$basePath}.
+ * `AssetPublisher` is responsible for executing the publication of the assets from {@see AssetBundle::$sourcePath} to
+ * {@see AssetBundle::$basePath}.
  *
  * @psalm-type HashCallback = callable(string):string
  * @psalm-type PublishedBundle = array{0:non-empty-string,1:non-empty-string}

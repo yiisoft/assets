@@ -7,7 +7,7 @@ namespace Yiisoft\Assets;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
- * The AssetPublisherInterface must be implemented by asset publisher classes.
+ * The `AssetPublisherInterface` must be implemented by asset publisher classes.
  */
 interface AssetPublisherInterface
 {
@@ -62,8 +62,8 @@ interface AssetPublisherInterface
      *
      * @param string $sourcePath The directory or file path being published.
      *
-     * @return string|null The string the published URL for the file or directory.
-     * Null if the file or directory does not exist.
+     * @return string|null The string the published URL for the file or directory. Null if the file or directory does
+     * not exist.
      */
     public function getPublishedUrl(string $sourcePath): ?string;
 }
