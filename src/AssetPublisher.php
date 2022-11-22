@@ -53,12 +53,15 @@ final class AssetPublisher implements AssetPublisherInterface
 
     /**
      * @param Aliases $aliases The aliases instance.
-     * @param bool $forceCopy Whether the directory being published should be copied even
-     * if it is found in the target directory. See {@see withForceCopy()}.
+     * @param bool $forceCopy Whether the directory being published should be copied even if it is found in the target
+     * directory. See {@see withForceCopy()}.
      * @param bool $linkAssets Whether to use symbolic link to publish asset files. See {@see withLinkAssets()}.
      */
-    public function __construct(private Aliases $aliases, private bool $forceCopy = false, private bool $linkAssets = false)
-    {
+    public function __construct(
+        private Aliases $aliases,
+        private bool $forceCopy = false,
+        private bool $linkAssets = false
+    ) {
     }
 
     public function publish(AssetBundle $bundle): array

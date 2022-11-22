@@ -35,13 +35,20 @@ final class AssetLoader implements AssetLoaderInterface
 
     /**
      * @param Aliases $aliases The aliases instance.
-     * @param bool $appendTimestamp Whether to append a timestamp to the URL of every published asset. See {@see withAppendTimestamp()}.
-     * @param array<string, string> $assetMap Mapping from source asset files to target asset files. See {@see withAssetMap()}.
+     * @param bool $appendTimestamp Whether to append a timestamp to the URL of every published asset. See
+     *     {@see withAppendTimestamp()}.
+     * @param array<string, string> $assetMap Mapping from source asset files to target asset files. See
+     *     {@see withAssetMap()}.
      * @param string|null $basePath The root directory storing the asset files. See {@see withBasePath()}.
      * @param string|null $baseUrl The base URL that can be used to access the asset files. See {@see withBaseUrl()}.
      */
-    public function __construct(private Aliases $aliases, private bool $appendTimestamp = false, private array $assetMap = [], private ?string $basePath = null, private ?string $baseUrl = null)
-    {
+    public function __construct(
+        private Aliases $aliases,
+        private bool $appendTimestamp = false,
+        private array $assetMap = [],
+        private ?string $basePath = null,
+        private ?string $baseUrl = null
+    ) {
     }
 
     public function getAssetUrl(AssetBundle $bundle, string $assetPath): string

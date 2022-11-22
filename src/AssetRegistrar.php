@@ -55,8 +55,10 @@ final class AssetRegistrar
      */
     private array $jsVars = [];
 
-    public function __construct(private Aliases $aliases, private AssetLoaderInterface $loader)
-    {
+    public function __construct(
+        private Aliases $aliases,
+        private AssetLoaderInterface $loader
+    ) {
     }
 
     /**
@@ -278,7 +280,7 @@ final class AssetRegistrar
             throw new InvalidConfigException(
                 sprintf(
                     'CSS file should be string. Got %s.',
-                    $this->getType($url),
+                    get_debug_type($url),
                 )
             );
         }
@@ -355,7 +357,7 @@ final class AssetRegistrar
             throw new InvalidConfigException(
                 sprintf(
                     'JavaScript file should be string. Got %s.',
-                    $this->getType($url),
+                    get_debug_type($url),
                 )
             );
         }
@@ -436,7 +438,7 @@ final class AssetRegistrar
             throw new InvalidConfigException(
                 sprintf(
                     'Without string key JavaScript variable should be array. Got %s.',
-                    $this->getType($config),
+                    get_debug_type($config),
                 )
             );
         }
@@ -450,7 +452,7 @@ final class AssetRegistrar
             throw new InvalidConfigException(
                 sprintf(
                     'JavaScript variable name should be string. Got %s.',
-                    $this->getType($name),
+                    get_debug_type($name),
                 )
             );
         }
@@ -466,7 +468,7 @@ final class AssetRegistrar
             throw new InvalidConfigException(
                 sprintf(
                     'JavaScript variable position should be integer. Got %s.',
-                    $this->getType($position),
+                    get_debug_type($position),
                 )
             );
         }
@@ -494,10 +496,5 @@ final class AssetRegistrar
         }
 
         return $array;
-    }
-
-    private function getType(mixed $value): string
-    {
-        return get_debug_type($value);
     }
 }
