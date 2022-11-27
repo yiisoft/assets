@@ -16,20 +16,14 @@ use Yiisoft\Json\Json;
 final class JsonAssetExporter implements AssetExporterInterface
 {
     /**
-     * @var string The full path to the target JSON file.
-     */
-    private string $targetFile;
-
-    /**
      * @param string $targetFile The full path to the target JSON file.
      */
-    public function __construct(string $targetFile)
+    public function __construct(private string $targetFile)
     {
-        $this->targetFile = $targetFile;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      *
      * @throws RuntimeException If an error occurred while writing to the JSON file.
      */

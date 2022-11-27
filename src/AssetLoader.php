@@ -10,37 +10,13 @@ use Yiisoft\Files\FileHelper;
 
 use function array_merge;
 use function is_file;
-use function strncmp;
 
 /**
- * AssetLoader is responsible for executing the loading of the assets
- * from {@see AssetBundle::$basePath} to {@see AssetBundle::$baseUrl}.
+ * `AssetLoader` is responsible for executing the loading of the assets from {@see AssetBundle::$basePath} to
+ * {@see AssetBundle::$baseUrl}.
  */
 final class AssetLoader implements AssetLoaderInterface
 {
-    private Aliases $aliases;
-
-    /**
-     * @var bool Whether to append a timestamp to the URL of every published asset.
-     */
-    private bool $appendTimestamp;
-
-    /**
-     * @var array Mapping from source asset files (keys) to target asset files (values).
-     * @psalm-var array<string, string>
-     */
-    private array $assetMap;
-
-    /**
-     * @var string|null The root directory storing the asset files. Default is `null`.
-     */
-    private ?string $basePath;
-
-    /**
-     * @var string|null The base URL that can be used to access the asset files. Default is `null`.
-     */
-    private ?string $baseUrl;
-
     /**
      * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
      * when registering the CSS files all assets bundle.
@@ -59,23 +35,20 @@ final class AssetLoader implements AssetLoaderInterface
 
     /**
      * @param Aliases $aliases The aliases instance.
-     * @param bool $appendTimestamp Whether to append a timestamp to the URL of every published asset. See {@see withAppendTimestamp()}.
-     * @param array<string, string> $assetMap Mapping from source asset files to target asset files. See {@see withAssetMap()}.
+     * @param bool $appendTimestamp Whether to append a timestamp to the URL of every published asset. See
+     *     {@see withAppendTimestamp()}.
+     * @param array<string, string> $assetMap Mapping from source asset files to target asset files. See
+     *     {@see withAssetMap()}.
      * @param string|null $basePath The root directory storing the asset files. See {@see withBasePath()}.
      * @param string|null $baseUrl The base URL that can be used to access the asset files. See {@see withBaseUrl()}.
      */
     public function __construct(
-        Aliases $aliases,
-        bool $appendTimestamp = false,
-        array $assetMap = [],
-        ?string $basePath = null,
-        ?string $baseUrl = null
+        private Aliases $aliases,
+        private bool $appendTimestamp = false,
+        private array $assetMap = [],
+        private ?string $basePath = null,
+        private ?string $baseUrl = null
     ) {
-        $this->aliases = $aliases;
-        $this->appendTimestamp = $appendTimestamp;
-        $this->assetMap = $assetMap;
-        $this->basePath = $basePath;
-        $this->baseUrl = $baseUrl;
     }
 
     public function getAssetUrl(AssetBundle $bundle, string $assetPath): string
@@ -106,7 +79,7 @@ final class AssetLoader implements AssetLoaderInterface
                 : $bundle->baseUrl . '/' . $assetPath;
         }
 
-        if (!AssetUtil::isRelative($assetPath) || strncmp($assetPath, '/', 1) === 0) {
+        if (!AssetUtil::isRelative($assetPath) || str_starts_with($assetPath, '/')) {
             return $assetPath;
         }
 
@@ -241,8 +214,6 @@ final class AssetLoader implements AssetLoaderInterface
      *
      * @param array $jsDefaultOptions The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
      * when registering the JS files all assets bundle.
-     *
-     * @return self
      */
     public function withJsDefaultOptions(array $jsDefaultOptions): self
     {

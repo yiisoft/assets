@@ -1,8 +1,8 @@
 # Yii Assets Change Log
 
-## 2.1.1 under development
+## 3.0.0 under development
 
-- Enh: Add composer require checker into CI
+- Enh #101: Refactoring with PHP 8 features usage (@xepozz, @vjik)
 
 ## 2.1.0 July 18, 2022
 

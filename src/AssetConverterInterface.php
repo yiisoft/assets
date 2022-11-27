@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Assets;
 
 /**
- * The AssetConverterInterface must be implemented by asset converter classes. The job of such class is to
+ * The `AssetConverterInterface` must be implemented by asset converter classes. The job of such class is to
  * convert an asset from one format to another. For example, from Sass to CSS.
  *
  * @psalm-type ConverterOptions = array<string, array{command?:string,path?:string}|null>

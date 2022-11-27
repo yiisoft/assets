@@ -9,16 +9,13 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 
 use function array_key_exists;
 use function array_values;
-use function get_class;
-use function gettype;
 use function is_array;
 use function is_int;
-use function is_object;
 use function is_string;
 use function sprintf;
 
 /**
- * AssetRegistrar registers asset files, code blocks and variables from a bundle considering dependencies.
+ * `AssetRegistrar` registers asset files, code blocks and variables from a bundle considering dependencies.
  *
  * @internal
  *
@@ -31,8 +28,6 @@ use function sprintf;
  */
 final class AssetRegistrar
 {
-    private Aliases $aliases;
-    private AssetLoaderInterface $loader;
     private ?AssetConverterInterface $converter = null;
 
     /**
@@ -60,10 +55,10 @@ final class AssetRegistrar
      */
     private array $jsVars = [];
 
-    public function __construct(Aliases $aliases, AssetLoaderInterface $loader)
-    {
-        $this->aliases = $aliases;
-        $this->loader = $loader;
+    public function __construct(
+        private Aliases $aliases,
+        private AssetLoaderInterface $loader
+    ) {
     }
 
     /**
@@ -268,11 +263,9 @@ final class AssetRegistrar
     /**
      * Registers a CSS file.
      *
-     * @param array|string $css
-     *
      * @throws InvalidConfigException
      */
-    private function registerCssFile(AssetBundle $bundle, ?string $key, $css): void
+    private function registerCssFile(AssetBundle $bundle, ?string $key, array|string $css): void
     {
         if (is_array($css)) {
             if (!array_key_exists(0, $css)) {
@@ -287,7 +280,7 @@ final class AssetRegistrar
             throw new InvalidConfigException(
                 sprintf(
                     'CSS file should be string. Got %s.',
-                    $this->getType($url),
+                    get_debug_type($url),
                 )
             );
         }
@@ -317,11 +310,9 @@ final class AssetRegistrar
     /**
      * Registers a CSS string.
      *
-     * @param mixed $cssString
-     *
      * @throws InvalidConfigException
      */
-    private function registerCssString(AssetBundle $bundle, ?string $key, $cssString): void
+    private function registerCssString(AssetBundle $bundle, ?string $key, mixed $cssString): void
     {
         if (is_array($cssString)) {
             $config = $cssString;
@@ -349,11 +340,9 @@ final class AssetRegistrar
     /**
      * Registers a JavaScript file.
      *
-     * @param array|string $js
-     *
      * @throws InvalidConfigException
      */
-    private function registerJsFile(AssetBundle $bundle, ?string $key, $js): void
+    private function registerJsFile(AssetBundle $bundle, ?string $key, array|string $js): void
     {
         if (is_array($js)) {
             if (!array_key_exists(0, $js)) {
@@ -368,7 +357,7 @@ final class AssetRegistrar
             throw new InvalidConfigException(
                 sprintf(
                     'JavaScript file should be string. Got %s.',
-                    $this->getType($url),
+                    get_debug_type($url),
                 )
             );
         }
@@ -398,11 +387,9 @@ final class AssetRegistrar
     /**
      * Registers a JavaScript string.
      *
-     * @param mixed $jsString
-     *
      * @throws InvalidConfigException
      */
-    private function registerJsString(AssetBundle $bundle, ?string $key, $jsString): void
+    private function registerJsString(AssetBundle $bundle, ?string $key, mixed $jsString): void
     {
         if (is_array($jsString)) {
             if (!array_key_exists(0, $jsString)) {
@@ -428,10 +415,8 @@ final class AssetRegistrar
 
     /**
      * Registers a JavaScript variable.
-     *
-     * @param mixed $value
      */
-    private function registerJsVar(string $name, $value, ?int $position): void
+    private function registerJsVar(string $name, mixed $value, ?int $position): void
     {
         $config = [$name, $value];
 
@@ -445,17 +430,15 @@ final class AssetRegistrar
     /**
      * Registers a JavaScript variable by config.
      *
-     * @param mixed $config
-     *
      * @throws InvalidConfigException
      */
-    private function registerJsVarByConfig($config, ?int $bundleJsPosition): void
+    private function registerJsVarByConfig(mixed $config, ?int $bundleJsPosition): void
     {
         if (!is_array($config)) {
             throw new InvalidConfigException(
                 sprintf(
                     'Without string key JavaScript variable should be array. Got %s.',
-                    $this->getType($config),
+                    get_debug_type($config),
                 )
             );
         }
@@ -469,7 +452,7 @@ final class AssetRegistrar
             throw new InvalidConfigException(
                 sprintf(
                     'JavaScript variable name should be string. Got %s.',
-                    $this->getType($name),
+                    get_debug_type($name),
                 )
             );
         }
@@ -485,7 +468,7 @@ final class AssetRegistrar
             throw new InvalidConfigException(
                 sprintf(
                     'JavaScript variable position should be integer. Got %s.',
-                    $this->getType($position),
+                    get_debug_type($position),
                 )
             );
         }
@@ -513,13 +496,5 @@ final class AssetRegistrar
         }
 
         return $array;
-    }
-
-    /**
-     * @param mixed $value
-     */
-    private function getType($value): string
-    {
-        return is_object($value) ? get_class($value) : gettype($value);
     }
 }

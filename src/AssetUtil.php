@@ -18,11 +18,10 @@ use function is_subclass_of;
 use function is_writable;
 use function mb_strlen;
 use function strncmp;
-use function strpos;
 use function substr_compare;
 
 /**
- * AssetUtil shared functions.
+ * `AssetUtil` shared functions.
  */
 final class AssetUtil
 {
@@ -183,6 +182,6 @@ final class AssetUtil
      */
     public static function isRelative(string $url): bool
     {
-        return strncmp($url, '//', 2) && strpos($url, '://') === false;
+        return strncmp($url, '//', 2) && !str_contains($url, '://');
     }
 }

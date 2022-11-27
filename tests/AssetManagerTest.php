@@ -243,9 +243,6 @@ final class AssetManagerTest extends TestCase
         );
     }
 
-    /**
-     * @return array
-     */
     public function positionProvider(): array
     {
         return [
@@ -260,9 +257,6 @@ final class AssetManagerTest extends TestCase
 
     /**
      * @dataProvider positionProvider
-     *
-     * @param int $pos
-     * @param bool $jqAlreadyRegistered
      */
     public function testPositionDependency(int $pos, bool $jqAlreadyRegistered): void
     {
@@ -648,7 +642,7 @@ final class AssetManagerTest extends TestCase
         $manager = $this->createManager();
 
         $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage('CSS file should be string. Got integer.');
+        $this->expectExceptionMessage('CSS file should be string. Got int.');
         $manager->register(CssAsArrayWithIntegerUrlAsset::class);
     }
 
@@ -675,7 +669,7 @@ final class AssetManagerTest extends TestCase
         $manager = $this->createManager();
 
         $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage('JavaScript file should be string. Got integer.');
+        $this->expectExceptionMessage('JavaScript file should be string. Got int.');
         $manager->register(JsAsArrayWithIntegerUrlAsset::class);
     }
 
@@ -702,7 +696,7 @@ final class AssetManagerTest extends TestCase
         $manager = $this->createManager();
 
         $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage('JavaScript variable name should be string. Got integer.');
+        $this->expectExceptionMessage('JavaScript variable name should be string. Got int.');
         $manager->register(JsVarAsArrayWithIntegerNameAsset::class);
     }
 
@@ -740,7 +734,7 @@ final class AssetManagerTest extends TestCase
         $manager = $this->createManager();
 
         $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage('Without string key JavaScript variable should be array. Got integer.');
+        $this->expectExceptionMessage('Without string key JavaScript variable should be array. Got int.');
         $manager->register(JsVarWithIntegerKeyAndNotArrayValueAsset::class);
     }
 

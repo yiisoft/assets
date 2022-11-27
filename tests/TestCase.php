@@ -56,8 +56,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Returns the registered asset bundles.
      *
-     * @param AssetManager $manager
-     *
      * @return array The registered asset bundles {@see AssetManager::$registeredBundles}.
      */
     protected function getRegisteredBundles(AssetManager $manager): array
@@ -73,9 +71,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Returns a published hash which is the name of the directory.
      *
-     * @param string $path
-     * @param AssetPublisherInterface $publisher
-     *
      * @return string The published hash which is the name of the directory.
      */
     protected function getPublishedHash(string $path, AssetPublisherInterface $publisher): string
@@ -90,10 +85,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Asserting two strings equality ignoring line endings.
-     *
-     * @param string $expected
-     * @param string $actual
-     * @param string $message
      */
     protected function assertEqualsWithoutLE(string $expected, string $actual, string $message = ''): void
     {
@@ -128,9 +119,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Verify sources publish files asset bundle.
-     *
-     * @param string $type
-     * @param AssetBundle $bundle
      */
     protected function sourcesPublishVerifyFiles(string $type, AssetBundle $bundle): void
     {
@@ -147,10 +135,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Invokes a inaccessible method.
-     *
-     * @param object $object
-     * @param string $method
-     * @param array $args
      *
      * @throws ReflectionException
      *

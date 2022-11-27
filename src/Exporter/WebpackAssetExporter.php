@@ -12,25 +12,19 @@ use Yiisoft\Assets\AssetUtil;
  * Exports the file paths of asset bundles {@see AssetBundle::$export}, converting them to `import '/path/to/file';`
  * expressions and placing them in the specified JavaScript file for later loading into Webpack.
  *
- * {@link https://webpack.js.org/concepts/#entry}
+ * @link https://webpack.js.org/concepts/#entry
  */
 final class WebpackAssetExporter implements AssetExporterInterface
 {
     /**
-     * @var string The full path to the target JavaScript file.
-     */
-    private string $targetFile;
-
-    /**
      * @param string $targetFile The full path to the target JavaScript file.
      */
-    public function __construct(string $targetFile)
+    public function __construct(private string $targetFile)
     {
-        $this->targetFile = $targetFile;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      *
      * @throws RuntimeException If an error occurred while writing to the JavaScript file.
      */
