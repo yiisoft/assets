@@ -738,7 +738,7 @@ final class AssetManagerTest extends TestCase
         $manager->register(JsVarWithIntegerKeyAndNotArrayValueAsset::class);
     }
 
-    public function testRegisterCustom(): void
+    public function testRegisterCustomized(): void
     {
         $urlJs = 'https://code.jquery.com/jquery-3.4.1.js';
         $manager = new AssetManager($this->aliases, $this->loader);
