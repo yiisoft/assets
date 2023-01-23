@@ -738,6 +738,37 @@ final class AssetManagerTest extends TestCase
         $manager->register(JsVarWithIntegerKeyAndNotArrayValueAsset::class);
     }
 
+    public function testRegisterCustomized(): void
+    {
+        $urlJs = 'https://code.jquery.com/jquery-3.4.1.js';
+        $manager = new AssetManager($this->aliases, $this->loader);
+
+        $this->assertEmpty($this->getRegisteredBundles($manager));
+
+        $manager->registerCustomized(
+            JqueryAsset::class,
+            [
+                'sourcePath' => null, //no publish asset bundle
+                'js' => [
+                    [
+                        $urlJs,
+                        'integrity' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                        'crossorigin' => 'anonymous',
+                    ],
+                ],
+            ],
+        );
+
+        $this->assertSame(
+            [
+                $urlJs,
+                'integrity' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                'crossorigin' => 'anonymous',
+            ],
+            $manager->getJsFiles()[$urlJs],
+        );
+    }
+
     private function createManager(array $aliases = []): AssetManager
     {
         $aliases = new Aliases($aliases);

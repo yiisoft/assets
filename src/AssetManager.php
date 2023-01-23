@@ -242,6 +242,21 @@ final class AssetManager
     }
 
     /**
+     * Registers asset bundle by name with custom configuration.
+     *
+     * @param string $bundleName The class name of the asset bundle (without the leading backslash).
+     * @param array $bundleConfig The customized asset bundle configuration.
+     *
+     * @psalm-param array<string, mixed> $bundleConfig
+     */
+    public function registerCustomized(string $bundleName, array $bundleConfig): void
+    {
+        $this->customizedBundles[$bundleName] = $bundleConfig;
+
+        $this->register($bundleName);
+    }
+
+    /**
      * Registers many asset bundles by names.
      *
      * @param string[] $names The many class names of the asset bundles (without the leading backslash).
