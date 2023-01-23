@@ -280,6 +280,7 @@ final class AssetPublisher implements AssetPublisherInterface
             ];
             foreach (['afterCopy', 'beforeCopy', 'filter', 'recursive'] as $key) {
                 if (array_key_exists($key, $bundle->publishOptions)) {
+                    /** @psalm-suppress MixedAssignment */
                     $publishOptions[$key] = $bundle->publishOptions[$key];
                 }
             }
