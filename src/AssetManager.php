@@ -246,6 +246,8 @@ final class AssetManager
      *
      * @param string $bundleName The class name of the asset bundle (without the leading backslash).
      * @param array $bundleConfig The customized asset bundle configuration.
+     *
+     * @psalm-param array<string, mixed> $bundleConfig
      */
     public function registerCustomized(string $bundleName, array $bundleConfig): void
     {
