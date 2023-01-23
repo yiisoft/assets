@@ -26,7 +26,7 @@ interface AssetPublisherInterface
      * By default, when publishing a directory, subdirectories and files whose name starts with a dot "." will NOT be
      * published.
      *
-     * Note: On rare scenario, a race condition can develop that will lead to a  one-time-manifestation of a
+     * Note: On rare scenario, a race condition can develop that will lead to a one-time-manifestation of a
      * non-critical problem in the creation of the directory that holds the published assets. This problem can be
      * avoided altogether by 'requesting' in advance all the resources that are supposed to trigger a 'publish()' call,
      * and doing that in the application deployment phase, before system goes live. See more in the following
