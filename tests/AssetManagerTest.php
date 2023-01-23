@@ -745,7 +745,7 @@ final class AssetManagerTest extends TestCase
 
         $this->assertEmpty($this->getRegisteredBundles($manager));
 
-        $manager->registerCustom(
+        $manager->registerCustomized(
             JqueryAsset::class,
             [
                 'sourcePath' => null, //no publish asset bundle
