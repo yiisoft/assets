@@ -273,11 +273,15 @@ final class AssetPublisher implements AssetPublisherInterface
             || ($this->forceCopy && !isset($bundle->publishOptions['forceCopy']))
             || !is_dir($dstDir)
         ) {
-            FileHelper::copyDirectory($src, $dstDir, array_merge($bundle->publishOptions, [
+            $publishOptions = $bundle->publishOptions;
+            unset($publishOptions['forceCopy']);
+            $publishOptions = array_merge($publishOptions, [
                 'dirMode' => $this->dirMode,
                 'fileMode' => $this->fileMode,
                 'copyEmptyDirectories' => false,
-            ]));
+            ]);
+
+            FileHelper::copyDirectory($src, $dstDir, $publishOptions);
         }
 
         return [$dstDir, "{$this->aliases->get((string) $bundle->baseUrl)}/{$dir}"];

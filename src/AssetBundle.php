@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use Yiisoft\Files\PathMatcher\PathMatcherInterface;
+
 /**
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
  *
@@ -241,6 +243,14 @@ class AssetBundle
     /**
      * The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
      * is being published. This property is used only when {@see $sourcePath} is set.
+     *
+     * @psalm-var array{
+     *     forceCopy?: bool,
+     *     afterCopy?: callable,
+     *     beforeCopy?: callable,
+     *     filter?: PathMatcherInterface|mixed,
+     *     recursive?: bool
+     * }
      */
     public array $publishOptions = [];
 
