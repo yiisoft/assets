@@ -9,8 +9,8 @@ use RecursiveDirectoryIterator;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
+use Yiisoft\Files\PathMatcher\PathMatcherInterface;
 
-use function array_merge;
 use function crc32;
 use function dirname;
 use function file_exists;
@@ -273,13 +273,28 @@ final class AssetPublisher implements AssetPublisherInterface
             || ($this->forceCopy && !isset($bundle->publishOptions['forceCopy']))
             || !is_dir($dstDir)
         ) {
-            $publishOptions = $bundle->publishOptions;
-            unset($publishOptions['forceCopy']);
-            $publishOptions = array_merge($publishOptions, [
+            $publishOptions = [
                 'dirMode' => $this->dirMode,
                 'fileMode' => $this->fileMode,
                 'copyEmptyDirectories' => false,
-            ]);
+            ];
+            foreach (['afterCopy', 'beforeCopy', 'filter', 'recursive'] as $key) {
+                if (array_key_exists($key, $bundle->publishOptions)) {
+                    $publishOptions[$key] = $bundle->publishOptions;
+                }
+            }
+
+            /**
+             * @psalm-var array{
+             *   dirMode: int,
+             *   fileMode: int,
+             *   filter?: PathMatcherInterface|mixed,
+             *   recursive?: bool,
+             *   beforeCopy?: callable,
+             *   afterCopy?: callable,
+             *   copyEmptyDirectories: bool,
+             * } $publishOptions
+             */
 
             FileHelper::copyDirectory($src, $dstDir, $publishOptions);
         }
