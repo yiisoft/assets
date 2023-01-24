@@ -23,9 +23,9 @@ name: static analysis
 
 jobs:
   psalm:
-    uses: yiisoft/actions/.github/workflows/psalm.yml@master
+    uses: yiisoft/actions/.github/workflows/psalm.yml@vjik-patch-1
     with:
       os: >-
         ['ubuntu-latest']
       php: >-
-        ['8.0', '8.1']
+        ['8.0', '8.1', '8.2']
