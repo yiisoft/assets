@@ -7,7 +7,7 @@
 ## 3.0.0 January 26, 2023
 
 - Enh #101: Refactoring with PHP 8 features usage (@xepozz, @vjik)
-- Enh #102: Add `Yiisoft\Assets\AssetManager::registerCustomized()` (@terabytesoftw)
+- Enh #113: Add `Yiisoft\Assets\AssetManager::registerCustomized()` (@terabytesoftw)
 
 ## 2.1.0 July 18, 2022
 
