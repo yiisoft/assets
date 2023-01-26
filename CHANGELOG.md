@@ -1,6 +1,6 @@
 # Yii Assets Change Log
 
-## 3.0.0 under development
+## 3.0.0 January 26, 2023
 
 - Enh #101: Refactoring with PHP 8 features usage (@xepozz, @vjik)
 - Enh #102: Add `Yiisoft\Assets\AssetManager::registerCustomized()` (@terabytesoftw)
