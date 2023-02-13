@@ -1,5 +1,9 @@
 # Yii Assets Change Log
 
+## 4.0.1 under development
+
+- no changes in this release.
+
 ## 4.0.0 February 13, 2023
 
 - Chg #115: Adapt configuration group names to Yii conventions (@vjik)
