@@ -1,6 +1,6 @@
 # Yii Assets Change Log
 
-## 4.0.0 under development
+## 4.0.0 February 13, 2023
 
 - Chg #115: Adapt configuration group names to Yii conventions (@vjik)
 - Enh #116: Add support of `yiisoft/aliases` version `^3.0` (@vjik)
