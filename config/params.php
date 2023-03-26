@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Yiisoft\Assets\AssetLoaderInterface;
+use Yiisoft\Assets\Debug\AssetCollector;
+use Yiisoft\Assets\Debug\AssetLoaderInterfaceProxy;
+
 return [
     'yiisoft/assets' => [
         'assetConverter' => [
@@ -24,6 +28,15 @@ return [
             'allowedBundleNames' => [],
             'customizedBundles' => [],
             'register' => [],
+        ],
+    ],
+
+    'yiisoft/yii-debug' => [
+        'collectors.web' => [
+            AssetCollector::class,
+        ],
+        'trackedServices' => [
+            AssetLoaderInterface::class => [AssetLoaderInterfaceProxy::class, AssetCollector::class],
         ],
     ],
 ];
