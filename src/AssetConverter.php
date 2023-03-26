@@ -26,6 +26,7 @@ use function substr;
  * It is used by {@see AssetManager} to convert files after they have been published.
  *
  * @psalm-type IsOutdatedCallback = callable(string,string,string,string,string):bool
+ *
  * @psalm-import-type ConverterOptions from AssetConverterInterface
  */
 final class AssetConverter implements AssetConverterInterface
@@ -48,6 +49,7 @@ final class AssetConverter implements AssetConverterInterface
 
     /**
      * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is outdated.
+     *
      * @psalm-var IsOutdatedCallback|null
      */
     private $isOutdatedCallback = null;

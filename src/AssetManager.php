@@ -35,18 +35,21 @@ final class AssetManager
 
     /**
      * @var true[] List of the asset bundles in register process. Use for detect circular dependency.
+     *
      * @psalm-var array<string, true>
      */
     private array $bundlesInRegisterProcess = [];
 
     /**
      * @var AssetBundle[]
+     *
      * @psalm-var array<string, AssetBundle>
      */
     private array $loadedBundles = [];
 
     /**
      * @var AssetBundle[]
+     *
      * @psalm-var array<string, AssetBundle>
      */
     private array $dummyBundles = [];
@@ -122,6 +125,7 @@ final class AssetManager
 
     /**
      * @return array Config array of CSS files.
+     *
      * @psalm-return CssFile[]
      */
     public function getCssFiles(): array
@@ -131,6 +135,7 @@ final class AssetManager
 
     /**
      * @return array CSS blocks.
+     *
      * @psalm-return CssString[]
      */
     public function getCssStrings(): array
@@ -140,6 +145,7 @@ final class AssetManager
 
     /**
      * @return array Config array of JavaScript files.
+     *
      * @psalm-return JsFile[]
      */
     public function getJsFiles(): array
@@ -149,6 +155,7 @@ final class AssetManager
 
     /**
      * @return array JavaScript code blocks.
+     *
      * @psalm-return JsString[]
      */
     public function getJsStrings(): array
@@ -158,6 +165,7 @@ final class AssetManager
 
     /**
      * @return array JavaScript variables.
+     *
      * @psalm-return list<JsVar>
      */
     public function getJsVars(): array
