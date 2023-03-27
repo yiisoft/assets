@@ -14,7 +14,7 @@ final class AssetCollectorTest extends AbstractCollectorTestCase
     /**
      * @param AssetCollector|CollectorInterface $collector
      */
-    protected function collectTestData(CollectorInterface $collector): void
+    protected function collectTestData(\Yiisoft\Assets\Debug\AssetCollector|\Yiisoft\Yii\Debug\Collector\CollectorInterface $collector): void
     {
         $collector->collect(new AssetBundle());
     }
