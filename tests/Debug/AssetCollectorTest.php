@@ -14,7 +14,7 @@ final class AssetCollectorTest extends AbstractCollectorTestCase
     /**
      * @param AssetCollector|CollectorInterface $collector
      */
-    protected function collectTestData(CollectorInterface $collector): void
+    protected function collectTestData(AssetCollector|CollectorInterface $collector): void
     {
         $collector->collect(new AssetBundle());
     }
