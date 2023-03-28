@@ -38,5 +38,8 @@ return [
         'trackedServices' => [
             AssetLoaderInterface::class => [AssetLoaderInterfaceProxy::class, AssetCollector::class],
         ],
+        'ignoredRequests' => [
+            '/assets/**',
+        ],
     ],
 ];
