@@ -41,12 +41,14 @@ final class AssetPublisher implements AssetPublisherInterface
 
     /**
      * @var callable|null A callback that will be called to produce hash for asset directory generation.
+     *
      * @psalm-var HashCallback|null
      */
     private $hashCallback = null;
 
     /**
      * @var array Contain published {@see AssetsBundle}.
+     *
      * @psalm-var PublishedBundle[]
      */
     private array $published = [];
@@ -185,6 +187,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *     return hash('md4', $path);
      * }
      * ```
+     *
      * @psalm-param HashCallback $hashCallback
      */
     public function withHashCallback(callable $hashCallback): self

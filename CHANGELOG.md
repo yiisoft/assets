@@ -1,8 +1,8 @@
 # Yii Assets Change Log
 
-## 4.0.1 under development
+## 4.1.0 under development
 
-- no changes in this release.
+- Enh #119: Add debug collector for yiisoft/yii-debug (@xepozz)
 
 ## 4.0.0 February 13, 2023
 
