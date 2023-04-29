@@ -2,7 +2,7 @@
 
 ## 4.1.0 under development
 
-- Enh #119: Add debug collector for yiisoft/yii-debug (@vjik)
+- Enh #119: Add debug collector for yiisoft/yii-debug (@xepozz)
 
 ## 4.0.0 February 13, 2023
 
