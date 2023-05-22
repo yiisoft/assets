@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use InvalidArgumentException;
 use RuntimeException;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;

@@ -787,7 +787,6 @@ final class AssetManagerTest extends TestCase
         $this->assertSame(['/js/jquery.js'], $manager->getJsFiles()['/js/jquery.js']);
     }
 
-
     /**
      * @link https://github.com/yiisoft/assets/issues/123
      */
