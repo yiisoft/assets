@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
+use InvalidArgumentException;
 use RuntimeException;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
@@ -250,7 +251,11 @@ final class AssetManager
     }
 
     /**
-     * Registers asset bundle by name with custom configuration.
+     * Registers an asset bundle by name with custom configuration.
+     *
+     * This method is similar to {@see register()}, except that it allows you to customize the asset bundle
+     * configuration before it is registered. It also supports registering asset bundles with virtual namespaces,
+     * which means that the corresponding asset file may not physically exist.
      *
      * @param string $bundleName The class name of the asset bundle (without the leading backslash).
      * @param array $bundleConfig The customized asset bundle configuration.
@@ -418,6 +423,7 @@ final class AssetManager
         }
 
         if (!isset($this->customizedBundles[$name])) {
+            $this->validateAssetBundleClass($name);
             return $this->loadedBundles[$name] = $this->loader->loadBundle($name);
         }
 
@@ -499,5 +505,12 @@ final class AssetManager
         }
 
         return false;
+    }
+
+    private function validateAssetBundleClass(string $class): void
+    {
+        if (!class_exists($class)) {
+            throw new InvalidConfigException("The \"{$class}\" asset bundle class does not exist.");
+        }
     }
 }
