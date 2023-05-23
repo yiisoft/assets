@@ -152,7 +152,6 @@ final class AssetRegistrar
             );
         }
 
-        /** @var mixed $jsString */
         foreach ($bundle->jsStrings as $key => $jsString) {
             $this->registerJsString(
                 $bundle,
@@ -179,7 +178,6 @@ final class AssetRegistrar
             );
         }
 
-        /** @var mixed $cssString */
         foreach ($bundle->cssStrings as $key => $cssString) {
             $this->registerCssString(
                 $bundle,
@@ -309,6 +307,7 @@ final class AssetRegistrar
         /** @psalm-var CssFile */
         $css = $this->mergeOptionsWithArray($bundle->cssOptions, $css);
 
+        /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
         $this->cssFiles[$key ?: $url] = $css;
     }
 
@@ -336,8 +335,10 @@ final class AssetRegistrar
         $config = $this->mergeOptionsWithArray($bundle->cssOptions, $config);
 
         if ($key === null) {
+            /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->cssStrings[] = $config;
         } else {
+            /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->cssStrings[$key] = $config;
         }
     }
@@ -386,6 +387,7 @@ final class AssetRegistrar
         /** @psalm-var JsFile */
         $js = $this->mergeOptionsWithArray($bundle->jsOptions, $js);
 
+        /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
         $this->jsFiles[$key ?: $url] = $js;
     }
 
@@ -412,8 +414,10 @@ final class AssetRegistrar
         $jsString = $this->mergeOptionsWithArray($bundle->jsOptions, $jsString);
 
         if ($key === null) {
+            /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->jsStrings[] = $jsString;
         } else {
+            /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->jsStrings[$key] = $jsString;
         }
     }
@@ -465,7 +469,6 @@ final class AssetRegistrar
         if (!array_key_exists(1, $config)) {
             throw new InvalidConfigException('Do not set JavaScript variable value.');
         }
-        /** @var mixed */
         $value = $config[1];
 
         $position = $config[2] ?? $bundleJsPosition;
@@ -486,7 +489,6 @@ final class AssetRegistrar
      */
     private function mergeOptionsWithArray(array $options, array $array): array
     {
-        /** @var mixed $value */
         foreach ($options as $key => $value) {
             if (is_int($key)) {
                 throw new InvalidConfigException(
@@ -495,7 +497,6 @@ final class AssetRegistrar
             }
 
             if (!array_key_exists($key, $array)) {
-                /** @var mixed */
                 $array[$key] = $value;
             }
         }

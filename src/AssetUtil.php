@@ -43,7 +43,6 @@ final class AssetUtil
         /** @psalm-suppress UnsafeInstantiation */
         $bundle = is_subclass_of($name, AssetBundle::class) ? new $name() : new AssetBundle();
 
-        /** @var mixed $value */
         foreach ($config as $property => $value) {
             $bundle->{$property} = $value;
         }
