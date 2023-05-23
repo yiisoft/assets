@@ -307,7 +307,7 @@ final class AssetRegistrar
         /** @psalm-var CssFile */
         $css = $this->mergeOptionsWithArray($bundle->cssOptions, $css);
 
-        /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
+        /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
         $this->cssFiles[$key ?: $url] = $css;
     }
 
@@ -335,10 +335,10 @@ final class AssetRegistrar
         $config = $this->mergeOptionsWithArray($bundle->cssOptions, $config);
 
         if ($key === null) {
-            /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
+            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->cssStrings[] = $config;
         } else {
-            /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
+            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->cssStrings[$key] = $config;
         }
     }
@@ -387,7 +387,7 @@ final class AssetRegistrar
         /** @psalm-var JsFile */
         $js = $this->mergeOptionsWithArray($bundle->jsOptions, $js);
 
-        /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
+        /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
         $this->jsFiles[$key ?: $url] = $js;
     }
 
@@ -414,10 +414,10 @@ final class AssetRegistrar
         $jsString = $this->mergeOptionsWithArray($bundle->jsOptions, $jsString);
 
         if ($key === null) {
-            /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
+            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->jsStrings[] = $jsString;
         } else {
-            /** @psalm-suppress PropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
+            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->jsStrings[$key] = $jsString;
         }
     }
