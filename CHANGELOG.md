@@ -2,7 +2,7 @@
 
 ## 4.1.0 under development
 
-- Fix #123: AssetManager load empty AssetBundle when register wrong namespace bundle (@terabytesoftw)
+- Bug #123: `AssetManager` load empty `AssetBundle` when register wrong namespace bundle (@terabytesoftw)
 - Enh #119: Add debug collector for yiisoft/yii-debug (@xepozz)
 
 ## 4.0.0 February 13, 2023
