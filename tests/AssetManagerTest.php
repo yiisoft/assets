@@ -769,6 +769,50 @@ final class AssetManagerTest extends TestCase
         );
     }
 
+    public function testRegisterCustomizedVirtualAsset(): void
+    {
+        $manager = new AssetManager($this->aliases, $this->loader);
+
+        $manager->registerCustomized(
+            VirtualAsset::class,
+            [
+                'basePath' => '@root/tests/public/jquery',
+                'baseUrl' => '/js',
+                'js' => [
+                    ['jquery.js'],
+                ],
+            ],
+        );
+
+        $this->assertSame(['/js/jquery.js'], $manager->getJsFiles()['/js/jquery.js']);
+    }
+
+    /**
+     * @link https://github.com/yiisoft/assets/issues/123
+     */
+    public function testRegisterWrongNameSpace(): void
+    {
+        $manager = new AssetManager($this->aliases, $this->loader);
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('The "yii\bootstrap\BootstrapAsset" asset bundle class does not exist.');
+
+        $manager->register('yii\bootstrap\BootstrapAsset');
+    }
+
+    /**
+     * @link https://github.com/yiisoft/assets/issues/123
+     */
+    public function testRegisterManyWrongNameSpace(): void
+    {
+        $manager = new AssetManager($this->aliases, $this->loader);
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('The "yii\bootstrap\BootstrapAsset" asset bundle class does not exist.');
+
+        $manager->registerMany(['yii\bootstrap\BootstrapAsset']);
+    }
+
     private function createManager(array $aliases = []): AssetManager
     {
         $aliases = new Aliases($aliases);
