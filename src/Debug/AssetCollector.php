@@ -8,6 +8,8 @@ use Yiisoft\Assets\AssetBundle;
 use Yiisoft\Yii\Debug\Collector\CollectorTrait;
 use Yiisoft\Yii\Debug\Collector\SummaryCollectorInterface;
 
+use function count;
+
 final class AssetCollector implements SummaryCollectorInterface
 {
     use CollectorTrait;
@@ -30,6 +32,10 @@ final class AssetCollector implements SummaryCollectorInterface
 
     public function getSummary(): array
     {
+        if (!$this->isActive()) {
+            return [];
+        }
+
         return [
             'asset' => [
                 'bundles' => [
