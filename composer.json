@@ -28,7 +28,7 @@
     "require-dev": {
         "maglnet/composer-require-checker": "^4.3",
         "phpunit/phpunit": "^9.5",
-        "rector/rector": "^0.17",
+        "rector/rector": "^0.18",
         "roave/infection-static-analysis-plugin": "^1.25|^1.31",
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.30|^5.8",
@@ -59,7 +59,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "infection/extension-installer": true,
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "yiisoft/config": false
         }
     },
     "scripts": {
