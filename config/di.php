@@ -57,8 +57,13 @@ return [
 
         $assetManager = $assetManager
             ->withConverter($container->get(AssetConverterInterface::class))
-            ->withPublisher($container->get(AssetPublisherInterface::class))
         ;
+
+        if ($params['yiisoft/assets']['assetManager']['publisher'] !== null) {
+            $assetManager = $assetManager->withPublisher(
+                $container->get($params['yiisoft/assets']['assetManager']['publisher'])
+            );
+        };
 
         $assetManager->registerMany($params['yiisoft/assets']['assetManager']['register']);
         return $assetManager;
