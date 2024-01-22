@@ -1,8 +1,8 @@
 # Yii Assets Change Log
 
-## 4.1.0 under development
+## 5.0.0 under development
 
-- Bug #132: `AssetManager` doesn't work in `CLI` mode (@Gerych1984)
+- Chg #132: Move `di-web` configuration to `di` and allow to set publisher via parameters (@Gerych1984)
 - Bug #123: `AssetManager` load empty `AssetBundle` when register wrong namespace bundle (@terabytesoftw)
 - Enh #119, #129: Add debug collector for `yiisoft/yii-debug` (@xepozz, @vjik)
 

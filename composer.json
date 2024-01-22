@@ -52,7 +52,7 @@
         },
         "config-plugin": {
             "params": "params.php",
-            "di-web": "di-web.php"
+            "di": "di.php"
         }
     },
     "config": {
