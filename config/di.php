@@ -63,7 +63,7 @@ return [
             $assetManager = $assetManager->withPublisher(
                 $container->get($params['yiisoft/assets']['assetManager']['publisher'])
             );
-        };
+        }
 
         $assetManager->registerMany($params['yiisoft/assets']['assetManager']['register']);
         return $assetManager;
