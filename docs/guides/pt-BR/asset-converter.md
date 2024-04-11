@@ -1,15 +1,15 @@
-# Asset converter
+# Conversor de ativos
 
-Asset converter purpose is to convert assets from one format to another. Out of the box it supports conversion of
-several popular formats into JavaScript and CSS.
+O objetivo do conversor de ativos é converter ativos de um formato para outro. Pronto para uso, ele suporta conversão de
+vários formatos populares em JavaScript e CSS.
 
-## Configuring asset conversion
+## Configurando a conversão de ativos
 
-In order to use asset conversion we have to configure it first. Let's see how it's done. As example
-let's convert [SCSS](https://sass-lang.com/) into CSS.  
+Para usar a conversão de ativos, temos que configurá-la primeiro. Vamos ver como isso é feito. Como exemplo
+vamos converter [SCSS](https://sass-lang.com/) em CSS.
 
-We'll use [foxy](https://github.com/fxpio/foxy). Since it calls npm we'll need [NodeJS](https://nodejs.org/en/) installed.
-After it is done, create `package.json`:
+Usaremos [foxy](https://github.com/fxpio/foxy). Como ele chama o npm, precisaremos do [NodeJS](https://nodejs.org/en/) instalado.
+Depois de feito isso, crie `package.json`:
 
 ```json
 {
@@ -20,9 +20,9 @@ After it is done, create `package.json`:
 }
 ```
 
-`npm install` brings three packages into `node_modules` directory of our application.
+`npm install` traz três pacotes para o diretório `node_modules` de nossa aplicação.
 
-Below we're using bootstrap bundle from "[Asset bundles](asset-bundles.md)" guide:
+Abaixo, estamos usando o pacote bootstrap do guia [Pacotes de ativos](asset-bundles.md):
 
 ```php
 namespace App\Assets;
@@ -59,9 +59,9 @@ final class BootstrapAsset extends AssetBundle
 }
 ```
 
-Since in `$css` we are pointing to `.scss`, asset manager asks asset converter to check if such a file could be converted
-to CSS. By default, asset converter has command definitions for less, scss, sass, styl, coffee and ts but since all these
-are meant to be installed globally, and we have it as local dependency, we need to redefine a command:
+Como em `$css` estamos apontando para `.scss`, o gerenciador de ativos pede ao conversor de ativos para verificar se tal arquivo pode ser convertido
+para CSS. Por padrão, o conversor de ativos possui definições de comando para less, scss, sass, styl, coffee e ts, mas como todos esses
+devem ser instalados globalmente e temos isso como dependência local, precisamos redefinir um comando:
 
 ```php
 /**
@@ -76,7 +76,7 @@ $converter = new \Yiisoft\Assets\AssetConverter($aliases, $logger, [
 $assetManager = $assetManager->withConverter($converter);
 ```  
 
-or, if done via `yiisoft/di` container:
+ou, se feito através do contêiner `yiisoft/di`:
 
 ```php
 AssetConverterInterface::class => static function (\Psr\Container\ContainerInterface $container) {
@@ -88,7 +88,7 @@ AssetConverterInterface::class => static function (\Psr\Container\ContainerInter
 }
 ```
 
-or, if done via params.php:
+ou, se feito via params.php:
 
 ```php
 'yiisoft/assets' => [
@@ -101,10 +101,10 @@ or, if done via params.php:
 ],
 ```
 
-Asset bundle's `$converterOptions` define additional options passed to conversion utility. In this case we're telling `sass`
-to minify resulting CSS.
+`$converterOptions` do pacote de ativos define opções adicionais passadas para o utilitário de conversão. Neste caso, estamos dizendo ao `sass`
+para minimizar o CSS resultante.
 
-Now, registering asset bundle as usual would result in asset conversion taking place:
+Agora, registrando o pacote de ativos normalmente resultaria na conversão dos ativos:
 
 ```php
 $assetManager->register(\App\Assets\BootstrapAsset::class);

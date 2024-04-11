@@ -1,14 +1,14 @@
-# Asset manager
+# Gerente de ativos
 
-AssetManager resolves asset bundles registered in it and provides a list of files to include into HTML.
-For general usage see "[asset bundles](asset-bundles.md)". In this guide we'll focus on configuring it.
+O AssetManager resolve os pacotes de recursos registrados nele e fornece uma lista de arquivos para incluir no HTML.
+Para uso geral, consulte [asset bundles](asset-bundles.md). Neste guia, nos concentraremos em configurá-lo.
 
-Configuration could be done in two ways:
+A configuração pode ser feita de duas maneiras:
 
-- Using DI container such as [yiisoft/di](https://github.com/yiisoft/di)
-- Creating a class manually
+- Usando contêiner DI como [yiisoft/di](https://github.com/yiisoft/di)
+- Criando uma classe manualmente
 
-### Creating using a container
+## Criando usando um contêiner
 
 ```php
 use Psr\Container\ContainerInterface;
@@ -82,7 +82,7 @@ return [
 ];
 ```
 
-### Creating a class manually
+## Criando uma classe manualmente
 
 ```php
 use Yiisoft\Assets\AssetConverter;
@@ -106,9 +106,9 @@ $assetManager = (new AssetManager($aliases, $loader))
 ;
 ```
 
-### Specifying additional settings
+## Especificando configurações adicionais
 
-The asset manager accepts two optional parameters `$allowedBundleNames` and `$customizedBundles` in the constructor:
+O gerenciador de ativos aceita dois parâmetros opcionais `$allowedBundleNames` e `$customizedBundles` no construtor:
 
 ```php
 /** 
@@ -126,11 +126,11 @@ $assetManager = new \Yiisoft\Assets\AssetManager(
 );
 ```
 
-#### Allowed asset bundles
+### Pacotes de recursos permitidos
 
-`$allowedBundleNames` - List of names of allowed asset bundles. If the names of allowed asset bundles were specified,
-only these asset bundles, or their dependencies can be registered and received. If the array is empty,
-then any asset bundles are allowed.
+`$allowedBundleNames` – Lista de nomes de pacotes de recursos permitidos. Se os nomes dos pacotes de ativos permitidos fossem especificados,
+apenas esses pacotes de ativos ou suas dependências poderiam ser registrados e recebidos. Se  array estiver vazio,
+então, quaisquer pacotes de ativos serão permitidos.
 
 ```php
 $allowedBundleNames = [
@@ -140,9 +140,10 @@ $allowedBundleNames = [
 ];
 ```
 
-The specified asset bundles and all their dependencies will be allowed, so you can specify the top-level bundles
-and not list all the dependencies. For example, if the `MainAsset` depends on the `BootstrapAsset`,
-and the `BootstrapAsset` depends on the `JqueryAsset`, then you can specify only the `MainAsset`.
+Os pacotes de ativos especificados e todas as suas dependências serão permitidos, portanto você pode especificar os pacotes de nível superior
+e não listar todas as dependências. Por exemplo, se `MainAsset` depende de `BootstrapAsset`,
+e o `BootstrapAsset` depende do `JqueryAsset`, então você pode especificar
+apenas o `MainAsset`.
 
 ```php
 $allowedBundleNames = [
@@ -150,15 +151,15 @@ $allowedBundleNames = [
 ];
 ```
 
-Using allowed asset bundles allows you to publish and export bundles of assets without manually registering them.
-It is also convenient if you publish assets using a console command, for example,
-for a one-time publication when deploying an application.
+O uso de pacotes de ativos permitidos permite publicar e exportar pacotes de ativos sem registrá-los manualmente.
+Também é conveniente publicar ativos usando um comando de console, por exemplo,
+para uma publicação única ao implantar um aplicativo.
 
-#### Customization of asset bundles
+### Personalização de pacotes de ativos
 
-`$customizedBundles` - The configurations to customize asset bundles. When loading an asset bundles,
-if it has a corresponding configuration specified here, the configuration will be applied. The array
-keys are the names of asset class bundles, and the values are arrays with modified property values.
+`$customizedBundles` - Configurações para personalizar pacotes de ativos. Ao carregar pacotes de ativos,
+se houver uma configuração correspondente especificada aqui, a configuração será aplicada. O array de
+chaves são os nomes dos pacotes de classes de ativos e os valores são matrizes com valores de propriedade modificados.
 
 ```php
 $customizedBundles = [
@@ -175,22 +176,22 @@ $customizedBundles = [
 ];
 ```
 
-The values of the `sourcePath` and `js` properties will be redefined for the `App\Assets\JqueryAsset` bundle,
-and the values of the other properties will remain unchanged.
+Os valores das propriedades `sourcePath` e `js` serão redefinidos para o pacote `App\Assets\JqueryAsset`,
+e os valores das demais propriedades permanecerão inalterados.
 
-> If a value is `false`, it means the corresponding asset bundle is disabled and
-> all the values of its properties will be empty.
+> Se um valor for `false`, significa que o pacote de ativos correspondente está desativado e
+> todos os valores de suas propriedades estarão vazios.
 
-For use in the [Yii framework](http://www.yiiframework.com/),
-see the configuration files: [`config/params.php`](../config/params.php) and [`config/web.php`](../config/web.php).
+Para uso no [Yii framework](https://www.yiiframework.com/),
+veja os arquivos de configuração: [`config/params.php`](../../../config/params.php) e [`config/web.php`](../../../config/di.php).
 
-## Publishing asset bundles
+## Publicação de pacotes de recursos
 
-There are two modes available for using the asset manager. With and without a publisher.
+Existem dois modos disponíveis para usar o gerenciador de ativos. Com e sem publisher.
 
-Using the publisher, the manager will automatically publish assets and monitor their changes. This is convenient
-when your application and assets are located on the same server and PHP is responsible for all manipulations.
-This mode is used by default in the [yiisoft/app](https://github.com/yiisoft/app) application template.
+Usando o publisher, o gestor publicará automaticamente os ativos e monitorará suas alterações. Isso é conveniente
+quando seu aplicativo e ativos estão localizados no mesmo servidor e o PHP é responsável por todas as manipulações.
+Este modo é usado por padrão no modelo de aplicativo [yiisoft/app](https://github.com/yiisoft/app).
 
 ```php
 /** 
@@ -211,17 +212,17 @@ $assetManager->registerMany([
 ]);
 ```
 
-If you opt out of using the publisher, you should take care of publishing the asset bundles yourself.
-This is useful when there are multiple applications and resources are located on a separate server.
+Se você optar por não usar o publisher, deverá cuidar da publicação dos pacotes de recursos por conta própria.
+Isso é útil quando há vários aplicativos e recursos localizados em um servidor separado.
 
-This mode is also suitable in the following cases:
+Este modo também é adequado nos seguintes casos:
 
-- For using asset files with CDN only.
-- For using an external module builder, such as [webpack](https://github.com/webpack/webpack).
-- For a single publication, such as when deploying an application.
+- Para usar arquivos de ativos somente com CDN.
+- Para usar um construtor de módulo externo, como [webpack](https://github.com/webpack/webpack).
+- Para uma única publicação, como ao implantar um aplicativo.
 
-Another way is to pre-publish assets. In order to do it, you need to create a console command and execute it at the time
-of application deployment:
+Outra forma é pré-publicar ativos. Para fazer isso, você precisa criar um comando de console e executá-lo no momento
+da publicação dos aplicativos:
 
 ```php
 use Symfony\Component\Console\Command\Command;
@@ -255,12 +256,12 @@ class PublishCommand extends Command
 }
 ```
 
-### Pre-publishing when using a load balancer
+## Pré-publicação ao usar um balanceador de carga
 
-Pre-publishing asset bundles is suitable for both local files and multiple servers behind a load balancer.
-In the latter case you need to use a static hash for the name of the directory that is created when publishing.
-Just like in the previous example, you need to create a console command and execute it at the time of
-application deployment:
+A pré-publicação de pacotes de ativos é adequada para arquivos locais e vários servidores atrás de um balanceador de carga.
+Neste último caso você precisa usar um hash estático para o nome do diretório que é criado durante a publicação.
+Assim como no exemplo anterior, você precisa criar um comando de console e executá-lo no momento da
+publicação dos aplicativos:
 
 ```php
 use Symfony\Component\Console\Command\Command;
@@ -297,17 +298,17 @@ class PublishCommand extends Command
 }
 ```
 
-## Exporting asset bundles
+## Exportando pacotes de ativos
 
-Export automates the collection of asset bundle file paths for external module builders.
-Two exporters are provided out of the box:
+A exportação automatiza a coleta de caminhos de arquivos de pacotes de ativos para construtores de módulos externos.
+Dois exportadores são fornecidos prontos para uso:
 
-- `Yiisoft\Assets\Exporter\JsonAssetExporter` - exports the file paths of asset bundles into a JSON file.
-- `Yiisoft\Assets\Exporter\WebpackAssetExporter` - exports the file paths of asset bundles, converting them to
-  `import '/path/to/file';` expressions and placing them in the specified JavaScript file for later loading into
-  Webpack. For more information, [see here](https://webpack.js.org/concepts/#entry).
+- `Yiisoft\Assets\Exporter\JsonAssetExporter` - exporta os caminhos dos arquivos dos pacotes de recursos para um arquivo JSON.
+- `Yiisoft\Assets\Exporter\WebpackAssetExporter` - exporta os caminhos dos arquivos dos pacotes de ativos, convertendo-os para expressões
+   `import '/path/to/file';` e colocá-las no arquivo JavaScript especificado para carregá-las posteriormente
+   pelo Webpack. Para mais informações, [veja aqui](https://webpack.js.org/concepts/#entry).
 
-Export is especially useful when using the allowed names of asset bundles:
+A exportação é especialmente útil ao usar os nomes permitidos de pacotes de recursos:
 
 ```php
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
@@ -328,7 +329,7 @@ $assetManager->export(new JsonAssetExporter('/path/to/file.json'));
 $assetManager->export(new WebpackAssetExporter('/path/to/file.js'));
 ```
 
-If the allowed asset bundle names are not used, they must be registered before exporting:
+Se os nomes de pacotes de ativos permitidos não forem usados, eles deverão ser registrados antes da exportação:
 
 ```php
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
@@ -351,5 +352,5 @@ $assetManager->export(new JsonAssetExporter('/path/to/file.json'));
 $assetManager->export(new WebpackAssetExporter('/path/to/file.js'));
 ```
 
-You can create your own custom exporters for various integrations,
-you just need to implement the `Yiisoft\Assets\AssetExporterInterface`.
+Você pode criar seus próprios exportadores personalizados para diversas integrações,
+você só precisa implementar `Yiisoft\Assets\AssetExporterInterface`.
