@@ -160,7 +160,7 @@ class AssetBundle
      * Each JavaScript file can be specified in one of the following formats:
      *
      * - an absolute URL representing an external asset. For example,
-     *   `http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js` or
+     *   `https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js` or
      *   `//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js`.
      * - a relative path representing a local asset (e.g. `js/main.js`). The actual file path of a local asset can be
      *   determined by prefixing {@see $basePath} to the relative path, and the actual URL of the asset can be

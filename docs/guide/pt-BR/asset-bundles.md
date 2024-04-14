@@ -3,7 +3,7 @@
 O pacote de ativos representa uma coleção de arquivos de ativos, como CSS, JavaScript, imagens junto com opções de publicação.
 
 Cada pacote de ativos possui um nome exclusivo que o identifica globalmente entre todos os pacotes de ativos usados em um aplicativo.
-O nome é o [nome da classe totalmente qualificado](http://php.net/manual/en/language.namespaces.rules.php) da classe
+O nome é o [nome da classe totalmente qualificado](https://php.net/manual/en/language.namespaces.rules.php) da classe
 representando isso.
 
 Um pacote de ativos pode depender de outros pacotes de ativos. Ao registrar um pacote de ativos para um gestor de ativos,
