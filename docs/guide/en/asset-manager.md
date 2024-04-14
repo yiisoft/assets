@@ -1,7 +1,7 @@
 # Asset manager
 
 AssetManager resolves asset bundles registered in it and provides a list of files to include into HTML.
-For general usage see [asset bundles](asset-bundles.md). In this guide we'll focus on configuring it.
+For general usage see "[asset bundles](asset-bundles.md)". In this guide we'll focus on configuring it.
 
 Configuration could be done in two ways:
 
@@ -182,7 +182,7 @@ and the values of the other properties will remain unchanged.
 > all the values of its properties will be empty.
 
 For use in the [Yii framework](https://www.yiiframework.com/),
-see the configuration files: [`config/params.php`](../../../config/params.php) and [`config/web.php`](../../../config/di.php).
+see the configuration files: [`config/params.php`](../../../config/params.php) and [`config/di.php`](../../../config/di.php).
 
 ## Publishing asset bundles
 

@@ -22,7 +22,7 @@ Depois de feito isso, crie `package.json`:
 
 `npm install` traz três pacotes para o diretório `node_modules` de nossa aplicação.
 
-Abaixo, estamos usando o pacote bootstrap do guia [Pacotes de ativos](asset-bundles.md):
+Abaixo, estamos usando o pacote bootstrap do guia "[Pacotes de ativos](asset-bundles.md)":
 
 ```php
 namespace App\Assets;

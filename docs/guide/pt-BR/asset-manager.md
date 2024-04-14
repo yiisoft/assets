@@ -1,7 +1,7 @@
 # Gerente de ativos
 
 O AssetManager resolve os pacotes de recursos registrados nele e fornece uma lista de arquivos para incluir no HTML.
-Para uso geral, consulte [asset bundles](asset-bundles.md). Neste guia, nos concentraremos em configurá-lo.
+Para uso geral, consulte "[asset bundles](asset-bundles.md)". Neste guia, nos concentraremos em configurá-lo.
 
 A configuração pode ser feita de duas maneiras:
 
@@ -183,7 +183,7 @@ e os valores das demais propriedades permanecerão inalterados.
 > todos os valores de suas propriedades estarão vazios.
 
 Para uso no [Yii framework](https://www.yiiframework.com/),
-veja os arquivos de configuração: [`config/params.php`](../../../config/params.php) e [`config/web.php`](../../../config/di.php).
+veja os arquivos de configuração: [`config/params.php`](../../../config/params.php) e [`config/di.php`](../../../config/di.php).
 
 ## Publicação de pacotes de recursos
 

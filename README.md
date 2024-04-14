@@ -35,10 +35,10 @@ composer require yiisoft/assets --prefer-dist
 
 There are three main steps using the package:
 
-1. [Define asset bundles](docs/asset-bundles.md). These are config classes defining where your assets
+1. [Define asset bundles](docs/guide/en/asset-bundles.md). These are config classes defining where your assets
    are and how they should be used.
-2. [Register bundles to asset manager](docs/asset-manager.md) and obtain list of files to include.
-3. Optionally [use asset converter with asset bundle](docs/asset-converter.md) for asset format conversion
+2. [Register bundles to asset manager](docs/guide/en/asset-manager.md) and obtain list of files to include.
+3. Optionally [use asset converter with asset bundle](docs/guide/en/asset-converter.md) for asset format conversion
    (such as TypeScript to JavaScript).
 4. Use your favorite method to include files into HTML (out of scope of this package).
 
