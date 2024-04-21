@@ -45,7 +45,7 @@ There are three main steps using the package:
 ## Documentation
 
 - [English](docs/guide/en/readme.md)
-- [Portuguese - Brazil](docs/guide/pt-BR/readme.md)
+- [Português - Brasil](docs/guide/pt-BR/readme.md)
 - [Internals](docs/internals.md)
 
 ## Support
