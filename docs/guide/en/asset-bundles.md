@@ -3,7 +3,7 @@
 Asset bundle represents a collection of asset files, such as CSS, JavaScript, images along with publishing options.
 
 Each asset bundle has a unique name that globally identifies it among all asset bundles used in an application.
-The name is the [fully qualified class name](http://php.net/manual/en/language.namespaces.rules.php) of the class
+The name is the [fully qualified class name](https://php.net/manual/en/language.namespaces.rules.php) of the class
 representing it.
 
 An asset bundle can depend on other asset bundles. When registering an asset bundle to an asset manager,
@@ -39,7 +39,7 @@ as public properties:
 `$jsPosition`       |`int\|null`   | `null`  | Specifies where the `<style>` tag should be inserted in a page.
 `$jsVars`           |`array`      | `[]`    | JavaScript variables.
 `$publishOptions`   |`array`      | `[]`    | The options to be passed to `\Yiisoft\Assets\AssetPublisher::publish()` when the asset bundle is being published.
-`$export`           |`array`      | `[]`    | List of file paths to export into a format readable by third party tools such as [Webpack](https://webpack.js.org/). If the array is empty, the file paths from the `$css` and `$js` will be exported. 
+`$export`           |`array`      | `[]`    | List of file paths to export into a format readable by third party tools such as [Webpack](https://webpack.js.org/). If the array is empty, the file paths from the `$css` and `$js` will be exported.
 `$sourcePath`       |`string\|null`| `null`  | The directory that contains the source asset files for this asset bundle.
 
 ### JS/CSS positions for [`yiisoft/view`](https://github.com/yiisoft/view)
@@ -81,7 +81,7 @@ After it is done, create `package.json`:
 }
 ```
 
-npm installs three packages into `node_modules` directory of our application. These are bootstrap4, and its two
+The npm installs three packages into `node_modules` directory of our application. These are bootstrap4, and its two
 dependencies: jQuery and popper.
 
 Add alias to the application config at `config/params.php`:
