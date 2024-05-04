@@ -28,7 +28,7 @@ It helps resolve dependencies and get lists of files ready for generating HTML `
 The package could be installed via composer:
 
 ```shell
-composer require yiisoft/assets --prefer-dist
+composer require yiisoft/assets
 ```
 
 ## General usage
