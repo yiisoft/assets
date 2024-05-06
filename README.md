@@ -25,7 +25,7 @@ It helps resolve dependencies and get lists of files ready for generating HTML `
 
 ## Installation
 
-The package could be installed via composer:
+The package could be installed with [Composer](https://getcomposer.org):
 
 ```shell
 composer require yiisoft/assets
