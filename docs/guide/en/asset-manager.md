@@ -352,4 +352,4 @@ $assetManager->export(new WebpackAssetExporter('/path/to/file.js'));
 ```
 
 You can create your own custom exporters for various integrations,
-you just need to implement the `Yiisoft\Assets\AssetExporterInterface`.
+just need to implement the `Yiisoft\Assets\AssetExporterInterface`.

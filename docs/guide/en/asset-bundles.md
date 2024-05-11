@@ -65,7 +65,7 @@ The possible values of `$cssPosition` are:
 ## Defining asset bundle for local assets
 
 A common use case is to define bundles for local files. As an example, we will create a bundle with `sourcePath` pointing
-to [Bootstrap 4](https://getbootstrap.com/).
+to [Bootstrap 5](https://getbootstrap.com/).
 
 We'll use [foxy](https://github.com/fxpio/foxy). It calls npm, so we'll need [NodeJS](https://nodejs.org/en/) installed.
 After it is done, create `package.json`:
@@ -74,14 +74,14 @@ After it is done, create `package.json`:
 {
     "license": "BSD-3-Clause",
     "dependencies": {
-        "bootstrap": "^4.1.3",
-        "jquery": "^3.3.1",
-        "popper.js": "^1.14.5"
+        "bootstrap": "^5.3.3",
+        "jquery": "^3.7.1",
+        "popper.js": "^2.11.8"
     }
 }
 ```
 
-The npm installs three packages into `node_modules` directory of our application. These are bootstrap4, and its two
+The npm installs three packages into `node_modules` directory of our application. These are bootstrap5, and its two
 dependencies: jQuery and popper.
 
 Add alias to the application config at `config/params.php`:
@@ -112,7 +112,7 @@ use Yiisoft\Assets\AssetBundle;
  *
  * BootstrapAsset.
  *
- * @package Bootstrap4
+ * @package bootstrap5
  */
 class BootstrapAsset extends AssetBundle
 {
@@ -156,7 +156,7 @@ use Yiisoft\Assets\AssetBundle;
  *
  * JqueryAsset.
  *
- * @package Bootstrap4
+ * @package bootstrap5
  */
 class JqueryAsset extends AssetBundle
 {
@@ -190,7 +190,7 @@ use Yiisoft\Assets\AssetBundle;
  *
  * PopperAsset.
  *
- * @package Bootstrap4
+ * @package bootstrap5
  */
 class PopperAsset extends AssetBundle
 {
@@ -252,7 +252,7 @@ class ViewFactory
 }
 ```
 
-If we want bootstrap 4 in all our views, we simply register it to asset manager in the layout:
+If we want Bootstrap 5 in all our views, we simply register it to asset manager in the layout:
 
 ```php
 // register an asset
@@ -263,7 +263,7 @@ $this->setCssFiles($assetManager->getCssFiles());
 $this->setJsFiles($assetManager->getJsFiles());
 ```
 
-> Note: If you need to register an asset in a single view, registering asset is done in that view instead while
+> **Note:** If you need to register an asset in a single view, registering asset is done in that view instead while
 resolving files stays in the layout.
 
 ### Override file paths for export

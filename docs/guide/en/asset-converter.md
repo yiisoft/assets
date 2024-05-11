@@ -15,7 +15,7 @@ After it is done, create `package.json`:
 {
     "license": "BSD-3-Clause",
     "dependencies": {
-        "sass": "^1.24.0"
+        "sass": "^1.77.0"
     }
 }
 ```
