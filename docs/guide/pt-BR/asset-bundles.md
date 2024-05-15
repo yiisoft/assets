@@ -65,7 +65,7 @@ Os valores possíveis de `$cssPosition` são:
 ## Definindo pacote de ativos para ativos locais
 
 Um caso de uso comum é definir pacotes configuráveis para arquivos locais. Como exemplo, criaremos um pacote com `sourcePath` apontando
-para [Bootstrap 4](https://getbootstrap.com/).
+para [Bootstrap 5](https://getbootstrap.com/).
 
 Usaremos [foxy](https://github.com/fxpio/foxy). Ele chama o npm, então precisaremos do [NodeJS](https://nodejs.org/en/) instalado.
 Depois de feito isso, crie `package.json`:
@@ -74,14 +74,14 @@ Depois de feito isso, crie `package.json`:
 {
     "license": "BSD-3-Clause",
     "dependencies": {
-        "bootstrap": "^4.1.3",
-        "jquery": "^3.3.1",
-        "popper.js": "^1.14.5"
+        "bootstrap": "^5.3.3",
+        "jquery": "^3.7.1",
+        "popper.js": "^2.11.8"
     }
 }
 ```
 
-O npm instala três pacotes no diretório `node_modules` da nossa aplicação. Estes são bootstrap4 e suas duas
+O npm instala três pacotes no diretório `node_modules` da nossa aplicação. Estes são bootstrap5 e suas duas
 dependências: jQuery e popper.
 
 Adicione o alias à configuração do aplicativo em `config/params.php`:
@@ -112,7 +112,7 @@ use Yiisoft\Assets\AssetBundle;
  *
  * BootstrapAsset.
  *
- * @package Bootstrap4
+ * @package bootstrap5
  */
 class BootstrapAsset extends AssetBundle
 {
@@ -156,7 +156,7 @@ use Yiisoft\Assets\AssetBundle;
  *
  * JqueryAsset.
  *
- * @package Bootstrap4
+ * @package bootstrap5
  */
 class JqueryAsset extends AssetBundle
 {
@@ -190,7 +190,7 @@ use Yiisoft\Assets\AssetBundle;
  *
  * PopperAsset.
  *
- * @package Bootstrap4
+ * @package bootstrap5
  */
 class PopperAsset extends AssetBundle
 {
@@ -252,7 +252,7 @@ class ViewFactory
 }
 ```
 
-Se quisermos o bootstrap 4 em todas as nossas visualizações, simplesmente registramos ele no gerenciador de ativos no layout:
+Se quisermos o Bootstrap 5 em todas as nossas visualizações, simplesmente registramos ele no gerenciador de ativos no layout:
 
 ```php
 // register an asset
@@ -263,7 +263,7 @@ $this->setCssFiles($assetManager->getCssFiles());
 $this->setJsFiles($assetManager->getJsFiles());
 ```
 
-> Nota: Se você precisar registrar um ativo em uma única visualização, o registro do ativo será feito nessa visualização enquanto
+> **Nota:** Se você precisar registrar um ativo em uma única visualização, o registro do ativo será feito nessa visualização enquanto
 a resolução de arquivos permanece no layout.
 
 ### Substituir caminhos de arquivo para exportação

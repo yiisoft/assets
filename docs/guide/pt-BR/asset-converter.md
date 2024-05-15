@@ -15,7 +15,7 @@ Depois de feito isso, crie `package.json`:
 {
     "license": "BSD-3-Clause",
     "dependencies": {
-        "sass": "^1.24.0"
+        "sass": "^1.77.0"
     }
 }
 ```
@@ -88,7 +88,7 @@ AssetConverterInterface::class => static function (\Psr\Container\ContainerInter
 }
 ```
 
-ou, se feito via params.php:
+ou ainda, se feito via params.php:
 
 ```php
 'yiisoft/assets' => [
