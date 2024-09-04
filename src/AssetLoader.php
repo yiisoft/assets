@@ -83,15 +83,14 @@ final class AssetLoader implements AssetLoaderInterface
             return $assetPath;
         }
 
-        $path = "{$this->getBundleBasePath($bundle)}/{$assetPath}";
         $url = "{$this->getBundleBaseUrl($bundle)}/{$assetPath}";
 
-        if (!is_file($path)) {
-            throw new InvalidConfigException("Asset files not found: \"{$path}\".");
-        }
-
-        if ($this->appendTimestamp && ($timestamp = FileHelper::lastModifiedTime($path)) > 0) {
-            return "{$url}?v={$timestamp}";
+        if ($this->appendTimestamp) {
+            $path = "{$this->getBundleBasePath($bundle)}/{$assetPath}";
+            $timestamp = FileHelper::lastModifiedTime($path);
+            if ($timestamp !== null) {
+                $url .= '?v=' . $timestamp;
+            }
         }
 
         return $url;

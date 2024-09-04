@@ -20,7 +20,7 @@ interface AssetLoaderInterface
      * @param AssetBundle $bundle The asset bundle which the asset file belongs to.
      * @param string $assetPath The asset path. See {@see AssetBundle::$js} and {@see AssetBundle::$css}.
      *
-     * @throws InvalidConfigException If asset files are not found.
+     * @throws InvalidConfigException If asset bundle configuration is invalid.
      *
      * @return string The actual URL for the specified asset.
      */
