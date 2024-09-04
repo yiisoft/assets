@@ -9,7 +9,6 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
 
 use function array_merge;
-use function is_file;
 
 /**
  * `AssetLoader` is responsible for executing the loading of the assets from {@see AssetBundle::$basePath} to
