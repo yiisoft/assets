@@ -10,8 +10,8 @@ use Yiisoft\Assets\AssetLoaderInterface;
 final class AssetLoaderInterfaceProxy implements AssetLoaderInterface
 {
     public function __construct(
-        private AssetLoaderInterface $assetLoader,
-        private AssetCollector $assetCollector
+        private readonly AssetLoaderInterface $assetLoader,
+        private readonly AssetCollector $assetCollector,
     ) {
     }
 

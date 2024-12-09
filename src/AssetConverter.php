@@ -75,10 +75,10 @@ final class AssetConverter implements AssetConverterInterface
      * @psalm-param array<string, array{0:string,1:string}> $commands
      */
     public function __construct(
-        private Aliases $aliases,
-        private LoggerInterface $logger,
+        private readonly Aliases $aliases,
+        private readonly LoggerInterface $logger,
         array $commands = [],
-        private bool $forceConvert = false
+        private bool $forceConvert = false,
     ) {
         $this->commands = array_merge($this->commands, $commands);
     }

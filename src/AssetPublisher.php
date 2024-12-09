@@ -61,9 +61,9 @@ final class AssetPublisher implements AssetPublisherInterface
      * @param bool $linkAssets Whether to use symbolic link to publish asset files. See {@see withLinkAssets()}.
      */
     public function __construct(
-        private Aliases $aliases,
+        private readonly Aliases $aliases,
         private bool $forceCopy = false,
-        private bool $linkAssets = false
+        private bool $linkAssets = false,
     ) {
     }
 

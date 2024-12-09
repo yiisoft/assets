@@ -75,7 +75,7 @@ final class AssetManager
     public function __construct(
         Aliases $aliases,
         private AssetLoaderInterface $loader,
-        private array $allowedBundleNames = [],
+        private readonly array $allowedBundleNames = [],
         private array $customizedBundles = []
     ) {
         $this->registrar = new AssetRegistrar($aliases, $this->loader);
