@@ -11,6 +11,7 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Files\PathMatcher\PathMatcherInterface;
 
+use function array_key_exists;
 use function crc32;
 use function dirname;
 use function file_exists;
@@ -283,7 +284,6 @@ final class AssetPublisher implements AssetPublisherInterface
             ];
             foreach (['afterCopy', 'beforeCopy', 'filter', 'recursive'] as $key) {
                 if (array_key_exists($key, $bundle->publishOptions)) {
-                    /** @psalm-suppress MixedAssignment */
                     $publishOptions[$key] = $bundle->publishOptions[$key];
                 }
             }
