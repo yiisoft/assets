@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use RecursiveDirectoryIterator;
 use RuntimeException;
 use Yiisoft\Aliases\Aliases;
@@ -243,7 +244,7 @@ final class AssetManagerTest extends TestCase
         );
     }
 
-    public function positionProvider(): array
+    public static function positionProvider(): array
     {
         return [
             [1, true],
@@ -255,9 +256,7 @@ final class AssetManagerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider positionProvider
-     */
+    #[DataProvider('positionProvider')]
     public function testPositionDependency(int $pos, bool $jqAlreadyRegistered): void
     {
         $manager = new AssetManager($this->aliases, $this->loader, [], [
@@ -291,7 +290,7 @@ final class AssetManagerTest extends TestCase
         $this->assertEquals($pos, $manager->getJsFiles()['/files/jsFile.js'][1]);
     }
 
-    public function dataJsPositionDependencyConflict(): array
+    public static function dataJsPositionDependencyConflict(): array
     {
         return [
             [1, true],
@@ -301,9 +300,7 @@ final class AssetManagerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataJsPositionDependencyConflict
-     */
+    #[DataProvider('dataJsPositionDependencyConflict')]
     public function testJsPositionDependencyConflict(int $pos, bool $jQueryAlreadyRegistered): void
     {
         $jQueryAsset = JqueryAsset::class;
@@ -328,7 +325,7 @@ final class AssetManagerTest extends TestCase
             : $manager->register(PositionAsset::class);
     }
 
-    public function dataCssPositionDependencyConflict(): array
+    public static function dataCssPositionDependencyConflict(): array
     {
         return [
             [1, true],
@@ -338,9 +335,7 @@ final class AssetManagerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataCssPositionDependencyConflict
-     */
+    #[DataProvider('dataCssPositionDependencyConflict')]
     public function testCssPositionDependencyConflict(int $pos, bool $oneAlreadyRegistered): void
     {
         $oneAsset = OneAsset::class;
