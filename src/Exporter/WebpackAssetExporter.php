@@ -19,8 +19,9 @@ final class WebpackAssetExporter implements AssetExporterInterface
     /**
      * @param string $targetFile The full path to the target JavaScript file.
      */
-    public function __construct(private string $targetFile)
-    {
+    public function __construct(
+        private readonly string $targetFile,
+    ) {
     }
 
     /**

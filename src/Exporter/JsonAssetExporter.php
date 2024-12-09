@@ -18,8 +18,9 @@ final class JsonAssetExporter implements AssetExporterInterface
     /**
      * @param string $targetFile The full path to the target JSON file.
      */
-    public function __construct(private string $targetFile)
-    {
+    public function __construct(
+        private readonly string $targetFile,
+    ) {
     }
 
     /**

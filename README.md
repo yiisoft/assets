@@ -19,7 +19,7 @@ It helps resolve dependencies and get lists of files ready for generating HTML `
 
 ## Requirements
 
-- PHP 8.0 or higher.
+- PHP 8.1 or higher.
 - `mbstring` PHP extension.
 
 ## Installation

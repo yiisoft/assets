@@ -11,6 +11,7 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Files\PathMatcher\PathMatcherInterface;
 
+use function array_key_exists;
 use function crc32;
 use function dirname;
 use function file_exists;
@@ -60,9 +61,9 @@ final class AssetPublisher implements AssetPublisherInterface
      * @param bool $linkAssets Whether to use symbolic link to publish asset files. See {@see withLinkAssets()}.
      */
     public function __construct(
-        private Aliases $aliases,
+        private readonly Aliases $aliases,
         private bool $forceCopy = false,
-        private bool $linkAssets = false
+        private bool $linkAssets = false,
     ) {
     }
 
@@ -283,7 +284,6 @@ final class AssetPublisher implements AssetPublisherInterface
             ];
             foreach (['afterCopy', 'beforeCopy', 'filter', 'recursive'] as $key) {
                 if (array_key_exists($key, $bundle->publishOptions)) {
-                    /** @psalm-suppress MixedAssignment */
                     $publishOptions[$key] = $bundle->publishOptions[$key];
                 }
             }

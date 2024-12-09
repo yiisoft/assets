@@ -43,7 +43,7 @@ final class AssetLoader implements AssetLoaderInterface
      * @param string|null $baseUrl The base URL that can be used to access the asset files. See {@see withBaseUrl()}.
      */
     public function __construct(
-        private Aliases $aliases,
+        private readonly Aliases $aliases,
         private bool $appendTimestamp = false,
         private array $assetMap = [],
         private ?string $basePath = null,
