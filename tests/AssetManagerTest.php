@@ -511,7 +511,7 @@ final class AssetManagerTest extends TestCase
         $this->manager->export(new JsonAssetExporter($this->aliases->get('@asset/test.json')));
     }
 
-    public function testGetAssetUrl(): void
+    public function testGetUrl(): void
     {
         $bundle = new ExportAsset();
         $sourcePath = $this->aliases->get($bundle->sourcePath);
@@ -523,20 +523,26 @@ final class AssetManagerTest extends TestCase
 
         $this->assertSame(
             $this->aliases->get("@assetUrl/{$hash}/css/stub.css"),
-            $this->manager->getAssetUrl(ExportAsset::class, 'css/stub.css'),
+            $this->manager->getUrl(ExportAsset::class, 'css/stub.css'),
         );
         $this->assertSame(
             $this->aliases->get("@assetUrl/{$hash}/js/stub.js"),
-            $this->manager->getAssetUrl(ExportAsset::class, 'js/stub.js'),
+            $this->manager->getUrl(ExportAsset::class, 'js/stub.js'),
         );
         $this->assertSame(
             $this->aliases->get("@assetUrl/{$hash}/export/stub.css"),
-            $this->manager->getAssetUrl(ExportAsset::class, 'export/stub.css'),
+            $this->manager->getUrl(ExportAsset::class, 'export/stub.css'),
         );
         $this->assertSame(
             $this->aliases->get("@assetUrl/{$hash}/export/stub.js"),
-            $this->manager->getAssetUrl(ExportAsset::class, 'export/stub.js'),
+            $this->manager->getUrl(ExportAsset::class, 'export/stub.js'),
         );
+        $this->assertSame(
+            $this->aliases->get("@assetUrl/{$hash}/export/yii-logo.png"),
+            $this->manager->getUrl(ExportAsset::class, 'export/yii-logo.png'),
+        );
+
+        // Test deprecated `getAssetUrl()` method
         $this->assertSame(
             $this->aliases->get("@assetUrl/{$hash}/export/yii-logo.png"),
             $this->manager->getAssetUrl(ExportAsset::class, 'export/yii-logo.png'),
