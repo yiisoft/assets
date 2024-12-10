@@ -17,6 +17,7 @@ use Yiisoft\Files\PathMatcher\PathMatcherInterface;
  * asset bundles will be automatically registered.
  *
  * @psalm-import-type CssFile from AssetManager
+ * @psalm-import-type JsFile from AssetManager
  */
 class AssetBundle
 {
@@ -173,6 +174,8 @@ class AssetBundle
      *   pairs that will be used to overwrite {@see $jsOptions} settings for this entry.
      *
      * Note that only a forward slash "/" should be used as directory separator.
+     *
+     * @psalm-var array<array-key, string|JsFile>
      */
     public array $js = [];
 

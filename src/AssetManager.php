@@ -16,7 +16,7 @@ use function is_array;
  *
  * @psalm-type CssFile = array{0: string, ...}|array{0: string, 1: int, ...}
  * @psalm-type CssString = array{0:mixed,1?:int}&array
- * @psalm-type JsFile = array{0:string,1?:int}&array
+ * @psalm-type JsFile = array{0: string, ...}|array{0: string, 1: int, ...}
  * @psalm-type JsString = array{0:mixed,1?:int}&array
  * @psalm-type JsVar = array{0:string,1:mixed,2?:int}
  * @psalm-type CustomizedBundles = array<string, AssetBundle|array<string, mixed>|false>
