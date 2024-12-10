@@ -196,8 +196,6 @@ final class AssetRegistrar
          * @psalm-var AssetConverterInterface $this->converter
          * @psalm-var string $bundle->basePath
          * @psalm-var ConverterOptions $bundle->converterOptions
-         *
-         * @var CssFile|string $css
          */
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
@@ -236,8 +234,6 @@ final class AssetRegistrar
          * @psalm-var AssetConverterInterface $this->converter
          * @psalm-var string $bundle->basePath
          * @psalm-var ConverterOptions $bundle->converterOptions
-         *
-         * @var JsFile|string $js
          */
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {

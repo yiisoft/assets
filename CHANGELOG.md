@@ -6,6 +6,7 @@
 - Bug #123: `AssetManager` load empty `AssetBundle` when register wrong namespace bundle (@terabytesoftw)
 - Enh #119, #129: Add debug collector for `yiisoft/yii-debug` (@xepozz, @vjik)
 - Enh #148: Raise the minimum PHP version to 8.1 and minor refactoring (@vjik)
+- Enh #149: Improve `AssetBundle` properties' Psalm types (@vjik) 
 
 ## 4.0.0 February 13, 2023
 

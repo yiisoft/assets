@@ -15,6 +15,11 @@ use Yiisoft\Files\PathMatcher\PathMatcherInterface;
  *
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
+ *
+ * @psalm-import-type CssFile from AssetManager
+ * @psalm-import-type CssString from AssetManager
+ * @psalm-import-type JsFile from AssetManager
+ * @psalm-import-type JsString from AssetManager
  */
 class AssetBundle
 {
@@ -72,6 +77,8 @@ class AssetBundle
      *     'key' => 'css/d.css',
      * ]
      * ```
+     *
+     * @psalm-var array<array-key, string|CssFile>
      */
     public array $css = [];
 
@@ -99,6 +106,8 @@ class AssetBundle
      *     'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any'],
      * ];
      * ```
+     *
+     * @psalm-var array<array-key, string|CssString>
      */
     public array $cssStrings = [];
 
@@ -169,6 +178,8 @@ class AssetBundle
      *   pairs that will be used to overwrite {@see $jsOptions} settings for this entry.
      *
      * Note that only a forward slash "/" should be used as directory separator.
+     *
+     * @psalm-var array<array-key, string|JsFile>
      */
     public array $js = [];
 
@@ -196,6 +207,8 @@ class AssetBundle
      *     'key4' => ['alert(8);', 3, 'id' => 'second'],
      * ];
      * ```
+     *
+     * @psalm-var array<array-key, string|JsString>
      */
     public array $jsStrings = [];
 
