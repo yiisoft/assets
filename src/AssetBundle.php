@@ -15,6 +15,8 @@ use Yiisoft\Files\PathMatcher\PathMatcherInterface;
  *
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
+ *
+ * @psalm-import-type CssFile from AssetManager
  */
 class AssetBundle
 {
@@ -72,6 +74,8 @@ class AssetBundle
      *     'key' => 'css/d.css',
      * ]
      * ```
+     *
+     * @psalm-var array<array-key, string|CssFile>
      */
     public array $css = [];
 
