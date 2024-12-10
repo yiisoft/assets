@@ -17,7 +17,9 @@ use Yiisoft\Files\PathMatcher\PathMatcherInterface;
  * asset bundles will be automatically registered.
  *
  * @psalm-import-type CssFile from AssetManager
+ * @psalm-import-type CssString from AssetManager
  * @psalm-import-type JsFile from AssetManager
+ * @psalm-import-type JsString from AssetManager
  */
 class AssetBundle
 {
@@ -104,6 +106,8 @@ class AssetBundle
      *     'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any'],
      * ];
      * ```
+     *
+     * @psalm-var array<array-key, string|CssString>
      */
     public array $cssStrings = [];
 
@@ -203,6 +207,8 @@ class AssetBundle
      *     'key4' => ['alert(8);', 3, 'id' => 'second'],
      * ];
      * ```
+     *
+     * @psalm-var array<array-key, string|JsString>
      */
     public array $jsStrings = [];
 
