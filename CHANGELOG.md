@@ -7,7 +7,7 @@
 - Enh #119, #129: Add debug collector for `yiisoft/yii-debug` (@xepozz, @vjik)
 - Enh #148: Raise the minimum PHP version to 8.1 and minor refactoring (@vjik)
 - Enh #149: Improve `AssetBundle` properties' Psalm types (@vjik) 
-- New #150: Add `AssetManager::getUrl()` method instead of `getAssetUrl()` method that marked as deprecated (@vjik)
+- New #150: Add `AssetManager::getUrl()` method instead of `getAssetUrl()` method that is marked as deprecated (@vjik)
 
 ## 4.0.0 February 13, 2023
 
