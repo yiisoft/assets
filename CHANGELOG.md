@@ -1,13 +1,13 @@
 # Yii Assets Change Log
 
-## 5.0.0 under development
+## 5.0.0 December 11, 2024
 
+- New #150: Add `AssetManager::getUrl()` method instead of `getAssetUrl()` method that is marked as deprecated (@vjik)
 - Chg #132: Move `di-web` configuration to `di` and allow to set publisher via parameters (@Gerych1984)
-- Bug #123: `AssetManager` load empty `AssetBundle` when register wrong namespace bundle (@terabytesoftw)
 - Enh #119, #129: Add debug collector for `yiisoft/yii-debug` (@xepozz, @vjik)
 - Enh #148: Raise the minimum PHP version to 8.1 and minor refactoring (@vjik)
-- Enh #149: Improve `AssetBundle` properties' Psalm types (@vjik) 
-- New #150: Add `AssetManager::getUrl()` method instead of `getAssetUrl()` method that is marked as deprecated (@vjik)
+- Enh #149: Improve `AssetBundle` properties' Psalm types (@vjik)
+- Bug #123: `AssetManager` load empty `AssetBundle` when register wrong namespace bundle (@terabytesoftw)
 
 ## 4.0.0 February 13, 2023
 
