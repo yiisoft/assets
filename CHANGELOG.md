@@ -1,5 +1,9 @@
 # Yii Assets Change Log
 
+## 5.0.1 under development
+
+- no changes in this release.
+
 ## 5.0.0 December 11, 2024
 
 - New #150: Add `AssetManager::getUrl()` method instead of `getAssetUrl()` method that is marked as deprecated (@vjik)
