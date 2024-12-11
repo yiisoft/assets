@@ -117,8 +117,25 @@ final class AssetManager
      * @throws InvalidConfigException If asset files are not found.
      *
      * @return string The actual URL for the specified asset.
+     *
+     * @deprecated Use {@see getUrl()} instead.
      */
     public function getAssetUrl(string $name, string $path): string
+    {
+        return $this->getUrl($name, $path);
+    }
+
+    /**
+     * Returns the actual URL for the specified asset.
+     *
+     * @param string $name The asset bundle name.
+     * @param string $path The asset path.
+     *
+     * @throws InvalidConfigException If asset files are not found.
+     *
+     * @return string The actual URL for the specified asset.
+     */
+    public function getUrl(string $name, string $path): string
     {
         return $this->loader->getAssetUrl($this->getBundle($name), $path);
     }
