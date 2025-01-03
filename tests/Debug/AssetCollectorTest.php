@@ -11,9 +11,25 @@ use Yiisoft\Yii\Debug\Tests\Shared\AbstractCollectorTestCase;
 
 final class AssetCollectorTest extends AbstractCollectorTestCase
 {
-    /**
-     * @param AssetCollector|CollectorInterface $collector
-     */
+    public function testSummary(): void
+    {
+        $collector = new AssetCollector();
+        $collector->startup();
+        $collector->collect(new AssetBundle());
+        $collector->collect(new AssetBundle());
+
+        $this->assertSame(
+            [
+                'asset' => [
+                    'bundles' => [
+                        'total' => 2,
+                    ],
+                ],
+            ],
+            $collector->getSummary(),
+        );
+    }
+
     protected function collectTestData(AssetCollector|CollectorInterface $collector): void
     {
         $collector->collect(new AssetBundle());
