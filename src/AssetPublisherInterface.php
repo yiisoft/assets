@@ -8,6 +8,8 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
  * The `AssetPublisherInterface` must be implemented by asset publisher classes.
+ *
+ * @phpstan-type PublishedBundle = array{0:non-empty-string,1:non-empty-string}
  */
 interface AssetPublisherInterface
 {
@@ -38,7 +40,7 @@ interface AssetPublisherInterface
      *
      * @throws InvalidConfigException If the asset or the asset file paths to be published does not exist.
      *
-     * @return array The path (directory or file path) and the URL that the asset is published as.
+     * @return PublishedBundle The path (directory or file path) and the URL that the asset is published as.
      */
     public function publish(AssetBundle $bundle): array;
 

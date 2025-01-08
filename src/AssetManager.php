@@ -14,43 +14,35 @@ use function is_array;
 /**
  * `AssetManager` manages asset bundle configuration and loading.
  *
- * @psalm-type CssFile = array{0: string, ...}|array{0: string, 1: int, ...}
- * @psalm-type CssString = array{0: mixed, ...}|array{0: string, 1: int, ...}
- * @psalm-type JsFile = array{0: string, ...}|array{0: string, 1: int, ...}
- * @psalm-type JsString = array{0: mixed, ...}|array{0: string, 1: int, ...}
- * @psalm-type JsVar = array{0:string,1:mixed,2?:int}
- * @psalm-type CustomizedBundles = array<string, AssetBundle|array<string, mixed>|false>
+ * @phpstan-type CssFile = array{0: string, ...}|array{0: string, 1: int, ...}
+ * @phpstan-type CssString = array{0: mixed, ...}|array{0: string, 1: int, ...}
+ * @phpstan-type JsFile = array{0: string, ...}|array{0: string, 1: int, ...}
+ * @phpstan-type JsString = array{0: mixed, ...}|array{0: string, 1: int, ...}
+ * @phpstan-type JsVar = array{0:string,1:mixed,2?:int}
+ * @phpstan-type CustomizedBundles = array<string, AssetBundle|array<string, mixed>|false>
  */
 final class AssetManager
 {
     /**
-     * @var AssetBundle[] list of the registered asset bundles.
+     * @var array<string, AssetBundle> list of the registered asset bundles.
      * The keys are the bundle names, and the values are the registered {@see AssetBundle} objects.
      *
      * {@see registerAssetBundle()}
-     *
-     * @psalm-var array<string, AssetBundle>
      */
     private array $registeredBundles = [];
 
     /**
-     * @var true[] List of the asset bundles in register process. Use for detect circular dependency.
-     *
-     * @psalm-var array<string, true>
+     * @var array<string, true> List of the asset bundles in register process. Use for detect circular dependency.
      */
     private array $bundlesInRegisterProcess = [];
 
     /**
-     * @var AssetBundle[]
-     *
-     * @psalm-var array<string, AssetBundle>
+     * @var array<string, AssetBundle>
      */
     private array $loadedBundles = [];
 
     /**
-     * @var AssetBundle[]
-     *
-     * @psalm-var array<string, AssetBundle>
+     * @var array<string, AssetBundle>
      */
     private array $dummyBundles = [];
 
@@ -64,13 +56,11 @@ final class AssetManager
      * asset bundles are allowed. If the names of allowed asset bundles were specified, only these asset bundles
      * or their dependencies can be registered {@see register()} and obtained {@see getBundle()}. Also, specifying
      * names allows to export {@see export()} asset bundles automatically without first registering them manually.
-     * @param array $customizedBundles The asset bundle configurations. Provided to customize asset bundles.
+     * @param CustomizedBundles $customizedBundles The asset bundle configurations. Provided to customize asset bundles.
      * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration specified
      * here, the configuration will be applied to the bundle. The array keys are the asset class bundle names
      * (without leading backslash). If a value is false, it means the corresponding asset bundle is disabled
      * and {@see getBundle()} should return an instance of the specified asset bundle with empty property values.
-     *
-     * @psalm-param CustomizedBundles $customizedBundles
      */
     public function __construct(
         Aliases $aliases,
@@ -141,9 +131,7 @@ final class AssetManager
     }
 
     /**
-     * @return array Config array of CSS files.
-     *
-     * @psalm-return CssFile[]
+     * @return CssFile[] Config array of CSS files.
      */
     public function getCssFiles(): array
     {
@@ -151,9 +139,7 @@ final class AssetManager
     }
 
     /**
-     * @return array CSS blocks.
-     *
-     * @psalm-return CssString[]
+     * @return CssString[] CSS blocks.
      */
     public function getCssStrings(): array
     {
@@ -161,9 +147,7 @@ final class AssetManager
     }
 
     /**
-     * @return array Config array of JavaScript files.
-     *
-     * @psalm-return JsFile[]
+     * @return JsFile[] Config array of JavaScript files.
      */
     public function getJsFiles(): array
     {
@@ -171,9 +155,7 @@ final class AssetManager
     }
 
     /**
-     * @return array JavaScript code blocks.
-     *
-     * @psalm-return JsString[]
+     * @return JsString[] JavaScript code blocks.
      */
     public function getJsStrings(): array
     {
@@ -181,9 +163,7 @@ final class AssetManager
     }
 
     /**
-     * @return array JavaScript variables.
-     *
-     * @psalm-return list<JsVar>
+     * @return list<JsVar> JavaScript variables.
      */
     public function getJsVars(): array
     {
@@ -274,9 +254,7 @@ final class AssetManager
      * which means that the corresponding asset file may not physically exist.
      *
      * @param string $bundleName The class name of the asset bundle (without the leading backslash).
-     * @param array $bundleConfig The customized asset bundle configuration.
-     *
-     * @psalm-param array<string, mixed> $bundleConfig
+     * @param array<string, mixed> $bundleConfig The customized asset bundle configuration.
      */
     public function registerCustomized(string $bundleName, array $bundleConfig): void
     {
@@ -451,12 +429,11 @@ final class AssetManager
             return $this->loadedBundles[$name] = $this->loader->loadBundle($name, $this->customizedBundles[$name]);
         }
 
-        /** @psalm-suppress RedundantConditionGivenDocblockType */
         if ($this->customizedBundles[$name] === false) {
-            /** @psalm-suppress MixedArgumentTypeCoercion */
             return $this->dummyBundles[$name] ??= $this->loader->loadBundle($name, (array) (new AssetBundle()));
         }
 
+        // @phpstan-ignore deadCode.unreachable
         throw new InvalidConfigException("Invalid configuration of the \"{$name}\" asset bundle.");
     }
 

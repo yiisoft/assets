@@ -9,7 +9,6 @@ use RecursiveDirectoryIterator;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
-use Yiisoft\Files\PathMatcher\PathMatcherInterface;
 
 use function array_key_exists;
 use function crc32;
@@ -25,8 +24,8 @@ use function symlink;
  * `AssetPublisher` is responsible for executing the publication of the assets from {@see AssetBundle::$sourcePath} to
  * {@see AssetBundle::$basePath}.
  *
- * @psalm-type HashCallback = callable(string):string
- * @psalm-type PublishedBundle = array{0:non-empty-string,1:non-empty-string}
+ * @phpstan-type HashCallback = callable(string):string
+ * @phpstan-import-type PublishedBundle from AssetPublisherInterface
  */
 final class AssetPublisher implements AssetPublisherInterface
 {
@@ -41,16 +40,12 @@ final class AssetPublisher implements AssetPublisherInterface
     private int $fileMode = 0755;
 
     /**
-     * @var callable|null A callback that will be called to produce hash for asset directory generation.
-     *
-     * @psalm-var HashCallback|null
+     * @var HashCallback|null A callback that will be called to produce hash for asset directory generation.
      */
     private $hashCallback = null;
 
     /**
-     * @var array Contain published {@see AssetsBundle}.
-     *
-     * @psalm-var PublishedBundle[]
+     * @var PublishedBundle[] Contain published {@see AssetsBundle}.
      */
     private array $published = [];
 
@@ -168,7 +163,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Returns a new instance with the specified force hash callback.
      *
-     * @param callable $hashCallback A callback that will be called to produce hash for asset directory generation.
+     * @param HashCallback $hashCallback A callback that will be called to produce hash for asset directory generation.
      * The signature of the callback should be as follows:
      *
      * ```
@@ -188,8 +183,6 @@ final class AssetPublisher implements AssetPublisherInterface
      *     return hash('md4', $path);
      * }
      * ```
-     *
-     * @psalm-param HashCallback $hashCallback
      */
     public function withHashCallback(callable $hashCallback): self
     {
@@ -251,9 +244,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @throws Exception If the asset to be published does not exist.
      *
-     * @return array The path directory and the URL that the asset is published as.
-     *
-     * @psalm-return PublishedBundle
+     * @return PublishedBundle The path directory and the URL that the asset is published as.
      */
     private function publishBundleDirectory(AssetBundle $bundle): array
     {
@@ -289,7 +280,7 @@ final class AssetPublisher implements AssetPublisherInterface
             }
 
             /**
-             * @psalm-var array{
+             * @var array{
              *   dirMode: int,
              *   fileMode: int,
              *   filter?: PathMatcherInterface|mixed,

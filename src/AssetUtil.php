@@ -32,15 +32,12 @@ final class AssetUtil
      * otherwise an instance of the {@see AssetBundle} will be created.
      *
      * @param string $name The asset bundle name. Usually the asset bundle class name (without leading backslash).
-     * @param array $config The asset bundle instance configuration. If specified, it will be applied to the instance.
-     *
-     * @psalm-param array<string,mixed> $config
+     * @param array<string,mixed> $config The asset bundle instance configuration. If specified, it will be applied to the instance.
      *
      * @return AssetBundle The created asset bundle.
      */
     public static function createAsset(string $name, array $config = []): AssetBundle
     {
-        /** @psalm-suppress UnsafeInstantiation */
         $bundle = is_subclass_of($name, AssetBundle::class) ? new $name() : new AssetBundle();
 
         foreach ($config as $property => $value) {
@@ -56,10 +53,8 @@ final class AssetUtil
      * @param AssetBundle $bundle The asset bundle which the asset file belongs to.
      * @param string $assetPath The asset path. This should be one of the assets listed
      * in {@see AssetBundle::$js} or {@see AssetBundle::$css}.
-     * @param array $assetMap Mapping from source asset files (keys) to target asset files (values)
+     * @param array<string, string> $assetMap Mapping from source asset files (keys) to target asset files (values)
      * {@see AssetPublisher::$assetMap}.
-     *
-     * @psalm-param array<string, string> $assetMap
      *
      * @return string|null The actual URL for the specified asset, or null if there is no mapping.
      */
@@ -131,22 +126,19 @@ final class AssetUtil
             }
 
             if (!empty($bundle->export)) {
-                /** @var string $filePath */
                 foreach ($bundle->export as $filePath) {
                     $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
                 }
                 continue;
             }
 
-            /** @var array|string $item */
             foreach (array_merge($bundle->css, $bundle->js) as $item) {
-                /** @var string */
                 $filePath = is_array($item) ? $item[0] : $item;
                 $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
             }
         }
 
-        return array_unique(array_filter($filePaths));
+        return array_unique($filePaths);
     }
 
     /**

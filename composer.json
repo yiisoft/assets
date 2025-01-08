@@ -38,10 +38,10 @@
     "require-dev": {
         "infection/infection": "^0.27.11",
         "maglnet/composer-require-checker": "^4.7",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^10.5",
         "rector/rector": "^2.0",
         "spatie/phpunit-watcher": "^1.24",
-        "vimeo/psalm": "^5.26",
         "yiisoft/di": "^1.3",
         "yiisoft/test-support": "^3.0",
         "yiisoft/yii-debug": "dev-master"
@@ -76,6 +76,8 @@
     "scripts": {
         "test": "phpunit --testdox --no-interaction",
         "test-watch": "phpunit-watcher watch",
-        "infection": "vendor/bin/infection --only-covered"
+        "infection": "vendor/bin/infection --only-covered",
+        "phpstan": "vendor/bin/phpstan analyse",
+        "phpstan-clear-cache": "vendor/bin/phpstan clear-result-cache"
     }
 }

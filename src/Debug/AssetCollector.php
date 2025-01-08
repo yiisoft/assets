@@ -14,8 +14,14 @@ final class AssetCollector implements SummaryCollectorInterface
 {
     use CollectorTrait;
 
+    /**
+     * @var list<AssetBundle>
+     */
     private array $assetBundles = [];
 
+    /**
+     * @return list<AssetBundle>
+     */
     public function getCollected(): array
     {
         return $this->assetBundles;
@@ -30,6 +36,9 @@ final class AssetCollector implements SummaryCollectorInterface
         $this->assetBundles[] = $assetBundle;
     }
 
+    /**
+     * @return array{asset?:array{bundles: array{total: int}}}
+     */
     public function getSummary(): array
     {
         if (!$this->isActive()) {
@@ -45,6 +54,10 @@ final class AssetCollector implements SummaryCollectorInterface
         ];
     }
 
+    /**
+     * https://github.com/phpstan/phpstan/issues/12201
+     * @phpstan-ignore method.unused
+     */
     private function reset(): void
     {
         $this->assetBundles = [];

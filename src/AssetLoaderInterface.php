@@ -30,9 +30,7 @@ interface AssetLoaderInterface
      * Loads an asset bundle class by name or creates an instance of the asset bundle class, if class name not exists.
      *
      * @param string $name The asset bundle name.
-     * @param array $config The asset bundle instance configuration.
-     *
-     * @psalm-param array<string, mixed> $config
+     * @param array<string, mixed> $config The asset bundle instance configuration.
      *
      * @throws InvalidConfigException For invalid asset bundle configuration.
      *

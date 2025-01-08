@@ -19,39 +19,39 @@ use function sprintf;
  *
  * @internal
  *
- * @psalm-import-type CssFile from AssetManager
- * @psalm-import-type CssString from AssetManager
- * @psalm-import-type JsFile from AssetManager
- * @psalm-import-type JsString from AssetManager
- * @psalm-import-type JsVar from AssetManager
- * @psalm-import-type ConverterOptions from AssetConverterInterface
+ * @phpstan-import-type CssFile from AssetManager
+ * @phpstan-import-type CssString from AssetManager
+ * @phpstan-import-type JsFile from AssetManager
+ * @phpstan-import-type JsString from AssetManager
+ * @phpstan-import-type JsVar from AssetManager
+ * @phpstan-import-type ConverterOptions from AssetConverterInterface
  */
 final class AssetRegistrar
 {
     private ?AssetConverterInterface $converter = null;
 
     /**
-     * @psalm-var CssFile[]
+     * @var CssFile[]
      */
     private array $cssFiles = [];
 
     /**
-     * @psalm-var CssString[]
+     * @var CssString[]
      */
     private array $cssStrings = [];
 
     /**
-     * @psalm-var JsFile[]
+     * @var JsFile[]
      */
     private array $jsFiles = [];
 
     /**
-     * @psalm-var JsString[]
+     * @var JsString[]
      */
     private array $jsStrings = [];
 
     /**
-     * @psalm-var JsVar[]
+     * @var JsVar[]
      */
     private array $jsVars = [];
 
@@ -62,9 +62,7 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array Config array of CSS files.
-     *
-     * @psalm-return CssFile[]
+     * @return CssFile[] Config array of CSS files.
      */
     public function getCssFiles(): array
     {
@@ -72,9 +70,7 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array CSS blocks.
-     *
-     * @psalm-return CssString[]
+     * @return CssString[] CSS blocks.
      */
     public function getCssStrings(): array
     {
@@ -82,9 +78,7 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array Config array of JavaScript files.
-     *
-     * @psalm-return JsFile[]
+     * @return JsFile[] Config array of JavaScript files.
      */
     public function getJsFiles(): array
     {
@@ -92,9 +86,7 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array JavaScript code blocks.
-     *
-     * @psalm-return JsString[]
+     * @return JsString[] JavaScript code blocks.
      */
     public function getJsStrings(): array
     {
@@ -102,9 +94,7 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array JavaScript variables.
-     *
-     * @psalm-return list<JsVar>
+     * @return list<JsVar> JavaScript variables.
      */
     public function getJsVars(): array
     {
@@ -192,34 +182,26 @@ final class AssetRegistrar
      */
     private function convertCss(AssetBundle $bundle): void
     {
-        /**
-         * @psalm-var AssetConverterInterface $this->converter
-         * @psalm-var string $bundle->basePath
-         * @psalm-var ConverterOptions $bundle->converterOptions
-         */
+        /** @var AssetConverterInterface $converter */
+        $converter = $this->converter;
+        /** @var string $basePath */
+        $basePath = $bundle->basePath;
+        /** @var ConverterOptions $converterOptions */
+        $converterOptions = $bundle->converterOptions;
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
                 $file = $css[0];
                 if (AssetUtil::isRelative($file)) {
-                    $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
+                    $baseFile = $this->aliases->get("{$basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        $css[0] = $this->converter->convert(
-                            $file,
-                            $bundle->basePath,
-                            $bundle->converterOptions,
-                        );
-
+                        $css[0] = $converter->convert($file, $basePath, $converterOptions);
                         $bundle->css[$i] = $css;
                     }
                 }
             } elseif (AssetUtil::isRelative($css)) {
-                $baseCss = $this->aliases->get("{$bundle->basePath}/{$css}");
+                $baseCss = $this->aliases->get("{$basePath}/{$css}");
                 if (is_file("$baseCss")) {
-                    $bundle->css[$i] = $this->converter->convert(
-                        $css,
-                        $bundle->basePath,
-                        $bundle->converterOptions
-                    );
+                    $bundle->css[$i] = $converter->convert($css, $basePath, $converterOptions);
                 }
             }
         }
@@ -230,30 +212,26 @@ final class AssetRegistrar
      */
     private function convertJs(AssetBundle $bundle): void
     {
-        /**
-         * @psalm-var AssetConverterInterface $this->converter
-         * @psalm-var string $bundle->basePath
-         * @psalm-var ConverterOptions $bundle->converterOptions
-         */
+        /** @var AssetConverterInterface $converter */
+        $converter = $this->converter;
+        /** @var string $basePath */
+        $basePath = $bundle->basePath;
+        /** @var ConverterOptions $converterOptions */
+        $converterOptions = $bundle->converterOptions;
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
                 $file = $js[0];
                 if (AssetUtil::isRelative($file)) {
-                    $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
+                    $baseFile = $this->aliases->get("{$basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        $js[0] = $this->converter->convert(
-                            $file,
-                            $bundle->basePath,
-                            $bundle->converterOptions
-                        );
-
+                        $js[0] = $converter->convert($file, $basePath, $converterOptions);
                         $bundle->js[$i] = $js;
                     }
                 }
             } elseif (AssetUtil::isRelative($js)) {
-                $baseJs = $this->aliases->get("{$bundle->basePath}/{$js}");
+                $baseJs = $this->aliases->get("{$basePath}/{$js}");
                 if (is_file($baseJs)) {
-                    $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
+                    $bundle->js[$i] = $converter->convert($js, $basePath);
                 }
             }
         }
@@ -300,10 +278,9 @@ final class AssetRegistrar
             $css[1] = $bundle->cssPosition;
         }
 
-        /** @psalm-var CssFile */
+        /** @var CssFile */
         $css = $this->mergeOptionsWithArray($bundle->cssOptions, $css);
 
-        /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
         $this->cssFiles[$key ?: $url] = $css;
     }
 
@@ -327,14 +304,12 @@ final class AssetRegistrar
             $config[1] = $bundle->cssPosition;
         }
 
-        /** @psalm-var CssString */
+        /** @var CssString */
         $config = $this->mergeOptionsWithArray($bundle->cssOptions, $config);
 
         if ($key === null) {
-            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->cssStrings[] = $config;
         } else {
-            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->cssStrings[$key] = $config;
         }
     }
@@ -380,10 +355,9 @@ final class AssetRegistrar
             $js[1] = $bundle->jsPosition;
         }
 
-        /** @psalm-var JsFile */
+        /** @var JsFile */
         $js = $this->mergeOptionsWithArray($bundle->jsOptions, $js);
 
-        /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
         $this->jsFiles[$key ?: $url] = $js;
     }
 
@@ -406,14 +380,12 @@ final class AssetRegistrar
             $jsString[1] = $bundle->jsPosition;
         }
 
-        /** @psalm-var JsString */
+        /** @var JsString */
         $jsString = $this->mergeOptionsWithArray($bundle->jsOptions, $jsString);
 
         if ($key === null) {
-            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->jsStrings[] = $jsString;
         } else {
-            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->jsStrings[$key] = $jsString;
         }
     }

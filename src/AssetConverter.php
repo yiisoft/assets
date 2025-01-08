@@ -25,18 +25,16 @@ use function substr;
  *
  * It is used by {@see AssetManager} to convert files after they have been published.
  *
- * @psalm-type IsOutdatedCallback = callable(string,string,string,string,string):bool
+ * @phpstan-type IsOutdatedCallback = callable(string,string,string,string,string):bool
  *
- * @psalm-import-type ConverterOptions from AssetConverterInterface
+ * @phpstan-import-type ConverterOptions from AssetConverterInterface
  */
 final class AssetConverter implements AssetConverterInterface
 {
     /**
-     * @var array The commands that are used to perform the asset conversion.
+     * @var array<string, array{0:string,1:string}> The commands that are used to perform the asset conversion.
      * The keys are the asset file extension names, and the values are the corresponding
      * target script types (either "css" or "js") and the commands used for the conversion.
-     *
-     * @psalm-var array<string, array{0:string,1:string}>
      */
     private array $commands = [
         'less' => ['css', 'lessc {from} {to} --no-color --source-map'],
@@ -48,18 +46,17 @@ final class AssetConverter implements AssetConverterInterface
     ];
 
     /**
-     * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is outdated.
-     *
-     * @psalm-var IsOutdatedCallback|null
+     * @var IsOutdatedCallback|null A PHP callback, which should be invoked to check whether asset conversion result is
+     * outdated.
      */
     private $isOutdatedCallback = null;
 
     /**
      * @param Aliases $aliases The aliases instance.
      * @param LoggerInterface $logger The logger instance.
-     * @param array $commands The commands that are used to perform the asset conversion.
-     * The keys are the asset file extension names, and the values are the corresponding
-     * target script types (either "css" or "js") and the commands used for the conversion.
+     * @param array<string, array{0:string,1:string}> $commands The commands that are used to perform the asset
+     * conversion. The keys are the asset file extension names, and the values are the corresponding target script types
+     * (either "css" or "js") and the commands used for the conversion.
      *
      * You may also use a {@link https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md}
      * to specify the location of the command:
@@ -71,8 +68,6 @@ final class AssetConverter implements AssetConverterInterface
      * ```
      * @param bool $forceConvert Whether the source asset file should be converted even if its result already exists.
      * See {@see withForceConvert()}.
-     *
-     * @psalm-param array<string, array{0:string,1:string}> $commands
      */
     public function __construct(
         private readonly Aliases $aliases,
@@ -179,7 +174,7 @@ final class AssetConverter implements AssetConverterInterface
      * }
      * ```
      *
-     * @psalm-param IsOutdatedCallback $isOutdatedCallback
+     * @param IsOutdatedCallback $isOutdatedCallback
      */
     public function withIsOutdatedCallback(callable $isOutdatedCallback): self
     {
@@ -266,6 +261,10 @@ final class AssetConverter implements AssetConverterInterface
         $pipes = [];
 
         $proc = proc_open($command, $descriptors, $pipes, $basePath);
+        /**
+         * @var resource $proc
+         * @var resource[] $pipes
+         */
 
         $stdout = stream_get_contents($pipes[1]);
 
@@ -293,7 +292,7 @@ final class AssetConverter implements AssetConverterInterface
     }
 
     /**
-     * @psalm-param ConverterOptions $options
+     * @param ConverterOptions $options
      */
     private function buildConverterOptions(string $srcExt, array $options): string
     {

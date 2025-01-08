@@ -16,10 +16,10 @@ use Yiisoft\Files\PathMatcher\PathMatcherInterface;
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
  *
- * @psalm-import-type CssFile from AssetManager
- * @psalm-import-type CssString from AssetManager
- * @psalm-import-type JsFile from AssetManager
- * @psalm-import-type JsString from AssetManager
+ * @phpstan-import-type CssFile from AssetManager
+ * @phpstan-import-type CssString from AssetManager
+ * @phpstan-import-type JsFile from AssetManager
+ * @phpstan-import-type JsString from AssetManager
  */
 class AssetBundle
 {
@@ -78,7 +78,7 @@ class AssetBundle
      * ]
      * ```
      *
-     * @psalm-var array<array-key, string|CssFile>
+     * @var array<array-key, string|CssFile>
      */
     public array $css = [];
 
@@ -107,7 +107,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @psalm-var array<array-key, string|CssString>
+     * @var array<array-key, string|CssString>
      */
     public array $cssStrings = [];
 
@@ -179,7 +179,7 @@ class AssetBundle
      *
      * Note that only a forward slash "/" should be used as directory separator.
      *
-     * @psalm-var array<array-key, string|JsFile>
+     * @var array<array-key, string|JsFile>
      */
     public array $js = [];
 
@@ -208,7 +208,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @psalm-var array<array-key, string|JsString>
+     * @var array<array-key, string|JsString>
      */
     public array $jsStrings = [];
 
@@ -257,7 +257,7 @@ class AssetBundle
      * The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
      * is being published. This property is used only when {@see $sourcePath} is set.
      *
-     * @psalm-var array{
+     * @var array{
      *     forceCopy?: bool,
      *     afterCopy?: callable,
      *     beforeCopy?: callable,
@@ -283,6 +283,8 @@ class AssetBundle
      *     'js/script.js',
      * ]:
      * ```
+     *
+     * @var list<string>
      */
     public array $export = [];
 
