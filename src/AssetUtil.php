@@ -8,7 +8,6 @@ use RuntimeException;
 use Yiisoft\Aliases\Aliases;
 
 use function array_merge;
-use function array_filter;
 use function array_unique;
 use function dirname;
 use function file_put_contents;

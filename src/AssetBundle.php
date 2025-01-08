@@ -78,7 +78,7 @@ class AssetBundle
      * ]
      * ```
      *
-     * @var array<array-key, string|CssFile>
+     * @var array<array-key, CssFile|string>
      */
     public array $css = [];
 
@@ -107,7 +107,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @var array<array-key, string|CssString>
+     * @var array<array-key, CssString|string>
      */
     public array $cssStrings = [];
 
@@ -179,7 +179,7 @@ class AssetBundle
      *
      * Note that only a forward slash "/" should be used as directory separator.
      *
-     * @var array<array-key, string|JsFile>
+     * @var array<array-key, JsFile|string>
      */
     public array $js = [];
 
@@ -208,7 +208,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @var array<array-key, string|JsString>
+     * @var array<array-key, JsString|string>
      */
     public array $jsStrings = [];
 
