@@ -182,26 +182,31 @@ final class AssetRegistrar
      */
     private function convertCss(AssetBundle $bundle): void
     {
-        /** @var AssetConverterInterface $converter */
-        $converter = $this->converter;
-        /** @var string $basePath */
-        $basePath = $bundle->basePath;
-        /** @var ConverterOptions $converterOptions */
-        $converterOptions = $bundle->converterOptions;
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
                 $file = $css[0];
                 if (AssetUtil::isRelative($file)) {
-                    $baseFile = $this->aliases->get("{$basePath}/{$file}");
+                    $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        $css[0] = $converter->convert($file, $basePath, $converterOptions);
+                        // @phpstan-ignore method.nonObject
+                        $css[0] = $this->converter->convert(
+                            $file,
+                            $bundle->basePath,
+                            $bundle->converterOptions,
+                        );
+
                         $bundle->css[$i] = $css;
                     }
                 }
             } elseif (AssetUtil::isRelative($css)) {
-                $baseCss = $this->aliases->get("{$basePath}/{$css}");
+                $baseCss = $this->aliases->get("{$bundle->basePath}/{$css}");
                 if (is_file("$baseCss")) {
-                    $bundle->css[$i] = $converter->convert($css, $basePath, $converterOptions);
+                    // @phpstan-ignore method.nonObject
+                    $bundle->css[$i] = $this->converter->convert(
+                        $css,
+                        $bundle->basePath,
+                        $bundle->converterOptions
+                    );
                 }
             }
         }
@@ -212,26 +217,27 @@ final class AssetRegistrar
      */
     private function convertJs(AssetBundle $bundle): void
     {
-        /** @var AssetConverterInterface $converter */
-        $converter = $this->converter;
-        /** @var string $basePath */
-        $basePath = $bundle->basePath;
-        /** @var ConverterOptions $converterOptions */
-        $converterOptions = $bundle->converterOptions;
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
                 $file = $js[0];
                 if (AssetUtil::isRelative($file)) {
-                    $baseFile = $this->aliases->get("{$basePath}/{$file}");
+                    $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
-                        $js[0] = $converter->convert($file, $basePath, $converterOptions);
+                        // @phpstan-ignore method.nonObject
+                        $js[0] = $this->converter->convert(
+                            $file,
+                            $bundle->basePath,
+                            $bundle->converterOptions
+                        );
+
                         $bundle->js[$i] = $js;
                     }
                 }
             } elseif (AssetUtil::isRelative($js)) {
-                $baseJs = $this->aliases->get("{$basePath}/{$js}");
+                $baseJs = $this->aliases->get("{$bundle->basePath}/{$js}");
                 if (is_file($baseJs)) {
-                    $bundle->js[$i] = $converter->convert($js, $basePath);
+                    // @phpstan-ignore method.nonObject
+                    $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
             }
         }

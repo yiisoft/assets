@@ -2,7 +2,7 @@
 
 ## 5.0.1 under development
 
-- no changes in this release.
+- Chg #155: Replace static analyze annotations from Psalm to PHPStan (@vjik)
 
 ## 5.0.0 December 11, 2024
 
