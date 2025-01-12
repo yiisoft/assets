@@ -7,7 +7,7 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
-      - 'psalm.xml'
+      - 'phpstan.neon'
 
 name: rector
 

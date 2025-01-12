@@ -24,7 +24,7 @@ name: static analysis
 
 jobs:
   psalm:
-    uses: yiisoft/actions/.github/workflows/psalm.yml@master
+    uses: yiisoft/actions/.github/workflows/phpstan.yml@phpstan
     with:
       os: >-
         ['ubuntu-latest']
