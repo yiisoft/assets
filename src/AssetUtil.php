@@ -31,7 +31,9 @@ final class AssetUtil
      * otherwise an instance of the {@see AssetBundle} will be created.
      *
      * @param string $name The asset bundle name. Usually the asset bundle class name (without leading backslash).
-     * @param array<string,mixed> $config The asset bundle instance configuration. If specified, it will be applied to the instance.
+     * @param array $config The asset bundle instance configuration. If specified, it will be applied to the instance.
+     *
+     * @phpstan-param array<string,mixed> $config
      *
      * @return AssetBundle The created asset bundle.
      */
@@ -52,8 +54,10 @@ final class AssetUtil
      * @param AssetBundle $bundle The asset bundle which the asset file belongs to.
      * @param string $assetPath The asset path. This should be one of the assets listed
      * in {@see AssetBundle::$js} or {@see AssetBundle::$css}.
-     * @param array<string, string> $assetMap Mapping from source asset files (keys) to target asset files (values)
+     * @param string[] $assetMap Mapping from source asset files (keys) to target asset files (values)
      * {@see AssetPublisher::$assetMap}.
+     *
+     * @phpstan-param array<string, string> $assetMap
      *
      * @return string|null The actual URL for the specified asset, or null if there is no mapping.
      */

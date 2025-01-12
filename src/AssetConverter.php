@@ -32,9 +32,11 @@ use function substr;
 final class AssetConverter implements AssetConverterInterface
 {
     /**
-     * @var array<string, array{0:string,1:string}> The commands that are used to perform the asset conversion.
+     * @var array The commands that are used to perform the asset conversion.
      * The keys are the asset file extension names, and the values are the corresponding
      * target script types (either "css" or "js") and the commands used for the conversion.
+     *
+     * @phpstan-var array<string, array{0:string,1:string}>
      */
     private array $commands = [
         'less' => ['css', 'lessc {from} {to} --no-color --source-map'],
@@ -46,15 +48,17 @@ final class AssetConverter implements AssetConverterInterface
     ];
 
     /**
-     * @var IsOutdatedCallback|null A PHP callback, which should be invoked to check whether asset conversion result is
+     * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is
      * outdated.
+     *
+     * @phpstan-var IsOutdatedCallback|null
      */
     private $isOutdatedCallback = null;
 
     /**
      * @param Aliases $aliases The aliases instance.
      * @param LoggerInterface $logger The logger instance.
-     * @param array<string, array{0:string,1:string}> $commands The commands that are used to perform the asset
+     * @param array $commands The commands that are used to perform the asset
      * conversion. The keys are the asset file extension names, and the values are the corresponding target script types
      * (either "css" or "js") and the commands used for the conversion.
      *
@@ -68,6 +72,8 @@ final class AssetConverter implements AssetConverterInterface
      * ```
      * @param bool $forceConvert Whether the source asset file should be converted even if its result already exists.
      * See {@see withForceConvert()}.
+     *
+     * @phpstan-param array<string, array{0:string,1:string}> $commands
      */
     public function __construct(
         private readonly Aliases $aliases,
@@ -174,7 +180,7 @@ final class AssetConverter implements AssetConverterInterface
      * }
      * ```
      *
-     * @param IsOutdatedCallback $isOutdatedCallback
+     * @phpstan-param IsOutdatedCallback $isOutdatedCallback
      */
     public function withIsOutdatedCallback(callable $isOutdatedCallback): self
     {
@@ -292,7 +298,7 @@ final class AssetConverter implements AssetConverterInterface
     }
 
     /**
-     * @param ConverterOptions $options
+     * @phpstan-param ConverterOptions $options
      */
     private function buildConverterOptions(string $srcExt, array $options): string
     {

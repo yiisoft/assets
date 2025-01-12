@@ -40,7 +40,9 @@ interface AssetPublisherInterface
      *
      * @throws InvalidConfigException If the asset or the asset file paths to be published does not exist.
      *
-     * @return PublishedBundle The path (directory or file path) and the URL that the asset is published as.
+     * @return array The path (directory or file path) and the URL that the asset is published as.
+     *
+     * @phpstan-return PublishedBundle
      */
     public function publish(AssetBundle $bundle): array;
 

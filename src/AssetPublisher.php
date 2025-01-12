@@ -40,12 +40,16 @@ final class AssetPublisher implements AssetPublisherInterface
     private int $fileMode = 0755;
 
     /**
-     * @var HashCallback|null A callback that will be called to produce hash for asset directory generation.
+     * @var callable|null A callback that will be called to produce hash for asset directory generation.
+     *
+     * @phpstan-var HashCallback|null
      */
     private $hashCallback = null;
 
     /**
-     * @var PublishedBundle[] Contain published {@see AssetsBundle}.
+     * @var array Contain published {@see AssetsBundle}.
+     *
+     * @phpstan-var PublishedBundle[]
      */
     private array $published = [];
 
@@ -163,7 +167,7 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * Returns a new instance with the specified force hash callback.
      *
-     * @param HashCallback $hashCallback A callback that will be called to produce hash for asset directory generation.
+     * @param callable $hashCallback A callback that will be called to produce hash for asset directory generation.
      * The signature of the callback should be as follows:
      *
      * ```
@@ -183,6 +187,8 @@ final class AssetPublisher implements AssetPublisherInterface
      *     return hash('md4', $path);
      * }
      * ```
+     *
+     * @phpstan-param HashCallback $hashCallback
      */
     public function withHashCallback(callable $hashCallback): self
     {
@@ -244,7 +250,9 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @throws Exception If the asset to be published does not exist.
      *
-     * @return PublishedBundle The path directory and the URL that the asset is published as.
+     * @return array The path directory and the URL that the asset is published as.
+     *
+     * @phpstan-return PublishedBundle
      */
     private function publishBundleDirectory(AssetBundle $bundle): array
     {
@@ -280,7 +288,7 @@ final class AssetPublisher implements AssetPublisherInterface
             }
 
             /**
-             * @var array{
+             * @phpstan-var array{
              *   dirMode: int,
              *   fileMode: int,
              *   filter?: PathMatcherInterface|mixed,

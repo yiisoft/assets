@@ -17,8 +17,10 @@ interface AssetConverterInterface
      *
      * @param string $asset The asset file path, relative to {@see AssetBundle::$basePath}.
      * @param string $basePath The directory the $asset is relative to.
-     * @param ConverterOptions $optionsConverter It allows you to {@see AssetConverter::runCommand()}
+     * @param array $optionsConverter It allows you to {@see AssetConverter::runCommand()}
      * options by {@see AssetBundle}.
+     *
+     * @phpstan-param ConverterOptions $optionsConverter
      *
      * @return string The converted asset file path, relative to {@see AssetBundle::$basePath}.
      */

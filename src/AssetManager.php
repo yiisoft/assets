@@ -24,25 +24,30 @@ use function is_array;
 final class AssetManager
 {
     /**
-     * @var array<string, AssetBundle> list of the registered asset bundles.
+     * @var AssetBundle[] list of the registered asset bundles.
      * The keys are the bundle names, and the values are the registered {@see AssetBundle} objects.
      *
      * {@see registerAssetBundle()}
+     *
+     * @phpstan-var array<string, AssetBundle>
      */
     private array $registeredBundles = [];
 
     /**
-     * @var array<string, true> List of the asset bundles in register process. Use for detect circular dependency.
+     * @var true[] List of the asset bundles in register process. Use for detect circular dependency.
+     * @phpstan-var array<string, true>
      */
     private array $bundlesInRegisterProcess = [];
 
     /**
-     * @var array<string, AssetBundle>
+     * @var AssetBundle[]
+     * @phpstan-var array<string, AssetBundle>
      */
     private array $loadedBundles = [];
 
     /**
-     * @var array<string, AssetBundle>
+     * @var AssetBundle[]
+     * @phpstan-var array<string, AssetBundle>
      */
     private array $dummyBundles = [];
 
@@ -56,11 +61,13 @@ final class AssetManager
      * asset bundles are allowed. If the names of allowed asset bundles were specified, only these asset bundles
      * or their dependencies can be registered {@see register()} and obtained {@see getBundle()}. Also, specifying
      * names allows to export {@see export()} asset bundles automatically without first registering them manually.
-     * @param CustomizedBundles $customizedBundles The asset bundle configurations. Provided to customize asset bundles.
+     * @param array $customizedBundles The asset bundle configurations. Provided to customize asset bundles.
      * When a bundle is being loaded by {@see getBundle()}, if it has a corresponding configuration specified
      * here, the configuration will be applied to the bundle. The array keys are the asset class bundle names
      * (without leading backslash). If a value is false, it means the corresponding asset bundle is disabled
      * and {@see getBundle()} should return an instance of the specified asset bundle with empty property values.
+     *
+     * @phpstan-param CustomizedBundles $customizedBundles
      */
     public function __construct(
         Aliases $aliases,
@@ -131,7 +138,9 @@ final class AssetManager
     }
 
     /**
-     * @return CssFile[] Config array of CSS files.
+     * @return array Config array of CSS files.
+     *
+     * @phpstan-return CssFile[]
      */
     public function getCssFiles(): array
     {
@@ -139,7 +148,9 @@ final class AssetManager
     }
 
     /**
-     * @return CssString[] CSS blocks.
+     * @return array CSS blocks.
+     *
+     * @phpstan-return CssString[]
      */
     public function getCssStrings(): array
     {
@@ -147,7 +158,9 @@ final class AssetManager
     }
 
     /**
-     * @return JsFile[] Config array of JavaScript files.
+     * @return array Config array of JavaScript files.
+     *
+     * @phpstan-return JsFile[]
      */
     public function getJsFiles(): array
     {
@@ -155,7 +168,9 @@ final class AssetManager
     }
 
     /**
-     * @return JsString[] JavaScript code blocks.
+     * @return array JavaScript code blocks.
+     *
+     * @phpstan-return JsString[]
      */
     public function getJsStrings(): array
     {
@@ -163,7 +178,9 @@ final class AssetManager
     }
 
     /**
-     * @return list<JsVar> JavaScript variables.
+     * @return array JavaScript variables.
+     *
+     * @phpstan-return list<JsVar>
      */
     public function getJsVars(): array
     {
@@ -254,7 +271,9 @@ final class AssetManager
      * which means that the corresponding asset file may not physically exist.
      *
      * @param string $bundleName The class name of the asset bundle (without the leading backslash).
-     * @param array<string, mixed> $bundleConfig The customized asset bundle configuration.
+     * @param array $bundleConfig The customized asset bundle configuration.
+     *
+     * @phpstan-param array<string, mixed> $bundleConfig
      */
     public function registerCustomized(string $bundleName, array $bundleConfig): void
     {

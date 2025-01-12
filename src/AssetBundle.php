@@ -78,7 +78,7 @@ class AssetBundle
      * ]
      * ```
      *
-     * @var array<array-key, CssFile|string>
+     * @phpstan-var array<array-key, CssFile|string>
      */
     public array $css = [];
 
@@ -107,7 +107,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @var array<array-key, CssString|string>
+     * @phpstan-var array<array-key, CssString|string>
      */
     public array $cssStrings = [];
 
@@ -179,7 +179,7 @@ class AssetBundle
      *
      * Note that only a forward slash "/" should be used as directory separator.
      *
-     * @var array<array-key, JsFile|string>
+     * @phpstan-var array<array-key, JsFile|string>
      */
     public array $js = [];
 
@@ -208,7 +208,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @var array<array-key, JsString|string>
+     * @phpstan-var array<array-key, JsString|string>
      */
     public array $jsStrings = [];
 
@@ -257,7 +257,7 @@ class AssetBundle
      * The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
      * is being published. This property is used only when {@see $sourcePath} is set.
      *
-     * @var array{
+     * @phpstan-var array{
      *     forceCopy?: bool,
      *     afterCopy?: callable,
      *     beforeCopy?: callable,
@@ -284,7 +284,7 @@ class AssetBundle
      * ]:
      * ```
      *
-     * @var list<string>
+     * @phpstan-var list<string>
      */
     public array $export = [];
 

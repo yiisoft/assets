@@ -31,27 +31,27 @@ final class AssetRegistrar
     private ?AssetConverterInterface $converter = null;
 
     /**
-     * @var CssFile[]
+     * @phpstan-var CssFile[]
      */
     private array $cssFiles = [];
 
     /**
-     * @var CssString[]
+     * @phpstan-var CssString[]
      */
     private array $cssStrings = [];
 
     /**
-     * @var JsFile[]
+     * @phpstan-var JsFile[]
      */
     private array $jsFiles = [];
 
     /**
-     * @var JsString[]
+     * @phpstan-var JsString[]
      */
     private array $jsStrings = [];
 
     /**
-     * @var JsVar[]
+     * @phpstan-var JsVar[]
      */
     private array $jsVars = [];
 
@@ -62,7 +62,9 @@ final class AssetRegistrar
     }
 
     /**
-     * @return CssFile[] Config array of CSS files.
+     * @return array Config array of CSS files.
+     *
+     * @phpstan-return CssFile[]
      */
     public function getCssFiles(): array
     {
@@ -70,7 +72,9 @@ final class AssetRegistrar
     }
 
     /**
-     * @return CssString[] CSS blocks.
+     * @return array CSS blocks.
+     *
+     * @phpstan-return CssString[]
      */
     public function getCssStrings(): array
     {
@@ -78,7 +82,9 @@ final class AssetRegistrar
     }
 
     /**
-     * @return JsFile[] Config array of JavaScript files.
+     * @return array Config array of JavaScript files.
+     *
+     * @phpstan-return JsFile[]
      */
     public function getJsFiles(): array
     {
@@ -86,7 +92,9 @@ final class AssetRegistrar
     }
 
     /**
-     * @return JsString[] JavaScript code blocks.
+     * @return array JavaScript code blocks.
+     *
+     * @phpstan-return JsString[]
      */
     public function getJsStrings(): array
     {
@@ -94,7 +102,9 @@ final class AssetRegistrar
     }
 
     /**
-     * @return list<JsVar> JavaScript variables.
+     * @return array JavaScript variables.
+     *
+     * @phpstan-return list<JsVar>
      */
     public function getJsVars(): array
     {
@@ -284,7 +294,7 @@ final class AssetRegistrar
             $css[1] = $bundle->cssPosition;
         }
 
-        /** @var CssFile */
+        /** @phpstan-var CssFile */
         $css = $this->mergeOptionsWithArray($bundle->cssOptions, $css);
 
         $this->cssFiles[$key ?: $url] = $css;
@@ -310,7 +320,7 @@ final class AssetRegistrar
             $config[1] = $bundle->cssPosition;
         }
 
-        /** @var CssString */
+        /** @phpstan-var CssString */
         $config = $this->mergeOptionsWithArray($bundle->cssOptions, $config);
 
         if ($key === null) {
@@ -361,7 +371,7 @@ final class AssetRegistrar
             $js[1] = $bundle->jsPosition;
         }
 
-        /** @var JsFile */
+        /** @phpstan-var JsFile */
         $js = $this->mergeOptionsWithArray($bundle->jsOptions, $js);
 
         $this->jsFiles[$key ?: $url] = $js;
@@ -386,7 +396,7 @@ final class AssetRegistrar
             $jsString[1] = $bundle->jsPosition;
         }
 
-        /** @var JsString */
+        /** @phpstan-var JsString */
         $jsString = $this->mergeOptionsWithArray($bundle->jsOptions, $jsString);
 
         if ($key === null) {
