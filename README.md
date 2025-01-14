@@ -11,8 +11,7 @@
 [![Build status](https://github.com/yiisoft/assets/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/assets/actions/workflows/build.yml)
 [![Code Coverage](https://codecov.io/gh/yiisoft/assets/graph/badge.svg?token=U09s7jclX6)](https://codecov.io/gh/yiisoft/assets)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fassets%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/assets/master)
-[![static analysis](https://github.com/yiisoft/assets/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/assets/actions?query=workflow%3A%22static+analysis%22)
-[![type-coverage](https://shepherd.dev/github/yiisoft/assets/coverage.svg)](https://shepherd.dev/github/yiisoft/assets)
+[![static analysis](https://github.com/yiisoft/assets/actions/workflows/static.yml/badge.svg)](https://github.com/yiisoft/assets/actions/workflows/static.yml)
 
 The package implements client-side asset (such as CSS and JavaScript) management for PHP.
 It helps resolve dependencies and get lists of files ready for generating HTML `<script>` and `<link>` tags.

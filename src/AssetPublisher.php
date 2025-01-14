@@ -9,7 +9,6 @@ use RecursiveDirectoryIterator;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
-use Yiisoft\Files\PathMatcher\PathMatcherInterface;
 
 use function array_key_exists;
 use function crc32;
@@ -26,7 +25,7 @@ use function symlink;
  * {@see AssetBundle::$basePath}.
  *
  * @psalm-type HashCallback = callable(string):string
- * @psalm-type PublishedBundle = array{0:non-empty-string,1:non-empty-string}
+ * @psalm-import-type PublishedBundle from AssetPublisherInterface
  */
 final class AssetPublisher implements AssetPublisherInterface
 {

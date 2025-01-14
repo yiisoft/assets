@@ -35,21 +35,18 @@ final class AssetManager
 
     /**
      * @var true[] List of the asset bundles in register process. Use for detect circular dependency.
-     *
      * @psalm-var array<string, true>
      */
     private array $bundlesInRegisterProcess = [];
 
     /**
      * @var AssetBundle[]
-     *
      * @psalm-var array<string, AssetBundle>
      */
     private array $loadedBundles = [];
 
     /**
      * @var AssetBundle[]
-     *
      * @psalm-var array<string, AssetBundle>
      */
     private array $dummyBundles = [];
@@ -451,12 +448,11 @@ final class AssetManager
             return $this->loadedBundles[$name] = $this->loader->loadBundle($name, $this->customizedBundles[$name]);
         }
 
-        /** @psalm-suppress RedundantConditionGivenDocblockType */
         if ($this->customizedBundles[$name] === false) {
-            /** @psalm-suppress MixedArgumentTypeCoercion */
             return $this->dummyBundles[$name] ??= $this->loader->loadBundle($name, (array) (new AssetBundle()));
         }
 
+        // @phpstan-ignore deadCode.unreachable
         throw new InvalidConfigException("Invalid configuration of the \"{$name}\" asset bundle.");
     }
 

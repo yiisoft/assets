@@ -8,7 +8,6 @@ use RuntimeException;
 use Yiisoft\Aliases\Aliases;
 
 use function array_merge;
-use function array_filter;
 use function array_unique;
 use function dirname;
 use function file_put_contents;
@@ -40,7 +39,6 @@ final class AssetUtil
      */
     public static function createAsset(string $name, array $config = []): AssetBundle
     {
-        /** @psalm-suppress UnsafeInstantiation */
         $bundle = is_subclass_of($name, AssetBundle::class) ? new $name() : new AssetBundle();
 
         foreach ($config as $property => $value) {
@@ -56,7 +54,7 @@ final class AssetUtil
      * @param AssetBundle $bundle The asset bundle which the asset file belongs to.
      * @param string $assetPath The asset path. This should be one of the assets listed
      * in {@see AssetBundle::$js} or {@see AssetBundle::$css}.
-     * @param array $assetMap Mapping from source asset files (keys) to target asset files (values)
+     * @param string[] $assetMap Mapping from source asset files (keys) to target asset files (values)
      * {@see AssetPublisher::$assetMap}.
      *
      * @psalm-param array<string, string> $assetMap
@@ -131,22 +129,19 @@ final class AssetUtil
             }
 
             if (!empty($bundle->export)) {
-                /** @var string $filePath */
                 foreach ($bundle->export as $filePath) {
                     $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
                 }
                 continue;
             }
 
-            /** @var array|string $item */
             foreach (array_merge($bundle->css, $bundle->js) as $item) {
-                /** @var string */
                 $filePath = is_array($item) ? $item[0] : $item;
                 $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
             }
         }
 
-        return array_unique(array_filter($filePaths));
+        return array_unique($filePaths);
     }
 
     /**

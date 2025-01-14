@@ -78,7 +78,7 @@ class AssetBundle
      * ]
      * ```
      *
-     * @psalm-var array<array-key, string|CssFile>
+     * @psalm-var array<array-key, CssFile|string>
      */
     public array $css = [];
 
@@ -107,7 +107,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @psalm-var array<array-key, string|CssString>
+     * @psalm-var array<array-key, CssString|string>
      */
     public array $cssStrings = [];
 
@@ -179,7 +179,7 @@ class AssetBundle
      *
      * Note that only a forward slash "/" should be used as directory separator.
      *
-     * @psalm-var array<array-key, string|JsFile>
+     * @psalm-var array<array-key, JsFile|string>
      */
     public array $js = [];
 
@@ -208,7 +208,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @psalm-var array<array-key, string|JsString>
+     * @psalm-var array<array-key, JsString|string>
      */
     public array $jsStrings = [];
 
@@ -283,6 +283,8 @@ class AssetBundle
      *     'js/script.js',
      * ]:
      * ```
+     *
+     * @psalm-var list<string>
      */
     public array $export = [];
 

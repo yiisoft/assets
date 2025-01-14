@@ -2,7 +2,8 @@
 
 ## 5.0.1 under development
 
-- no changes in this release.
+- Chg #155: Improve static analyze annotations (@vjik)
+- Enh #155: Remove unnecessary `array_filter` call in `AssetUtil::extractFilePathsForExport()` method (@vjik)
 
 ## 5.0.0 December 11, 2024
 

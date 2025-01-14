@@ -192,17 +192,13 @@ final class AssetRegistrar
      */
     private function convertCss(AssetBundle $bundle): void
     {
-        /**
-         * @psalm-var AssetConverterInterface $this->converter
-         * @psalm-var string $bundle->basePath
-         * @psalm-var ConverterOptions $bundle->converterOptions
-         */
         foreach ($bundle->css as $i => $css) {
             if (is_array($css)) {
                 $file = $css[0];
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
+                        // @phpstan-ignore method.nonObject
                         $css[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -215,6 +211,7 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($css)) {
                 $baseCss = $this->aliases->get("{$bundle->basePath}/{$css}");
                 if (is_file("$baseCss")) {
+                    // @phpstan-ignore method.nonObject
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
                         $bundle->basePath,
@@ -230,17 +227,13 @@ final class AssetRegistrar
      */
     private function convertJs(AssetBundle $bundle): void
     {
-        /**
-         * @psalm-var AssetConverterInterface $this->converter
-         * @psalm-var string $bundle->basePath
-         * @psalm-var ConverterOptions $bundle->converterOptions
-         */
         foreach ($bundle->js as $i => $js) {
             if (is_array($js)) {
                 $file = $js[0];
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
+                        // @phpstan-ignore method.nonObject
                         $js[0] = $this->converter->convert(
                             $file,
                             $bundle->basePath,
@@ -253,6 +246,7 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($js)) {
                 $baseJs = $this->aliases->get("{$bundle->basePath}/{$js}");
                 if (is_file($baseJs)) {
+                    // @phpstan-ignore method.nonObject
                     $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
             }
@@ -303,7 +297,6 @@ final class AssetRegistrar
         /** @psalm-var CssFile */
         $css = $this->mergeOptionsWithArray($bundle->cssOptions, $css);
 
-        /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
         $this->cssFiles[$key ?: $url] = $css;
     }
 
@@ -331,10 +324,8 @@ final class AssetRegistrar
         $config = $this->mergeOptionsWithArray($bundle->cssOptions, $config);
 
         if ($key === null) {
-            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->cssStrings[] = $config;
         } else {
-            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->cssStrings[$key] = $config;
         }
     }
@@ -383,7 +374,6 @@ final class AssetRegistrar
         /** @psalm-var JsFile */
         $js = $this->mergeOptionsWithArray($bundle->jsOptions, $js);
 
-        /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
         $this->jsFiles[$key ?: $url] = $js;
     }
 
@@ -410,10 +400,8 @@ final class AssetRegistrar
         $jsString = $this->mergeOptionsWithArray($bundle->jsOptions, $jsString);
 
         if ($key === null) {
-            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->jsStrings[] = $jsString;
         } else {
-            /** @psalm-suppress MixedPropertyTypeCoercion It's Psalm bug https://github.com/vimeo/psalm/issues/9810 */
             $this->jsStrings[$key] = $jsString;
         }
     }

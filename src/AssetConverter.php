@@ -48,7 +48,8 @@ final class AssetConverter implements AssetConverterInterface
     ];
 
     /**
-     * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is outdated.
+     * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is
+     * outdated.
      *
      * @psalm-var IsOutdatedCallback|null
      */
@@ -57,9 +58,9 @@ final class AssetConverter implements AssetConverterInterface
     /**
      * @param Aliases $aliases The aliases instance.
      * @param LoggerInterface $logger The logger instance.
-     * @param array $commands The commands that are used to perform the asset conversion.
-     * The keys are the asset file extension names, and the values are the corresponding
-     * target script types (either "css" or "js") and the commands used for the conversion.
+     * @param array $commands The commands that are used to perform the asset
+     * conversion. The keys are the asset file extension names, and the values are the corresponding target script types
+     * (either "css" or "js") and the commands used for the conversion.
      *
      * You may also use a {@link https://github.com/yiisoft/docs/blob/master/guide/en/concept/aliases.md}
      * to specify the location of the command:
@@ -266,6 +267,10 @@ final class AssetConverter implements AssetConverterInterface
         $pipes = [];
 
         $proc = proc_open($command, $descriptors, $pipes, $basePath);
+        /**
+         * @var resource $proc
+         * @var resource[] $pipes
+         */
 
         $stdout = stream_get_contents($pipes[1]);
 

@@ -8,7 +8,7 @@ on:
       - '.gitattributes'
       - 'infection.json.dist'
       - 'phpunit.xml.dist'
-      - 'psalm.xml'
+      - 'phpstan.neon'
 
   push:
     branches: ['master']
@@ -20,7 +20,7 @@ on:
       - '.gitattributes'
       - 'infection.json.dist'
       - 'phpunit.xml.dist'
-      - 'psalm.xml'
+      - 'phpstan.neon'
 
 name: Composer require checker
 
