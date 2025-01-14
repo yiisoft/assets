@@ -2,6 +2,7 @@
 
 ## 5.0.1 under development
 
+- Chg #156: Change PHP constraint in `composer.json` to `~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0` (@vjik) 
 - Chg #155: Improve static analyze annotations (@vjik)
 - Enh #155: Remove unnecessary `array_filter` call in `AssetUtil::extractFilePathsForExport()` method (@vjik)
 
