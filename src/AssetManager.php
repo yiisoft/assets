@@ -14,12 +14,12 @@ use function is_array;
 /**
  * `AssetManager` manages asset bundle configuration and loading.
  *
- * @phpstan-type CssFile = array{0: string, ...}|array{0: string, 1: int, ...}
- * @phpstan-type CssString = array{0: mixed, ...}|array{0: string, 1: int, ...}
- * @phpstan-type JsFile = array{0: string, ...}|array{0: string, 1: int, ...}
- * @phpstan-type JsString = array{0: mixed, ...}|array{0: string, 1: int, ...}
- * @phpstan-type JsVar = array{0:string,1:mixed,2?:int}
- * @phpstan-type CustomizedBundles = array<string, AssetBundle|array<string, mixed>|false>
+ * @psalm-type CssFile = array{0: string, ...}|array{0: string, 1: int, ...}
+ * @psalm-type CssString = array{0: mixed, ...}|array{0: string, 1: int, ...}
+ * @psalm-type JsFile = array{0: string, ...}|array{0: string, 1: int, ...}
+ * @psalm-type JsString = array{0: mixed, ...}|array{0: string, 1: int, ...}
+ * @psalm-type JsVar = array{0:string,1:mixed,2?:int}
+ * @psalm-type CustomizedBundles = array<string, AssetBundle|array<string, mixed>|false>
  */
 final class AssetManager
 {
@@ -29,25 +29,25 @@ final class AssetManager
      *
      * {@see registerAssetBundle()}
      *
-     * @phpstan-var array<string, AssetBundle>
+     * @psalm-var array<string, AssetBundle>
      */
     private array $registeredBundles = [];
 
     /**
      * @var true[] List of the asset bundles in register process. Use for detect circular dependency.
-     * @phpstan-var array<string, true>
+     * @psalm-var array<string, true>
      */
     private array $bundlesInRegisterProcess = [];
 
     /**
      * @var AssetBundle[]
-     * @phpstan-var array<string, AssetBundle>
+     * @psalm-var array<string, AssetBundle>
      */
     private array $loadedBundles = [];
 
     /**
      * @var AssetBundle[]
-     * @phpstan-var array<string, AssetBundle>
+     * @psalm-var array<string, AssetBundle>
      */
     private array $dummyBundles = [];
 
@@ -67,7 +67,7 @@ final class AssetManager
      * (without leading backslash). If a value is false, it means the corresponding asset bundle is disabled
      * and {@see getBundle()} should return an instance of the specified asset bundle with empty property values.
      *
-     * @phpstan-param CustomizedBundles $customizedBundles
+     * @psalm-param CustomizedBundles $customizedBundles
      */
     public function __construct(
         Aliases $aliases,
@@ -140,7 +140,7 @@ final class AssetManager
     /**
      * @return array Config array of CSS files.
      *
-     * @phpstan-return CssFile[]
+     * @psalm-return CssFile[]
      */
     public function getCssFiles(): array
     {
@@ -150,7 +150,7 @@ final class AssetManager
     /**
      * @return array CSS blocks.
      *
-     * @phpstan-return CssString[]
+     * @psalm-return CssString[]
      */
     public function getCssStrings(): array
     {
@@ -160,7 +160,7 @@ final class AssetManager
     /**
      * @return array Config array of JavaScript files.
      *
-     * @phpstan-return JsFile[]
+     * @psalm-return JsFile[]
      */
     public function getJsFiles(): array
     {
@@ -170,7 +170,7 @@ final class AssetManager
     /**
      * @return array JavaScript code blocks.
      *
-     * @phpstan-return JsString[]
+     * @psalm-return JsString[]
      */
     public function getJsStrings(): array
     {
@@ -180,7 +180,7 @@ final class AssetManager
     /**
      * @return array JavaScript variables.
      *
-     * @phpstan-return list<JsVar>
+     * @psalm-return list<JsVar>
      */
     public function getJsVars(): array
     {
@@ -273,7 +273,7 @@ final class AssetManager
      * @param string $bundleName The class name of the asset bundle (without the leading backslash).
      * @param array $bundleConfig The customized asset bundle configuration.
      *
-     * @phpstan-param array<string, mixed> $bundleConfig
+     * @psalm-param array<string, mixed> $bundleConfig
      */
     public function registerCustomized(string $bundleName, array $bundleConfig): void
     {

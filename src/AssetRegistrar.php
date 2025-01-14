@@ -19,39 +19,39 @@ use function sprintf;
  *
  * @internal
  *
- * @phpstan-import-type CssFile from AssetManager
- * @phpstan-import-type CssString from AssetManager
- * @phpstan-import-type JsFile from AssetManager
- * @phpstan-import-type JsString from AssetManager
- * @phpstan-import-type JsVar from AssetManager
- * @phpstan-import-type ConverterOptions from AssetConverterInterface
+ * @psalm-import-type CssFile from AssetManager
+ * @psalm-import-type CssString from AssetManager
+ * @psalm-import-type JsFile from AssetManager
+ * @psalm-import-type JsString from AssetManager
+ * @psalm-import-type JsVar from AssetManager
+ * @psalm-import-type ConverterOptions from AssetConverterInterface
  */
 final class AssetRegistrar
 {
     private ?AssetConverterInterface $converter = null;
 
     /**
-     * @phpstan-var CssFile[]
+     * @psalm-var CssFile[]
      */
     private array $cssFiles = [];
 
     /**
-     * @phpstan-var CssString[]
+     * @psalm-var CssString[]
      */
     private array $cssStrings = [];
 
     /**
-     * @phpstan-var JsFile[]
+     * @psalm-var JsFile[]
      */
     private array $jsFiles = [];
 
     /**
-     * @phpstan-var JsString[]
+     * @psalm-var JsString[]
      */
     private array $jsStrings = [];
 
     /**
-     * @phpstan-var JsVar[]
+     * @psalm-var JsVar[]
      */
     private array $jsVars = [];
 
@@ -64,7 +64,7 @@ final class AssetRegistrar
     /**
      * @return array Config array of CSS files.
      *
-     * @phpstan-return CssFile[]
+     * @psalm-return CssFile[]
      */
     public function getCssFiles(): array
     {
@@ -74,7 +74,7 @@ final class AssetRegistrar
     /**
      * @return array CSS blocks.
      *
-     * @phpstan-return CssString[]
+     * @psalm-return CssString[]
      */
     public function getCssStrings(): array
     {
@@ -84,7 +84,7 @@ final class AssetRegistrar
     /**
      * @return array Config array of JavaScript files.
      *
-     * @phpstan-return JsFile[]
+     * @psalm-return JsFile[]
      */
     public function getJsFiles(): array
     {
@@ -94,7 +94,7 @@ final class AssetRegistrar
     /**
      * @return array JavaScript code blocks.
      *
-     * @phpstan-return JsString[]
+     * @psalm-return JsString[]
      */
     public function getJsStrings(): array
     {
@@ -104,7 +104,7 @@ final class AssetRegistrar
     /**
      * @return array JavaScript variables.
      *
-     * @phpstan-return list<JsVar>
+     * @psalm-return list<JsVar>
      */
     public function getJsVars(): array
     {
@@ -294,7 +294,7 @@ final class AssetRegistrar
             $css[1] = $bundle->cssPosition;
         }
 
-        /** @phpstan-var CssFile */
+        /** @psalm-var CssFile */
         $css = $this->mergeOptionsWithArray($bundle->cssOptions, $css);
 
         $this->cssFiles[$key ?: $url] = $css;
@@ -320,7 +320,7 @@ final class AssetRegistrar
             $config[1] = $bundle->cssPosition;
         }
 
-        /** @phpstan-var CssString */
+        /** @psalm-var CssString */
         $config = $this->mergeOptionsWithArray($bundle->cssOptions, $config);
 
         if ($key === null) {
@@ -371,7 +371,7 @@ final class AssetRegistrar
             $js[1] = $bundle->jsPosition;
         }
 
-        /** @phpstan-var JsFile */
+        /** @psalm-var JsFile */
         $js = $this->mergeOptionsWithArray($bundle->jsOptions, $js);
 
         $this->jsFiles[$key ?: $url] = $js;
@@ -396,7 +396,7 @@ final class AssetRegistrar
             $jsString[1] = $bundle->jsPosition;
         }
 
-        /** @phpstan-var JsString */
+        /** @psalm-var JsString */
         $jsString = $this->mergeOptionsWithArray($bundle->jsOptions, $jsString);
 
         if ($key === null) {

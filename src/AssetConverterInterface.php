@@ -8,7 +8,7 @@ namespace Yiisoft\Assets;
  * The `AssetConverterInterface` must be implemented by asset converter classes. The job of such class is to
  * convert an asset from one format to another. For example, from Sass to CSS.
  *
- * @phpstan-type ConverterOptions = array<string, array{command?:string,path?:string}|null>
+ * @psalm-type ConverterOptions = array<string, array{command?:string,path?:string}|null>
  */
 interface AssetConverterInterface
 {
@@ -20,7 +20,7 @@ interface AssetConverterInterface
      * @param array $optionsConverter It allows you to {@see AssetConverter::runCommand()}
      * options by {@see AssetBundle}.
      *
-     * @phpstan-param ConverterOptions $optionsConverter
+     * @psalm-param ConverterOptions $optionsConverter
      *
      * @return string The converted asset file path, relative to {@see AssetBundle::$basePath}.
      */

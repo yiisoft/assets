@@ -24,8 +24,8 @@ use function symlink;
  * `AssetPublisher` is responsible for executing the publication of the assets from {@see AssetBundle::$sourcePath} to
  * {@see AssetBundle::$basePath}.
  *
- * @phpstan-type HashCallback = callable(string):string
- * @phpstan-import-type PublishedBundle from AssetPublisherInterface
+ * @psalm-type HashCallback = callable(string):string
+ * @psalm-import-type PublishedBundle from AssetPublisherInterface
  */
 final class AssetPublisher implements AssetPublisherInterface
 {
@@ -42,14 +42,14 @@ final class AssetPublisher implements AssetPublisherInterface
     /**
      * @var callable|null A callback that will be called to produce hash for asset directory generation.
      *
-     * @phpstan-var HashCallback|null
+     * @psalm-var HashCallback|null
      */
     private $hashCallback = null;
 
     /**
      * @var array Contain published {@see AssetsBundle}.
      *
-     * @phpstan-var PublishedBundle[]
+     * @psalm-var PublishedBundle[]
      */
     private array $published = [];
 
@@ -188,7 +188,7 @@ final class AssetPublisher implements AssetPublisherInterface
      * }
      * ```
      *
-     * @phpstan-param HashCallback $hashCallback
+     * @psalm-param HashCallback $hashCallback
      */
     public function withHashCallback(callable $hashCallback): self
     {
@@ -252,7 +252,7 @@ final class AssetPublisher implements AssetPublisherInterface
      *
      * @return array The path directory and the URL that the asset is published as.
      *
-     * @phpstan-return PublishedBundle
+     * @psalm-return PublishedBundle
      */
     private function publishBundleDirectory(AssetBundle $bundle): array
     {
@@ -288,7 +288,7 @@ final class AssetPublisher implements AssetPublisherInterface
             }
 
             /**
-             * @phpstan-var array{
+             * @psalm-var array{
              *   dirMode: int,
              *   fileMode: int,
              *   filter?: PathMatcherInterface|mixed,

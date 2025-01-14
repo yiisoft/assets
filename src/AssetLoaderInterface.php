@@ -32,7 +32,7 @@ interface AssetLoaderInterface
      * @param string $name The asset bundle name.
      * @param array $config The asset bundle instance configuration.
      *
-     * @phpstan-param array<string, mixed> $config
+     * @psalm-param array<string, mixed> $config
      *
      * @throws InvalidConfigException For invalid asset bundle configuration.
      *

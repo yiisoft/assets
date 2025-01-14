@@ -9,7 +9,7 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 /**
  * The `AssetPublisherInterface` must be implemented by asset publisher classes.
  *
- * @phpstan-type PublishedBundle = array{0:non-empty-string,1:non-empty-string}
+ * @psalm-type PublishedBundle = array{0:non-empty-string,1:non-empty-string}
  */
 interface AssetPublisherInterface
 {
@@ -42,7 +42,7 @@ interface AssetPublisherInterface
      *
      * @return array The path (directory or file path) and the URL that the asset is published as.
      *
-     * @phpstan-return PublishedBundle
+     * @psalm-return PublishedBundle
      */
     public function publish(AssetBundle $bundle): array;
 

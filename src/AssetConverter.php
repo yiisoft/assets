@@ -25,9 +25,9 @@ use function substr;
  *
  * It is used by {@see AssetManager} to convert files after they have been published.
  *
- * @phpstan-type IsOutdatedCallback = callable(string,string,string,string,string):bool
+ * @psalm-type IsOutdatedCallback = callable(string,string,string,string,string):bool
  *
- * @phpstan-import-type ConverterOptions from AssetConverterInterface
+ * @psalm-import-type ConverterOptions from AssetConverterInterface
  */
 final class AssetConverter implements AssetConverterInterface
 {
@@ -36,7 +36,7 @@ final class AssetConverter implements AssetConverterInterface
      * The keys are the asset file extension names, and the values are the corresponding
      * target script types (either "css" or "js") and the commands used for the conversion.
      *
-     * @phpstan-var array<string, array{0:string,1:string}>
+     * @psalm-var array<string, array{0:string,1:string}>
      */
     private array $commands = [
         'less' => ['css', 'lessc {from} {to} --no-color --source-map'],
@@ -51,7 +51,7 @@ final class AssetConverter implements AssetConverterInterface
      * @var callable|null A PHP callback, which should be invoked to check whether asset conversion result is
      * outdated.
      *
-     * @phpstan-var IsOutdatedCallback|null
+     * @psalm-var IsOutdatedCallback|null
      */
     private $isOutdatedCallback = null;
 
@@ -73,7 +73,7 @@ final class AssetConverter implements AssetConverterInterface
      * @param bool $forceConvert Whether the source asset file should be converted even if its result already exists.
      * See {@see withForceConvert()}.
      *
-     * @phpstan-param array<string, array{0:string,1:string}> $commands
+     * @psalm-param array<string, array{0:string,1:string}> $commands
      */
     public function __construct(
         private readonly Aliases $aliases,
@@ -180,7 +180,7 @@ final class AssetConverter implements AssetConverterInterface
      * }
      * ```
      *
-     * @phpstan-param IsOutdatedCallback $isOutdatedCallback
+     * @psalm-param IsOutdatedCallback $isOutdatedCallback
      */
     public function withIsOutdatedCallback(callable $isOutdatedCallback): self
     {
@@ -298,7 +298,7 @@ final class AssetConverter implements AssetConverterInterface
     }
 
     /**
-     * @phpstan-param ConverterOptions $options
+     * @psalm-param ConverterOptions $options
      */
     private function buildConverterOptions(string $srcExt, array $options): string
     {

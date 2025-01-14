@@ -33,7 +33,7 @@ final class AssetUtil
      * @param string $name The asset bundle name. Usually the asset bundle class name (without leading backslash).
      * @param array $config The asset bundle instance configuration. If specified, it will be applied to the instance.
      *
-     * @phpstan-param array<string,mixed> $config
+     * @psalm-param array<string,mixed> $config
      *
      * @return AssetBundle The created asset bundle.
      */
@@ -57,7 +57,7 @@ final class AssetUtil
      * @param string[] $assetMap Mapping from source asset files (keys) to target asset files (values)
      * {@see AssetPublisher::$assetMap}.
      *
-     * @phpstan-param array<string, string> $assetMap
+     * @psalm-param array<string, string> $assetMap
      *
      * @return string|null The actual URL for the specified asset, or null if there is no mapping.
      */

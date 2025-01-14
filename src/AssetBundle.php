@@ -16,10 +16,10 @@ use Yiisoft\Files\PathMatcher\PathMatcherInterface;
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
  *
- * @phpstan-import-type CssFile from AssetManager
- * @phpstan-import-type CssString from AssetManager
- * @phpstan-import-type JsFile from AssetManager
- * @phpstan-import-type JsString from AssetManager
+ * @psalm-import-type CssFile from AssetManager
+ * @psalm-import-type CssString from AssetManager
+ * @psalm-import-type JsFile from AssetManager
+ * @psalm-import-type JsString from AssetManager
  */
 class AssetBundle
 {
@@ -78,7 +78,7 @@ class AssetBundle
      * ]
      * ```
      *
-     * @phpstan-var array<array-key, CssFile|string>
+     * @psalm-var array<array-key, CssFile|string>
      */
     public array $css = [];
 
@@ -107,7 +107,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @phpstan-var array<array-key, CssString|string>
+     * @psalm-var array<array-key, CssString|string>
      */
     public array $cssStrings = [];
 
@@ -179,7 +179,7 @@ class AssetBundle
      *
      * Note that only a forward slash "/" should be used as directory separator.
      *
-     * @phpstan-var array<array-key, JsFile|string>
+     * @psalm-var array<array-key, JsFile|string>
      */
     public array $js = [];
 
@@ -208,7 +208,7 @@ class AssetBundle
      * ];
      * ```
      *
-     * @phpstan-var array<array-key, JsString|string>
+     * @psalm-var array<array-key, JsString|string>
      */
     public array $jsStrings = [];
 
@@ -257,7 +257,7 @@ class AssetBundle
      * The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
      * is being published. This property is used only when {@see $sourcePath} is set.
      *
-     * @phpstan-var array{
+     * @psalm-var array{
      *     forceCopy?: bool,
      *     afterCopy?: callable,
      *     beforeCopy?: callable,
@@ -284,7 +284,7 @@ class AssetBundle
      * ]:
      * ```
      *
-     * @phpstan-var list<string>
+     * @psalm-var list<string>
      */
     public array $export = [];
 

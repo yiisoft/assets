@@ -15,12 +15,12 @@ final class AssetCollector implements SummaryCollectorInterface
     use CollectorTrait;
 
     /**
-     * @phpstan-var list<AssetBundle>
+     * @psalm-var list<AssetBundle>
      */
     private array $assetBundles = [];
 
     /**
-     * @phpstan-return list<AssetBundle>
+     * @psalm-return list<AssetBundle>
      */
     public function getCollected(): array
     {
@@ -37,7 +37,7 @@ final class AssetCollector implements SummaryCollectorInterface
     }
 
     /**
-     * @phpstan-return array{asset?:array{bundles: array{total: int}}}
+     * @psalm-return array{asset?:array{bundles: array{total: int}}}
      */
     public function getSummary(): array
     {
