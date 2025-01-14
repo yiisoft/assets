@@ -247,7 +247,7 @@ final class AssetConverter implements AssetConverterInterface
         string $basePath,
         string $asset,
         string $result,
-        string $options = null
+        ?string $options = null
     ): bool {
         $basePath = $this->aliases->get($basePath);
 
