@@ -1,0 +1,8 @@
+{
+    "require-dev": {
+        "roave/backward-compatibility-check": "^8.6"
+    },
+    "config": {
+        "bump-after-update": "dev"
+    }
+}
