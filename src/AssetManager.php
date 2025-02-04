@@ -448,7 +448,9 @@ final class AssetManager
             return $this->loadedBundles[$name] = $this->loader->loadBundle($name, $this->customizedBundles[$name]);
         }
 
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         if ($this->customizedBundles[$name] === false) {
+            /** @psalm-suppress MixedArgumentTypeCoercion */
             return $this->dummyBundles[$name] ??= $this->loader->loadBundle($name, (array) (new AssetBundle()));
         }
 
