@@ -27,6 +27,7 @@ jobs:
   roave_bc_check:
     uses: yiisoft/actions/.github/workflows/bc.yml@vjik-patch-1
     with:
+      usePackageBin: true
       os: >-
         ['ubuntu-latest']
       php: >-
