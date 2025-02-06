@@ -39,6 +39,7 @@ final class AssetUtil
      */
     public static function createAsset(string $name, array $config = []): AssetBundle
     {
+        /** @psalm-suppress UnsafeInstantiation */
         $bundle = is_subclass_of($name, AssetBundle::class) ? new $name() : new AssetBundle();
 
         foreach ($config as $property => $value) {

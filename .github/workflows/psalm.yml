@@ -8,9 +8,9 @@ on:
       - '.gitattributes'
       - 'infection.json.dist'
       - 'phpunit.xml.dist'
-      - 'phpstan.neon'
+
   push:
-    branches: ['master']
+    branches: [ 'master' ]
     paths-ignore:
       - 'docs/**'
       - 'README.md'
@@ -19,16 +19,14 @@ on:
       - '.gitattributes'
       - 'infection.json.dist'
       - 'phpunit.xml.dist'
-      - 'phpstan.neon'
 
-name: backwards compatibility
+name: static analysis
 
 jobs:
-  roave_bc_check:
-    uses: yiisoft/actions/.github/workflows/bc.yml@master
+  psalm:
+    uses: yiisoft/actions/.github/workflows/psalm.yml@master
     with:
-      usePackageBin: true
       os: >-
         ['ubuntu-latest']
       php: >-
-        ['8.1']
+        ['8.1', '8.2', '8.3', '8.4']

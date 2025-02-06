@@ -198,6 +198,7 @@ final class AssetRegistrar
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
+                        /** @psalm-suppress PossiblyNullArgument, PossiblyNullReference, MixedArgumentTypeCoercion */
                         // @phpstan-ignore method.nonObject
                         $css[0] = $this->converter->convert(
                             $file,
@@ -211,6 +212,7 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($css)) {
                 $baseCss = $this->aliases->get("{$bundle->basePath}/{$css}");
                 if (is_file("$baseCss")) {
+                    /** @psalm-suppress PossiblyNullArgument, PossiblyNullReference, MixedArgumentTypeCoercion */
                     // @phpstan-ignore method.nonObject
                     $bundle->css[$i] = $this->converter->convert(
                         $css,
@@ -233,6 +235,7 @@ final class AssetRegistrar
                 if (AssetUtil::isRelative($file)) {
                     $baseFile = $this->aliases->get("{$bundle->basePath}/{$file}");
                     if (is_file($baseFile)) {
+                        /** @psalm-suppress PossiblyNullArgument, PossiblyNullReference, MixedArgumentTypeCoercion */
                         // @phpstan-ignore method.nonObject
                         $js[0] = $this->converter->convert(
                             $file,
@@ -246,6 +249,7 @@ final class AssetRegistrar
             } elseif (AssetUtil::isRelative($js)) {
                 $baseJs = $this->aliases->get("{$bundle->basePath}/{$js}");
                 if (is_file($baseJs)) {
+                    /** @psalm-suppress PossiblyNullArgument, PossiblyNullReference */
                     // @phpstan-ignore method.nonObject
                     $bundle->js[$i] = $this->converter->convert($js, $bundle->basePath);
                 }
