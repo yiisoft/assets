@@ -20,6 +20,8 @@ use Yiisoft\Files\PathMatcher\PathMatcherInterface;
  * @psalm-import-type CssString from AssetManager
  * @psalm-import-type JsFile from AssetManager
  * @psalm-import-type JsString from AssetManager
+ *
+ * @psalm-suppress ClassMustBeFinal
  */
 class AssetBundle
 {

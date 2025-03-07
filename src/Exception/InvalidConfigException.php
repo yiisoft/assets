@@ -8,6 +8,8 @@ use Exception;
 
 /**
  * `InvalidConfigException` is thrown when configuration of asset bundle is not valid.
+ *
+ * @final
  */
 class InvalidConfigException extends Exception
 {
