@@ -1,9 +1,9 @@
 # Yii Assets Change Log
 
-## 5.0.1 under development
+## 5.1.0 March 08, 2025
 
-- Chg #156: Change PHP constraint in `composer.json` to `~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0` (@vjik) 
 - Chg #155: Improve static analyze annotations (@vjik)
+- Chg #156: Change PHP constraint in `composer.json` to `~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0` (@vjik)
 - Enh #155: Remove unnecessary `array_filter` call in `AssetUtil::extractFilePathsForExport()` method (@vjik)
 - Bug #156: Fix the nullable parameter declarations for compatibility with PHP 8.4 (@vjik)
 
