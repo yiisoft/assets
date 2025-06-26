@@ -37,7 +37,7 @@ final class AssetCollector implements SummaryCollectorInterface
     }
 
     /**
-     * @psalm-return array{asset?:array{bundles: array{total: int}}}
+     * @psalm-return array{bundles?: array{total: int}}
      */
     public function getSummary(): array
     {
@@ -46,10 +46,8 @@ final class AssetCollector implements SummaryCollectorInterface
         }
 
         return [
-            'asset' => [
-                'bundles' => [
-                    'total' => count($this->assetBundles),
-                ],
+            'bundles' => [
+                'total' => count($this->assetBundles),
             ],
         ];
     }
