@@ -2,7 +2,7 @@
 
 ## 5.1.1 under development
 
-- no changes in this release.
+- Enh #163: Adapt summary data in debug collector (@rustamwin)
 
 ## 5.1.0 March 08, 2025
 
