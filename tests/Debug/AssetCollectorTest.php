@@ -20,10 +20,8 @@ final class AssetCollectorTest extends AbstractCollectorTestCase
 
         $this->assertSame(
             [
-                'asset' => [
-                    'bundles' => [
-                        'total' => 2,
-                    ],
+                'bundles' => [
+                    'total' => 2,
                 ],
             ],
             $collector->getSummary(),
