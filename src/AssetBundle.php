@@ -243,6 +243,14 @@ class AssetBundle
     /**
      * The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
      * is being published. This property is used only when {@see $sourcePath} is set.
+     *
+     * Available options:
+     *
+     *  - `forceCopy` (`bool`)
+     *  - `afterCopy` (`callable`)
+     *  - `beforeCopy` (`callable`)
+     *  - `filter` (`PathMatcherInterface|mixed`)
+     *  - `recursive` (`bool`)
      */
     public array $publishOptions = [];
 
