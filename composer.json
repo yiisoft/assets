@@ -38,11 +38,11 @@
     "require-dev": {
         "bamarni/composer-bin-plugin": "^1.8.2",
         "infection/infection": "^0.29.8",
-        "phpstan/phpstan": "^2.1.19",
-        "phpunit/phpunit": "^10.5.48",
-        "rector/rector": "^2.1.2",
+        "phpstan/phpstan": "^2.1.22",
+        "phpunit/phpunit": "^10.5.52",
+        "rector/rector": "^2.1.4",
         "spatie/phpunit-watcher": "^1.24",
-        "vimeo/psalm": "^6.13.0",
+        "vimeo/psalm": "^6.13.1",
         "yiisoft/di": "^1.4",
         "yiisoft/test-support": "^3.0.2",
         "yiisoft/yii-debug": "dev-master"
