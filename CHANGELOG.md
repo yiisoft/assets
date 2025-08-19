@@ -3,6 +3,7 @@
 ## 5.1.1 under development
 
 - Enh #163: Adapt summary data in debug collector (@rustamwin)
+- Enh #164: Simplify types in `AssetBundle` (@vjik)
 
 ## 5.1.0 March 08, 2025
 
