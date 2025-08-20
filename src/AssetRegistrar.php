@@ -193,6 +193,7 @@ final class AssetRegistrar
     private function convertCss(AssetBundle $bundle): void
     {
         foreach ($bundle->css as $i => $css) {
+            /** @psalm-var CssFile|string $css */
             if (is_array($css)) {
                 $file = $css[0];
                 if (AssetUtil::isRelative($file)) {
@@ -230,6 +231,7 @@ final class AssetRegistrar
     private function convertJs(AssetBundle $bundle): void
     {
         foreach ($bundle->js as $i => $js) {
+            /** @psalm-var JsFile|string $js */
             if (is_array($js)) {
                 $file = $js[0];
                 if (AssetUtil::isRelative($file)) {

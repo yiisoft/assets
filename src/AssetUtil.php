@@ -21,6 +21,9 @@ use function substr_compare;
 
 /**
  * `AssetUtil` shared functions.
+ *
+ * @psalm-import-type CssFile from AssetManager
+ * @psalm-import-type JsFile from AssetManager
  */
 final class AssetUtil
 {
@@ -131,12 +134,14 @@ final class AssetUtil
 
             if (!empty($bundle->export)) {
                 foreach ($bundle->export as $filePath) {
+                    /** @var string $filePath */
                     $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
                 }
                 continue;
             }
 
             foreach (array_merge($bundle->css, $bundle->js) as $item) {
+                /** @psalm-var CssFile|JsFile|string $item */
                 $filePath = is_array($item) ? $item[0] : $item;
                 $filePaths[] = "{$bundle->sourcePath}/{$filePath}";
             }

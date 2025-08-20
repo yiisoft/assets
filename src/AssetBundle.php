@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Assets;
 
-use Yiisoft\Files\PathMatcher\PathMatcherInterface;
-
 /**
- * AssetBundle represents a collection of asset files, such as CSS, JS, images.
+ * `AssetBundle` represents a collection of asset files, such as CSS, JS, images.
  *
  * Each asset bundle has a unique name that globally identifies it among all asset bundles used in an application.
  * The name is the fully qualified class name {@link https://www.php.net/manual/en/language.namespaces.rules.php}
@@ -15,11 +13,6 @@ use Yiisoft\Files\PathMatcher\PathMatcherInterface;
  *
  * An asset bundle can depend on other asset bundles. When registering an asset bundle with a view, all its dependent
  * asset bundles will be automatically registered.
- *
- * @psalm-import-type CssFile from AssetManager
- * @psalm-import-type CssString from AssetManager
- * @psalm-import-type JsFile from AssetManager
- * @psalm-import-type JsString from AssetManager
  *
  * @psalm-suppress ClassMustBeFinal
  */
@@ -79,8 +72,6 @@ class AssetBundle
      *     'key' => 'css/d.css',
      * ]
      * ```
-     *
-     * @psalm-var array<array-key, CssFile|string>
      */
     public array $css = [];
 
@@ -108,8 +99,6 @@ class AssetBundle
      *     'key4' => ['a { color: red; }', 3, 'crossorigin' => 'any'],
      * ];
      * ```
-     *
-     * @psalm-var array<array-key, CssString|string>
      */
     public array $cssStrings = [];
 
@@ -180,8 +169,6 @@ class AssetBundle
      *   pairs that will be used to overwrite {@see $jsOptions} settings for this entry.
      *
      * Note that only a forward slash "/" should be used as directory separator.
-     *
-     * @psalm-var array<array-key, JsFile|string>
      */
     public array $js = [];
 
@@ -209,8 +196,6 @@ class AssetBundle
      *     'key4' => ['alert(8);', 3, 'id' => 'second'],
      * ];
      * ```
-     *
-     * @psalm-var array<array-key, JsString|string>
      */
     public array $jsStrings = [];
 
@@ -259,13 +244,13 @@ class AssetBundle
      * The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
      * is being published. This property is used only when {@see $sourcePath} is set.
      *
-     * @psalm-var array{
-     *     forceCopy?: bool,
-     *     afterCopy?: callable,
-     *     beforeCopy?: callable,
-     *     filter?: PathMatcherInterface|mixed,
-     *     recursive?: bool
-     * }
+     * Available options:
+     *
+     *  - `forceCopy` (`bool`)
+     *  - `afterCopy` (`callable`)
+     *  - `beforeCopy` (`callable`)
+     *  - `filter` (`PathMatcherInterface|mixed`)
+     *  - `recursive` (`bool`)
      */
     public array $publishOptions = [];
 
@@ -285,8 +270,6 @@ class AssetBundle
      *     'js/script.js',
      * ]:
      * ```
-     *
-     * @psalm-var list<string>
      */
     public array $export = [];
 
