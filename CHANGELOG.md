@@ -1,5 +1,9 @@
 # Yii Assets Change Log
 
+## 5.1.2 under development
+
+- no changes in this release.
+
 ## 5.1.1 August 20, 2025
 
 - Enh #163: Adapt summary data in debug collector (@rustamwin)
