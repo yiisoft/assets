@@ -1,6 +1,6 @@
 # Yii Assets Change Log
 
-## 5.1.1 under development
+## 5.1.1 August 20, 2025
 
 - Enh #163: Adapt summary data in debug collector (@rustamwin)
 - Enh #164: Simplify types in `AssetBundle` (@vjik)
