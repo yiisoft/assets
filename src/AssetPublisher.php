@@ -291,7 +291,7 @@ final class AssetPublisher implements AssetPublisherInterface
              * @psalm-var array{
              *   dirMode: int,
              *   fileMode: int,
-             *   filter?: \Yiisoft\Files\PathMatcher\PathMatcherInterface|mixed,
+             *   filter?: \Yiisoft\Files\PathMatcher\PathMatcherInterface,
              *   recursive?: bool,
              *   beforeCopy?: callable,
              *   afterCopy?: callable,

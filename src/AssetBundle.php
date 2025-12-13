@@ -249,7 +249,7 @@ class AssetBundle
      *  - `forceCopy` (`bool`)
      *  - `afterCopy` (`callable`)
      *  - `beforeCopy` (`callable`)
-     *  - `filter` (`PathMatcherInterface|mixed`)
+     *  - `filter` (`PathMatcherInterface`)
      *  - `recursive` (`bool`)
      */
     public array $publishOptions = [];
