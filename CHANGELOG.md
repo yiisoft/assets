@@ -2,7 +2,7 @@
 
 ## 5.1.2 under development
 
-- no changes in this release.
+- Enh #169: Add PHP 8.5 support (@vjik)
 
 ## 5.1.1 August 20, 2025
 
