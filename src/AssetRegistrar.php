@@ -8,6 +8,7 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 use function array_key_exists;
+use function array_key_first;
 use function array_values;
 use function is_array;
 use function is_int;
@@ -54,6 +55,11 @@ final class AssetRegistrar
      * @psalm-var JsVar[]
      */
     private array $jsVars = [];
+
+    private array $imports = [
+        'imports' => [],
+        'integrity' => [],
+    ];
 
     public function __construct(
         private Aliases $aliases,
@@ -108,6 +114,11 @@ final class AssetRegistrar
     public function getJsVars(): array
     {
         return array_values($this->jsVars);
+    }
+
+    public function getImports(): array
+    {
+        return $this->imports;
     }
 
     /**
@@ -183,6 +194,10 @@ final class AssetRegistrar
                 is_string($key) ? $key : null,
                 $cssString,
             );
+        }
+
+        foreach ($bundle->imports as $key => $import) {
+            $this->registerImport($bundle, $import, $key);
         }
     }
 
@@ -471,6 +486,65 @@ final class AssetRegistrar
         }
 
         $this->registerJsVar($name, $value, $position);
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    private function registerImport(AssetBundle $bundle, array|string $import, string|int $key): void
+    {
+        if (is_array($import)) {
+            $module = array_key_first($import);
+
+            if (is_string($module)) {
+                $integrity = $import[$module];
+            } else {
+                $module = $import[$module];
+                $integrity = null;
+            }
+
+        } else {
+            $integrity = null;
+            $module = $import;
+        }
+
+        if (!is_string($module)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'Module should be string. Got %s.',
+                    get_debug_type($module),
+                ),
+            );
+        }
+
+        if ($module === '') {
+            throw new InvalidConfigException('Module should be a not empty string.');
+        }
+
+        if (is_int($key)) {
+            $key = $module;
+        }
+
+        if (isset($this->imports['imports'][$key])) {
+            throw new InvalidConfigException('Module name should be a unique.');
+        }
+
+        $url = $this->loader->getAssetUrl($bundle, $module);
+        $this->imports['imports'][$key] = $url;
+
+        if ($integrity) {
+
+            if (!is_string($integrity)) {
+                throw new InvalidConfigException(
+                    sprintf(
+                        'Integrity should be string. Got %s.',
+                        get_debug_type($integrity),
+                    ),
+                );
+            }
+
+            $this->imports['integrity'][$url] = $integrity;
+        }
     }
 
     /**

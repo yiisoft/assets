@@ -18,9 +18,14 @@ use Yiisoft\Assets\Tests\stubs\CdnAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\OneAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\TwoAsset;
 use Yiisoft\Assets\Tests\stubs\ExportAsset;
+use Yiisoft\Assets\Tests\stubs\ImportmapAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithEmptyUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithIntegerUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithoutUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportDoubleKeyAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyStringAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringIntegrityAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithEmptyUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithIntegerUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithoutUrlAsset;
@@ -801,6 +806,7 @@ final class AssetManagerTest extends TestCase
         $manager->register('yii\bootstrap\BootstrapAsset');
     }
 
+
     /**
      * @link https://github.com/yiisoft/assets/issues/123
      */
@@ -812,6 +818,141 @@ final class AssetManagerTest extends TestCase
         $this->expectExceptionMessage('The "yii\bootstrap\BootstrapAsset" asset bundle class does not exist.');
 
         $manager->registerMany(['yii\bootstrap\BootstrapAsset']);
+    }
+
+    public static function invalidImportsDataProvider(): array
+    {
+        return [
+            [
+                ImportNotStringAsset::class,
+                'Module should be string. Got array.',
+            ],
+
+            [
+                ImportEmptyStringAsset::class,
+                'Module should be a not empty string.',
+            ],
+
+            [
+                ImportDoubleKeyAsset::class,
+                'Module name should be a unique.',
+            ],
+
+            [
+                ImportNotStringIntegrityAsset::class,
+                'Integrity should be string. Got bool.',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidImportsDataProvider
+     *
+     * @param string $bundle
+     * @param string $expectMessage
+     * @return void
+     * @throws InvalidConfigException
+     */
+    public function testInvalidImports(string $bundle, string $expectMessage): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage($expectMessage);
+
+        $manager->register($bundle);
+    }
+
+    public static function importmapDataProvider(): array
+    {
+        return [
+            [
+                null,
+            ],
+
+            [
+                'root.js',
+                [
+                    'imports' => [
+                        'root.js' => '/root.js',
+                    ],
+                ],
+            ],
+
+            [
+                'root.js',
+                [
+                    'imports' => [
+                        '@root' => '/root.js',
+                    ],
+                ],
+                '@root',
+            ],
+
+            [
+                [
+                    'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                ],
+                [
+                    'imports' => [
+                        'root.js' => '/root.js'
+                    ],
+                    'integrity' => [
+                        '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    ],
+                ],
+            ],
+
+            [
+                [
+                    'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                ],
+                [
+                    'imports' => [
+                        '@root' => '/root.js'
+                    ],
+                    'integrity' => [
+                        '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    ],
+                ],
+                '@root'
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider importmapDataProvider
+     *
+     * @param array|string|null $import
+     * @param array $imports
+     * @param string|int $key
+     * @return void
+     */
+    public function testImportmap(array|string|null $import, array $imports = [], string|int $key = 0): void
+    {
+        $manager = $this->createManager();
+
+        if ($import === null) {
+
+            $manager->register(ImportmapAsset::class);
+            $this->assertEquals(null, $manager->getImportmap());
+
+        } else {
+
+            $manager->registerCustomized(
+                ImportmapAsset::class,
+                [
+                    'imports' => [
+                        $key => $import
+                    ],
+                ],
+            );
+
+            $this->assertEquals(
+                $imports,
+                $manager->getImportmap()
+            );
+        }
     }
 
     private function createManager(array $aliases = []): AssetManager

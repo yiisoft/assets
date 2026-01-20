@@ -243,6 +243,25 @@ class AssetBundle
     public array $jsVars = [];
 
     /**
+     * List of JavaScript modules that this bundle contains.
+     *
+     * Each module can be specified in one of the following formats:
+     *
+     * - an absolute URL representing an external asset. For example,
+     *   `https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js` or
+     *   `//cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js`.
+     * - a relative path representing a local asset (e.g. `js/main.js`). The actual file path of a local asset can be
+     *   determined by prefixing {@see $basePath} to the relative path, and the actual URL of the asset can be
+     *   determined by prefixing {@see $baseUrl} to the relative path.
+     * - an array
+     *     where key is the module name
+     *     value can be a string or value as array with module as key and integrity as value
+     *
+     * Note that only a forward slash "/" should be used as directory separator.
+     */
+    public array $imports = [];
+
+    /**
      * The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
      * is being published. This property is used only when {@see $sourcePath} is set.
      *

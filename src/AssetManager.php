@@ -187,6 +187,17 @@ final class AssetManager
         return $this->registrar->getJsVars();
     }
 
+    public function getImportmap(): array|null
+    {
+        $imports = $this->registrar->getImports();
+
+        return match (true) {
+            $imports['imports'] === [] => null,
+            $imports['integrity'] === [] => ['imports' => $imports['imports']],
+            default => $imports
+        };
+    }
+
     /**
      * Returns a new instance with the specified converter.
      */
