@@ -20,7 +20,7 @@ use function is_array;
  * @psalm-type JsString = array{0: mixed, ...}|array{0: string, 1: int, ...}
  * @psalm-type JsVar = array{0:string,1:mixed,2?:int}
  * @psalm-type CustomizedBundles = array<string, AssetBundle|array<string, mixed>|false>
- * @psalm-type Imports = array{imports: array<string, string>, integrity: <string, string>}
+ * @psalm-type Imports = array{imports: array<string, string>, integrity: array<string, string>}
  */
 final class AssetManager
 {

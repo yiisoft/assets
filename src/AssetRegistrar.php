@@ -499,18 +499,20 @@ final class AssetRegistrar
      */
     private function registerImport(AssetBundle $bundle, array|string $import, string|int $key): void
     {
+        $integrity = null;
+
         if (is_array($import)) {
             $module = array_key_first($import);
 
             if (is_string($module)) {
                 $integrity = $import[$module];
-            } else {
+            } elseif (is_int($module)) {
                 $module = $import[$module];
-                $integrity = null;
+            } else {
+                throw new InvalidConfigException('Module should be a not empty array.');
             }
 
         } else {
-            $integrity = null;
             $module = $import;
         }
 
