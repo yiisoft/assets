@@ -187,14 +187,14 @@ final class AssetManager
         return $this->registrar->getJsVars();
     }
 
-    public function getImportmap(): array|null
+    public function getImportmap(): ?array
     {
         $imports = $this->registrar->getImports();
 
         return match (true) {
             $imports['imports'] === [] => null,
             $imports['integrity'] === [] => ['imports' => $imports['imports']],
-            default => $imports
+            default => $imports,
         };
     }
 
