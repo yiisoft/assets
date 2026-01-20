@@ -188,6 +188,11 @@ final class AssetManager
         return $this->registrar->getJsVars();
     }
 
+    /**
+     * @return array|null
+     *
+     * @psalm-return Imports|null
+     */
     public function getImportmap(): ?array
     {
         $imports = $this->registrar->getImports();

@@ -23,6 +23,7 @@ use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithEmptyUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithIntegerUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithoutUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportDoubleKeyAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyArrayAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyStringAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringIntegrityAsset;
@@ -825,6 +826,11 @@ final class AssetManagerTest extends TestCase
             [
                 ImportNotStringAsset::class,
                 'Module should be string. Got array.',
+            ],
+
+            [
+                ImportEmptyArrayAsset::class,
+                'Module should be a not empty array.',
             ],
 
             [

@@ -504,13 +504,11 @@ final class AssetRegistrar
         if (is_array($import)) {
             $module = array_key_first($import);
 
-            if (is_string($module)) {
-                $integrity = $import[$module];
-            } elseif (is_int($module)) {
-                $module = $import[$module];
-            } else {
-                throw new InvalidConfigException('Module should be a not empty array.');
-            }
+            match (true) {
+                is_string($module) => $integrity = $import[$module],
+                is_int($module) => $module = $import[$module],
+                default => throw new InvalidConfigException('Module should be a not empty array.'),
+            };
 
         } else {
             $module = $import;
