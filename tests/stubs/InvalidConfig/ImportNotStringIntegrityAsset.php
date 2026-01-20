@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests\stubs\InvalidConfig;
@@ -9,7 +10,7 @@ final class ImportNotStringIntegrityAsset extends AssetBundle
 {
     public array $imports = [
         'root' => [
-            'root.js' => true
-        ]
+            'root.js' => true,
+        ],
     ];
 }

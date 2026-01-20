@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests\stubs\InvalidConfig;
@@ -9,6 +10,6 @@ final class ImportDoubleKeyAsset extends AssetBundle
 {
     public array $imports = [
         'root.js',
-        'root.js'
+        'root.js',
     ];
 }

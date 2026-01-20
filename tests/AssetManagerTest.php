@@ -806,7 +806,6 @@ final class AssetManagerTest extends TestCase
         $manager->register('yii\bootstrap\BootstrapAsset');
     }
 
-
     /**
      * @link https://github.com/yiisoft/assets/issues/123
      */
@@ -895,7 +894,7 @@ final class AssetManagerTest extends TestCase
                 ],
                 [
                     'imports' => [
-                        'root.js' => '/root.js'
+                        'root.js' => '/root.js',
                     ],
                     'integrity' => [
                         '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
@@ -909,13 +908,13 @@ final class AssetManagerTest extends TestCase
                 ],
                 [
                     'imports' => [
-                        '@root' => '/root.js'
+                        '@root' => '/root.js',
                     ],
                     'integrity' => [
                         '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
                     ],
                 ],
-                '@root'
+                '@root',
             ],
         ];
     }
@@ -943,14 +942,14 @@ final class AssetManagerTest extends TestCase
                 ImportmapAsset::class,
                 [
                     'imports' => [
-                        $key => $import
+                        $key => $import,
                     ],
                 ],
             );
 
             $this->assertEquals(
                 $imports,
-                $manager->getImportmap()
+                $manager->getImportmap(),
             );
         }
     }
