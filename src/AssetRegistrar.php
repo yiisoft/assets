@@ -27,7 +27,7 @@ use function sprintf;
  * @psalm-import-type JsVar from AssetManager
  * @psalm-import-type ConverterOptions from AssetConverterInterface
  * @psalm-import-type Imports from AssetManager
- * @psalm-type ImportModule = array<int: string>|array<string, string>
+ * @psalm-type ImportModule = array<0: string>|array<string, string>
  */
 final class AssetRegistrar
 {
@@ -500,6 +500,8 @@ final class AssetRegistrar
     }
 
     /**
+     * Register a Javascript module
+     *
      * @throws InvalidConfigException
      */
     private function registerImport(AssetBundle $bundle, array|string $import, string|int $key): void
