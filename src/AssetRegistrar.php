@@ -27,7 +27,7 @@ use function sprintf;
  * @psalm-import-type JsVar from AssetManager
  * @psalm-import-type ConverterOptions from AssetConverterInterface
  * @psalm-import-type Imports from AssetManager
- * @psalm-type ImportModule = array{0: string}|array<string, string>
+ * @psalm-type ImportModule = array<int: string>|array<string, string>
  */
 final class AssetRegistrar
 {
@@ -121,6 +121,11 @@ final class AssetRegistrar
         return array_values($this->jsVars);
     }
 
+    /**
+     * @return array|array[] importmap
+     *
+     * @psalm-return Imports
+     */
     public function getImports(): array
     {
         return $this->imports;
