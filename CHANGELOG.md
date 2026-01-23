@@ -3,7 +3,7 @@
 ## 5.1.3 under development
 
 - Enh #172: Explicitly import classes and constants in "use" section (@mspirkov)
-- New #173: Add `AssetManager::getImportmap()`, `AssetRegistrar::getImports()` methods and `AssetBundle::import` property (@Gerych1984) 
+- New #173: Add `AssetManager::getImportmap()`, `AssetRegistrar::getImports()` methods and `AssetBundle::imports` property (@Gerych1984) 
 
 ## 5.1.2 December 13, 2025
 

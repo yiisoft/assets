@@ -189,6 +189,8 @@ final class AssetManager
     }
 
     /**
+     * Returns a array of module map that can be used in the script tag with `json_encode` as content
+     *
      * @return array{imports: array<string, string>, integrity?: array<string, string>}|null
      */
     public function getImportmap(): ?array

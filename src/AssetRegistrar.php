@@ -122,7 +122,9 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array|array[] importmap
+     * Returns a array of module map
+     *
+     * @return array[] importmap
      *
      * @psalm-return Imports
      */
