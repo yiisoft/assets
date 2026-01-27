@@ -195,7 +195,7 @@ final class AssetManager
      *
      * @return array{imports: array<string, string>, integrity?: array<string, string>}|null
      */
-    public function getImportmap(): array|null
+    public function getImportmap(): ?array
     {
         $imports = $this->registrar->getImports();
 
