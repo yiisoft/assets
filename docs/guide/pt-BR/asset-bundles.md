@@ -325,7 +325,7 @@ final class VueEsmAsset extends AssetBundle
         ]
     ];
 
-    //Pré-carga do módulo opcional
+    // Optional preload module.
     public array $css = [
         [
             'https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js',
@@ -337,7 +337,7 @@ final class VueEsmAsset extends AssetBundle
 }
 ```
 
-`PopperEsmAsset.php`
+`PopperEsmAsset.php`:
 
 ```php
 
@@ -352,7 +352,6 @@ final class PopperEsmAsset extends AssetBundle
             'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/esm/popper.min.js' => 'sha512-aSCUnIf5arudGto225/QqbEgN6cN22eXky/XUnXgkxsuLfdxzr/zirkr25psrCK24Q8UItMSwAhxTQpTHO24hQ=='
         ]
     ];
- 
 }
 ```
 
@@ -374,14 +373,13 @@ final class BoostrapEsmAsset extends AssetBundle
             'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.esm.min.js' => 'sha512-2OlrVWMEtWpu6gdWyl7zE7dxCREirSpMlmPQ16qn86VmlCJGQOkPyGakw9RPGolJa538sKHX4nW0UDACO3WKrg=='
         ]
     ];
-
-    //Optional module preload
+    
     public array $css = [
         [
             'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css',
             'integrity' => 'sha512-2bBQCjcnw658Lho4nlXJcc6WkV/UxpE/sAokbXPxQNGqmNdQrWqtw26Ns9kFF/yG792pKR1Sx8/Y1Lf1XN4GKA==',
         ],
-        //Pré-carga do módulo opcional
+        // Optional preload module.
         [
             'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.esm.min.js',
             'rel' => 'modulepreload',
@@ -396,7 +394,7 @@ final class BoostrapEsmAsset extends AssetBundle
 }
 ```
 
-Em algum lugar no topo do layout
+Em algum lugar no topo do layout você deve usar o seguinte:
 
 ```php
 if ($imports = $assetManager->getImportmap()) {
@@ -406,7 +404,7 @@ if ($imports = $assetManager->getImportmap()) {
 }
 ```
 
-Agora podemos usar o módulo js 'import' como este
+Agora podemos usar o módulo JavaScript `import` assim:
 
 ```js
 import { createApp, defineComponent } from "vue";

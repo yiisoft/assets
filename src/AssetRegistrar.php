@@ -122,11 +122,11 @@ final class AssetRegistrar
     }
 
     /**
-     * Returns a array of module map
-     *
-     * @return array[] importmap
+     * @return array[] JavaScript module map.
      *
      * @psalm-return Imports
+     *
+     * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap
      */
     public function getImports(): array
     {
@@ -502,7 +502,7 @@ final class AssetRegistrar
     }
 
     /**
-     * Register a Javascript module
+     * Register a Javascript module.
      *
      * @throws InvalidConfigException
      */

@@ -189,11 +189,13 @@ final class AssetManager
     }
 
     /**
-     * Returns a array of module map that can be used in the script tag with `json_encode` as content
+     * Returns a array of module map with optional integrity
+     * that can be used in the script tag with `json_encode` as content
+     * or null if there are no modules.
      *
      * @return array{imports: array<string, string>, integrity?: array<string, string>}|null
      */
-    public function getImportmap(): ?array
+    public function getImportmap(): array|null
     {
         $imports = $this->registrar->getImports();
 
