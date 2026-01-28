@@ -258,6 +258,8 @@ class AssetBundle
      *     value can be a string or value as array with module as key and integrity as value
      *
      * Note that only a forward slash "/" should be used as directory separator.
+     *
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap
      */
     public array $imports = [];
 
