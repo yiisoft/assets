@@ -45,7 +45,6 @@ use Yiisoft\Assets\Tests\stubs\PureAsset;
 use Yiisoft\Assets\Tests\stubs\RepeatAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\stubs\UnicodeAsset;
-use Yiisoft\Assets\Tests\stubs\WithoutBaseAsset;
 use Yiisoft\Files\FileHelper;
 
 use function array_key_first;
@@ -936,7 +935,7 @@ final class AssetManagerTest extends TestCase
                 [
                     'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
                     'scopes' => [
-                        'test' => 'value.js'
+                        'test' => 'value.js',
                     ],
                 ],
                 [
@@ -948,7 +947,7 @@ final class AssetManagerTest extends TestCase
                     ],
                     'scopes' => [
                         'test' => [
-                            '@root' => 'value.js'
+                            '@root' => 'value.js',
                         ],
                     ],
                 ],
@@ -959,7 +958,7 @@ final class AssetManagerTest extends TestCase
                 [
                     'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
                     'scopes' => [
-                        JqueryAsset::class => 'value.js'
+                        JqueryAsset::class => 'value.js',
                     ],
                 ],
                 [
@@ -971,7 +970,7 @@ final class AssetManagerTest extends TestCase
                     ],
                     'scopes' => [
                         '/js' => [
-                            '@root' => 'value.js'
+                            '@root' => 'value.js',
                         ],
                     ],
                 ],

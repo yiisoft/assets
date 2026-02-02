@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests\stubs\InvalidConfig;
@@ -13,8 +14,8 @@ final class ImportScopeNotStringKeyAsset extends AssetBundle
         'name' => [
             'some-module-url',
             'scopes' => [
-                'wrong-key'
-            ]
+                'wrong-key',
+            ],
         ],
     ];
 }

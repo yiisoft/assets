@@ -558,7 +558,7 @@ final class AssetRegistrar
                     sprintf(
                         'Scopes should be array. Got %s.',
                         get_debug_type($scopes),
-                    )
+                    ),
                 );
             }
 

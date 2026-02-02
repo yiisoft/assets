@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Assets;
@@ -29,7 +30,7 @@ final class Importmap implements JsonSerializable
             $importmap['integrity'] = $this->integrity;
         }
 
-        if ($this->scopes)  {
+        if ($this->scopes) {
             $importmap['scopes'] = $this->scopes;
         }
 
