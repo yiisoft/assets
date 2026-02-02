@@ -869,7 +869,7 @@ final class AssetManagerTest extends TestCase
 
             [
                 ImportNullBaseUrlAsset::class,
-                'Scope bundle should have not empty `$baseUrl` property.'
+                'Scope bundle should have not empty `$baseUrl` property.',
             ],
         ];
     }

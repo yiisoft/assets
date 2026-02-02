@@ -16,7 +16,6 @@ use function is_int;
 use function is_string;
 use function is_subclass_of;
 use function sprintf;
-use function var_dump;
 
 /**
  * `AssetRegistrar` registers asset files, code blocks and variables from a bundle considering dependencies.
@@ -572,8 +571,8 @@ final class AssetRegistrar
                     throw new InvalidConfigException(
                         sprintf(
                             'Alternative should be a string. Got %s.',
-                            get_debug_type($alternative)
-                        )
+                            get_debug_type($alternative),
+                        ),
                     );
                 }
 
