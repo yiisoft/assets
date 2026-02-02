@@ -105,7 +105,7 @@ class AssetBundle
     public array $cssStrings = [];
 
     /**
-     * The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
+     * The options that will be passed to {@see WebView::registerCssFile()}
      * when registering the CSS files in this bundle.
      */
     public array $cssOptions = [];
@@ -202,7 +202,7 @@ class AssetBundle
     public array $jsStrings = [];
 
     /**
-     * The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
+     * The options that will be passed to {@see WebView::registerJsFile()}
      * when registering the JS files in this bundle.
      */
     public array $jsOptions = [];
@@ -259,6 +259,8 @@ class AssetBundle
      *     optional array element `scopes`
      *
      * Note that only a forward slash "/" should be used as directory separator.
+     *
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap
      */
     public array $imports = [];
 
