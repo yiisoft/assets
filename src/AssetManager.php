@@ -20,7 +20,6 @@ use function is_array;
  * @psalm-type JsString = array{0: mixed, ...}|array{0: string, 1: int, ...}
  * @psalm-type JsVar = array{0:string,1:mixed,2?:int}
  * @psalm-type CustomizedBundles = array<string, AssetBundle|array<string, mixed>|false>
- * @psalm-type Imports = array{imports: array<string, string>, integrity: array<string, string>}
  */
 final class AssetManager
 {
@@ -188,22 +187,9 @@ final class AssetManager
         return $this->registrar->getJsVars();
     }
 
-    /**
-     * Returns a array of module map with optional integrity
-     * that can be used in the script tag with `json_encode` as content
-     * or null if there are no modules.
-     *
-     * @return array{imports: array<string, string>, integrity?: array<string, string>}|null
-     */
-    public function getImportmap(): array|null
+    public function getImportmap(): Importmap
     {
-        $imports = $this->registrar->getImports();
-
-        return match (true) {
-            $imports['imports'] === [] => null,
-            $imports['integrity'] === [] => ['imports' => $imports['imports']],
-            default => $imports,
-        };
+        return $this->registrar->getImports();
     }
 
     /**

@@ -27,6 +27,8 @@ use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyArrayAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyStringAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringIntegrityAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportScopeNotArrayAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportScopeNotStringKeyAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithEmptyUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithIntegerUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithoutUrlAsset;
@@ -43,6 +45,7 @@ use Yiisoft\Assets\Tests\stubs\PureAsset;
 use Yiisoft\Assets\Tests\stubs\RepeatAsset;
 use Yiisoft\Assets\Tests\stubs\SourceAsset;
 use Yiisoft\Assets\Tests\stubs\UnicodeAsset;
+use Yiisoft\Assets\Tests\stubs\WithoutBaseAsset;
 use Yiisoft\Files\FileHelper;
 
 use function array_key_first;
@@ -847,6 +850,16 @@ final class AssetManagerTest extends TestCase
                 ImportNotStringIntegrityAsset::class,
                 'Integrity should be string. Got bool.',
             ],
+
+            [
+                ImportScopeNotArrayAsset::class,
+                'Scopes should be array. Got bool.',
+            ],
+
+            [
+                ImportScopeNotStringKeyAsset::class,
+                'Scopes should be a string. Got int.',
+            ],
         ];
     }
 
@@ -860,7 +873,7 @@ final class AssetManagerTest extends TestCase
      */
     public function testInvalidImports(string $bundle, string $expectMessage): void
     {
-        $manager = $this->createManager();
+        $manager = $this->createManager(['@root' => dirname(__DIR__, 2)]);
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($expectMessage);
@@ -871,10 +884,6 @@ final class AssetManagerTest extends TestCase
     public static function importmapDataProvider(): array
     {
         return [
-            [
-                null,
-            ],
-
             [
                 'root.js',
                 [
@@ -918,6 +927,52 @@ final class AssetManagerTest extends TestCase
                     ],
                     'integrity' => [
                         '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    ],
+                ],
+                '@root',
+            ],
+
+            [
+                [
+                    'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    'scopes' => [
+                        'test' => 'value.js'
+                    ],
+                ],
+                [
+                    'imports' => [
+                        '@root' => '/root.js',
+                    ],
+                    'integrity' => [
+                        '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    ],
+                    'scopes' => [
+                        'test' => [
+                            '@root' => 'value.js'
+                        ],
+                    ],
+                ],
+                '@root',
+            ],
+
+            [
+                [
+                    'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    'scopes' => [
+                        JqueryAsset::class => 'value.js'
+                    ],
+                ],
+                [
+                    'imports' => [
+                        '@root' => '/root.js',
+                    ],
+                    'integrity' => [
+                        '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    ],
+                    'scopes' => [
+                        '/js' => [
+                            '@root' => 'value.js'
+                        ],
                     ],
                 ],
                 '@root',
@@ -933,31 +988,23 @@ final class AssetManagerTest extends TestCase
      * @param string|int $key
      * @return void
      */
-    public function testImportmap(array|string|null $import, array $imports = [], string|int $key = 0): void
+    public function testImportmap(array|string $import, array $imports = [], string|int $key = 0): void
     {
-        $manager = $this->createManager();
+        $manager = $this->createManager(['@root' => dirname(__DIR__, 2)]);
 
-        if ($import === null) {
-
-            $manager->register(ImportmapAsset::class);
-            $this->assertEquals(null, $manager->getImportmap());
-
-        } else {
-
-            $manager->registerCustomized(
-                ImportmapAsset::class,
-                [
-                    'imports' => [
-                        $key => $import,
-                    ],
+        $manager->registerCustomized(
+            ImportmapAsset::class,
+            [
+                'imports' => [
+                    $key => $import,
                 ],
-            );
+            ],
+        );
 
-            $this->assertEquals(
-                $imports,
-                $manager->getImportmap(),
-            );
-        }
+        $this->assertEquals(
+            $imports,
+            $manager->getImportmap()->jsonSerialize(),
+        );
     }
 
     private function createManager(array $aliases = []): AssetManager

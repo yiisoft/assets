@@ -13,6 +13,7 @@ use function array_values;
 use function is_array;
 use function is_int;
 use function is_string;
+use function is_subclass_of;
 use function sprintf;
 
 /**
@@ -58,18 +59,14 @@ final class AssetRegistrar
      */
     private array $jsVars = [];
 
-    /**
-     * @psalm-var Imports
-     */
-    private array $imports = [
-        'imports' => [],
-        'integrity' => [],
-    ];
+    private Importmap $imports;
 
     public function __construct(
         private Aliases $aliases,
         private AssetLoaderInterface $loader,
-    ) {}
+    ) {
+        $this->imports = new Importmap();
+    }
 
     /**
      * @return array Config array of CSS files.
@@ -122,13 +119,9 @@ final class AssetRegistrar
     }
 
     /**
-     * @return array[] JavaScript module map.
-     *
-     * @psalm-return Imports
-     *
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap
      */
-    public function getImports(): array
+    public function getImports(): Importmap
     {
         return $this->imports;
     }
@@ -508,10 +501,11 @@ final class AssetRegistrar
      */
     private function registerImport(AssetBundle $bundle, array|string $import, string|int $key): void
     {
-        $integrity = null;
+        $integrity = $scopes = null;
 
         if (is_array($import)) {
             $module = array_key_first($import);
+            $scopes = $import['scopes'] ?? null;
 
             match (true) {
                 is_string($module) => $integrity = $import[$module],
@@ -540,12 +534,8 @@ final class AssetRegistrar
             $key = $module;
         }
 
-        if (isset($this->imports['imports'][$key])) {
-            throw new InvalidConfigException('Module name should be a unique.');
-        }
-
         $url = $this->loader->getAssetUrl($bundle, $module);
-        $this->imports['imports'][$key] = $url;
+        $this->imports->addImport($key, $url);
 
         if ($integrity) {
 
@@ -558,7 +548,31 @@ final class AssetRegistrar
                 );
             }
 
-            $this->imports['integrity'][$url] = $integrity;
+            $this->imports->addIntegrity($url, $integrity);
+        }
+
+        if ($scopes) {
+
+            if (!is_array($scopes)) {
+                throw new InvalidConfigException(
+                    sprintf(
+                        'Scopes should be array. Got %s.',
+                        get_debug_type($scopes),
+                    )
+                );
+            }
+
+            foreach ($scopes as $scope => $alternative) {
+                if (!is_string($scope)) {
+                    throw new InvalidConfigException('Scopes should be a string. Got int.');
+                }
+
+                if (is_subclass_of($scope, AssetBundle::class)) {
+                    $scope = $this->loader->loadBundle($scope)->baseUrl;
+                }
+
+                $this->imports->addScope($scope, $key, $alternative);
+            }
         }
     }
 

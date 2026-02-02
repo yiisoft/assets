@@ -256,6 +256,7 @@ class AssetBundle
      * - an array
      *     where key is the module name
      *     value can be a string or value as array with module as key and integrity as value
+     *     optional array element `scopes`
      *
      * Note that only a forward slash "/" should be used as directory separator.
      */
