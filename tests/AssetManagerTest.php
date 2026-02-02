@@ -22,11 +22,13 @@ use Yiisoft\Assets\Tests\stubs\ImportmapAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithEmptyUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithIntegerUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithoutUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportArrayAlternativeAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportDoubleKeyAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyArrayAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyStringAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringIntegrityAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNullBaseUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportScopeNotArrayAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportScopeNotStringKeyAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithEmptyUrlAsset;
@@ -859,6 +861,16 @@ final class AssetManagerTest extends TestCase
                 ImportScopeNotStringKeyAsset::class,
                 'Scopes should be a string. Got int.',
             ],
+
+            [
+                ImportArrayAlternativeAsset::class,
+                'Alternative should be a string. Got array.',
+            ],
+
+            [
+                ImportNullBaseUrlAsset::class,
+                'Scope bundle should have not empty `$baseUrl` property.'
+            ],
         ];
     }
 
@@ -872,7 +884,7 @@ final class AssetManagerTest extends TestCase
      */
     public function testInvalidImports(string $bundle, string $expectMessage): void
     {
-        $manager = $this->createManager(['@root' => dirname(__DIR__, 2)]);
+        $manager = $this->createManager();
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage($expectMessage);

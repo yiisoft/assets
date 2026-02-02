@@ -10,11 +10,13 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 use function array_key_exists;
 use function array_key_first;
 use function array_values;
+use function get_debug_type;
 use function is_array;
 use function is_int;
 use function is_string;
 use function is_subclass_of;
 use function sprintf;
+use function var_dump;
 
 /**
  * `AssetRegistrar` registers asset files, code blocks and variables from a bundle considering dependencies.
@@ -27,8 +29,7 @@ use function sprintf;
  * @psalm-import-type JsString from AssetManager
  * @psalm-import-type JsVar from AssetManager
  * @psalm-import-type ConverterOptions from AssetConverterInterface
- * @psalm-import-type Imports from AssetManager
- * @psalm-type ImportModule = array<int, string>|array<string, string>
+ * @psalm-type Import = array{int: string, scopes?: array<string, string>}|array{string: string, scopes?: array<string, string>}
  */
 final class AssetRegistrar
 {
@@ -201,7 +202,7 @@ final class AssetRegistrar
             );
         }
 
-        /** @var ImportModule|string $import */
+        /** @var Import|string $import */
         foreach ($bundle->imports as $key => $import) {
             $this->registerImport($bundle, $import, $key);
         }
@@ -567,8 +568,21 @@ final class AssetRegistrar
                     throw new InvalidConfigException('Scopes should be a string. Got int.');
                 }
 
+                if (!is_string($alternative)) {
+                    throw new InvalidConfigException(
+                        sprintf(
+                            'Alternative should be a string. Got %s.',
+                            get_debug_type($alternative)
+                        )
+                    );
+                }
+
                 if (is_subclass_of($scope, AssetBundle::class)) {
                     $scope = $this->loader->loadBundle($scope)->baseUrl;
+
+                    if (empty($scope)) {
+                        throw new InvalidConfigException('Scope bundle should have not empty `$baseUrl` property.');
+                    }
                 }
 
                 $this->imports->addScope($scope, $key, $alternative);

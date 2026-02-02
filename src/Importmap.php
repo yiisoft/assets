@@ -12,8 +12,19 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
  */
 final class Importmap implements JsonSerializable
 {
+    /**
+     * @var array<string, string>
+     */
     private array $imports = [];
+
+    /**
+     * @var array<string, string>
+     */
     private array $integrity = [];
+
+    /**
+     * @var array<string, array<string, string>>
+     */
     private array $scopes = [];
 
     public function jsonSerialize(): array

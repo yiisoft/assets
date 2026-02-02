@@ -396,11 +396,9 @@ final class BoostrapEsmAsset extends AssetBundle
 Somewhere at the top of the layout you should use the following:
 
 ```php
-if ($imports = $assetManager->getImportmap()) {
-    $impormap = Script::tag()
-        ->type('importmap')
-        ->content(json_encode($imports))
-}
+$impormap = Script::tag()
+    ->type('importmap')
+    ->content(json_encode($assetManager->getImportmap()))
 ```
 
 Now we can use JavaScript `import` module like this:
