@@ -4,6 +4,7 @@
 
 - Enh #172: Explicitly import classes and constants in "use" section (@mspirkov)
 - New #173: Add `AssetManager::getImportmap()`, `AssetRegistrar::getImports()` methods and `AssetBundle::imports` property (@Gerych1984) 
+- Enh #174: Remove unnecessary files from Composer package (@mspirkov)
 
 ## 5.1.2 December 13, 2025
 
