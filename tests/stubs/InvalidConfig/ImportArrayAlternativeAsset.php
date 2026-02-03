@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Assets\Tests\stubs\InvalidConfig;
@@ -13,7 +14,7 @@ final class ImportArrayAlternativeAsset extends AssetBundle
         'name' => [
             'some-module-url',
             'scopes' => [
-                'array' => []
+                'array' => [],
             ],
         ],
     ];
