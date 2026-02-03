@@ -253,10 +253,39 @@ class AssetBundle
      * - a relative path representing a local asset (e.g. `js/main.js`). The actual file path of a local asset can be
      *   determined by prefixing {@see $basePath} to the relative path, and the actual URL of the asset can be
      *   determined by prefixing {@see $baseUrl} to the relative path.
-     * - an array
-     *     where key is the module name
-     *     value can be a string or value as array with module as key and integrity as value
-     *     optional array element `scopes`
+     * - an array with the following format:
+     *
+     * ```php
+     * public array $imports = [
+     *      'some-esm-module.js',
+     * ];
+     * ```
+     *
+     * ```php
+     * public array $imports = [
+     *     'module-name' => 'module-file.js',
+     * ];
+     * ```
+     *
+     * ```php
+     * public array $imports = [
+     *     'module-name' => [
+     *          'module-file.js' => 'integrity-hash',
+     *     ],
+     * ];
+     * ```
+     *
+     * ```php
+     * public array $imports = [
+     *     'module-name' => [
+     *          'module-file.js',
+     *          'scopes' => [
+     *              'path-or-url' => 'alternative-file-1.js',
+     *              OtherBundleAsset::class => 'alternative-file-2.js',
+     *           ],
+     *     ],
+     * ];
+     * ```
      *
      * Note that only a forward slash "/" should be used as directory separator.
      *

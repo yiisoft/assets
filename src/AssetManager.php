@@ -187,6 +187,9 @@ final class AssetManager
         return $this->registrar->getJsVars();
     }
 
+    /**
+     * @return Importmap instance
+     */
     public function getImportmap(): Importmap
     {
         return $this->registrar->getImports();

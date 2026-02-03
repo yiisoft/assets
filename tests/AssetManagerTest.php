@@ -844,7 +844,7 @@ final class AssetManagerTest extends TestCase
 
             [
                 ImportDoubleKeyAsset::class,
-                'Module name should be a unique.',
+                'Module name should be unique.',
             ],
 
             [

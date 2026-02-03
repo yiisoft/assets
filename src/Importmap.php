@@ -8,7 +8,9 @@ use JsonSerializable;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 /**
- * `Importmap` represents a collection of ESM modules
+ * `Importmap` represents a collection of ESM modules.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap
  */
 final class Importmap implements JsonSerializable
 {
@@ -49,28 +51,36 @@ final class Importmap implements JsonSerializable
     }
 
     /**
+     * Add ESM module to importmap.
+     *
      * @throws InvalidConfigException
      */
-    public function addImport(string $key, string $url): void
+    public function addImport(string $moduleName, string $url): void
     {
-        if (isset($this->imports[$key])) {
-            throw new InvalidConfigException('Module name should be a unique.');
+        if (isset($this->imports[$moduleName])) {
+            throw new InvalidConfigException('Module name should be unique.');
         }
 
-        $this->imports[$key] = $url;
+        $this->imports[$moduleName] = $url;
     }
 
+    /**
+     * Add optional integrity hash to url.
+     */
     public function addIntegrity(string $url, string $integrity): void
     {
         $this->integrity[$url] = $integrity;
     }
 
-    public function addScope(string $scope, string $key, string $url): void
+    /**
+     * Add optional scope to importmap.
+     */
+    public function addScope(string $scope, string $moduleName, string $url): void
     {
         if (!isset($this->scopes[$scope])) {
             $this->scopes[$scope] = [];
         }
 
-        $this->scopes[$scope][$key] = $url;
+        $this->scopes[$scope][$moduleName] = $url;
     }
 }
