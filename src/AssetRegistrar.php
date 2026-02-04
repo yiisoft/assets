@@ -68,6 +68,11 @@ final class AssetRegistrar
         $this->imports = new Importmap();
     }
 
+    public function __clone(): void
+    {
+        $this->imports = clone $this->imports;
+    }
+
     /**
      * @return array Config array of CSS files.
      *
@@ -504,8 +509,12 @@ final class AssetRegistrar
         $integrity = $scopes = null;
 
         if (is_array($import)) {
+            if (array_key_exists('scopes', $import)) {
+                $scopes = $import['scopes'];
+                unset($import['scopes']);
+            }
+
             $module = array_key_first($import);
-            $scopes = $import['scopes'] ?? null;
 
             match (true) {
                 is_string($module) => $integrity = $import[$module],
@@ -534,10 +543,14 @@ final class AssetRegistrar
             $key = $module;
         }
 
+        if ($key === '') {
+            throw new InvalidConfigException('Module name should be a not empty string.');
+        }
+
         $url = $this->loader->getAssetUrl($bundle, $module);
         $this->imports->addImport($key, $url);
 
-        if ($integrity) {
+        if (!empty($integrity)) {
 
             if (!is_string($integrity)) {
                 throw new InvalidConfigException(

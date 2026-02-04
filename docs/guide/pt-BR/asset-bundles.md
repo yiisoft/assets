@@ -299,12 +299,12 @@ class AppAsset extends AssetBundle
         'js/script.js',
     ];
 }
+```
 
 Neste exemplo, os caminhos para os arquivos `img/image.png` e `js/script.js` serão exportados,
 mas o caminho para o arquivo `css/style.css` não será exportado.
-```
 
-### Pacote de registo com importmap
+### Pacote de registro com importmap
 
 `VueEsmAsset.php`:
 
@@ -397,7 +397,7 @@ final class BoostrapEsmAsset extends AssetBundle
 Em algum lugar no topo do layout você deve usar o seguinte:
 
 ```php
-$impormap = Script::tag()
+$importmap = Script::tag()
     ->type('importmap')
     ->content(json_encode($assetManager->getImportmap()))
 ```

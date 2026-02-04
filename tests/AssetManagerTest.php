@@ -25,6 +25,7 @@ use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithoutUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportArrayAlternativeAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportDoubleKeyAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyArrayAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyKeyAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyStringAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringIntegrityAsset;
@@ -871,6 +872,11 @@ final class AssetManagerTest extends TestCase
                 ImportNullBaseUrlAsset::class,
                 'Scope bundle should have not empty `$baseUrl` property.',
             ],
+
+            [
+                ImportEmptyKeyAsset::class,
+                'Module name should be a not empty string.',
+            ],
         ];
     }
 
@@ -994,12 +1000,12 @@ final class AssetManagerTest extends TestCase
     /**
      * @dataProvider importmapDataProvider
      *
-     * @param array|string|null $import
-     * @param array $imports
+     * @param array|string $import
+     * @param array $expected
      * @param string|int $key
      * @return void
      */
-    public function testImportmap(array|string $import, array $imports = [], string|int $key = 0): void
+    public function testImportmap(array|string $import, array $expected, string|int $key = 0): void
     {
         $manager = $this->createManager(['@root' => dirname(__DIR__, 2)]);
 
@@ -1013,7 +1019,7 @@ final class AssetManagerTest extends TestCase
         );
 
         $this->assertEquals(
-            $imports,
+            $expected,
             $manager->getImportmap()->jsonSerialize(),
         );
     }
