@@ -68,7 +68,7 @@ final class AssetRegistrar
         $this->imports = new Importmap();
     }
 
-    public function __clone(): void
+    public function __clone()
     {
         $this->imports = clone $this->imports;
     }

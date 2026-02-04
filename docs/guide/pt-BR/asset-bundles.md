@@ -355,7 +355,7 @@ final class PopperEsmAsset extends AssetBundle
 }
 ```
 
-`BoostrapEsmAsset.php`:
+`BootstrapEsmAsset.php`:
 
 ```php
 <?php
@@ -364,7 +364,7 @@ namespace App\Assets;
 
 use Yiisoft\Assets\AssetBundle;
 
-final class BoostrapEsmAsset extends AssetBundle
+final class BootstrapEsmAsset extends AssetBundle
 {
     public bool $cdn = true;
 
