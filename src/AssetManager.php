@@ -188,7 +188,7 @@ final class AssetManager
     }
 
     /**
-     * @return Importmap instance
+     * @return Importmap Current import map.
      */
     public function getImportmap(): Importmap
     {
