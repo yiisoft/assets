@@ -551,7 +551,6 @@ final class AssetRegistrar
         $this->imports->addImport($key, $url);
 
         if (!empty($integrity)) {
-
             if (!is_string($integrity)) {
                 throw new InvalidConfigException(
                     sprintf(
@@ -565,7 +564,6 @@ final class AssetRegistrar
         }
 
         if ($scopes) {
-
             if (!is_array($scopes)) {
                 throw new InvalidConfigException(
                     sprintf(
@@ -576,7 +574,7 @@ final class AssetRegistrar
             }
 
             foreach ($scopes as $scope => $alternative) {
-                if (!is_string($scope)) {
+                if (is_int($scope)) {
                     throw new InvalidConfigException('Scopes should be a string. Got int.');
                 }
 

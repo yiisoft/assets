@@ -43,7 +43,6 @@ como propriedades públicas:
 `$sourcePath`       |`string\|null` | `null`    | O diretório que contém os arquivos de ativos de origem para esse pacote de ativos.
 `$imports`       | `array`        | `[]`   | Lista dos módulos ESM que este pacote contém.
 
-
 ### Posições JS/CSS para [`yiisoft/view`](https://github.com/yiisoft/view)
 
 Quando este pacote é usado com `yiisoft/view`, os valores possíveis de `$jsPosition` são:
@@ -309,8 +308,6 @@ mas o caminho para o arquivo `css/style.css` não será exportado.
 `VueEsmAsset.php`:
 
 ```php
-<?php
-
 namespace App\Assets;
 
 use Yiisoft\Assets\AssetBundle;
@@ -333,13 +330,14 @@ final class VueEsmAsset extends AssetBundle
             'as' => 'script',
             'integrity' => 'sha512-wwPCC5DrJ1qE35cUTcaRjYVYNaNhowKwfw5niTqSCD2d36g0NgozjdRWAQ2r3K8cd4ORPMqUh1S3AvKM7UigAQ=='
         ]
-    ];   
+    ];
 }
 ```
 
 `PopperEsmAsset.php`:
 
 ```php
+namespace App\Assets;
 
 use Yiisoft\Assets\AssetBundle;
 
@@ -358,8 +356,6 @@ final class PopperEsmAsset extends AssetBundle
 `BootstrapEsmAsset.php`:
 
 ```php
-<?php
-
 namespace App\Assets;
 
 use Yiisoft\Assets\AssetBundle;
@@ -386,7 +382,7 @@ final class BootstrapEsmAsset extends AssetBundle
             'as' => 'script',
             'integrity' => 'sha512-2OlrVWMEtWpu6gdWyl7zE7dxCREirSpMlmPQ16qn86VmlCJGQOkPyGakw9RPGolJa538sKHX4nW0UDACO3WKrg=='
         ]
-    ];   
+    ];
     
     public array $depends = [
         PopperEsmAsset::class
