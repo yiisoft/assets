@@ -192,7 +192,7 @@ final class AssetManager
      */
     public function getImportmap(): Importmap
     {
-        return $this->registrar->getImports();
+        return $this->registrar->getImportmap();
     }
 
     /**

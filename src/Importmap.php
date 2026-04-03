@@ -77,10 +77,6 @@ final class Importmap implements JsonSerializable
      */
     public function addScope(string $scope, string $moduleName, string $url): void
     {
-        if (!isset($this->scopes[$scope])) {
-            $this->scopes[$scope] = [];
-        }
-
         $this->scopes[$scope][$moduleName] = $url;
     }
 }

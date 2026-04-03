@@ -59,18 +59,18 @@ final class AssetRegistrar
      */
     private array $jsVars = [];
 
-    private Importmap $imports;
+    private Importmap $importmap;
 
     public function __construct(
         private Aliases $aliases,
         private AssetLoaderInterface $loader,
     ) {
-        $this->imports = new Importmap();
+        $this->importmap = new Importmap();
     }
 
     public function __clone()
     {
-        $this->imports = clone $this->imports;
+        $this->importmap = clone $this->importmap;
     }
 
     /**
@@ -126,9 +126,9 @@ final class AssetRegistrar
     /**
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap
      */
-    public function getImports(): Importmap
+    public function getImportmap(): Importmap
     {
-        return $this->imports;
+        return $this->importmap;
     }
 
     /**
@@ -548,7 +548,7 @@ final class AssetRegistrar
         }
 
         $url = $this->loader->getAssetUrl($bundle, $module);
-        $this->imports->addImport($key, $url);
+        $this->importmap->addImport($key, $url);
 
         if (!empty($integrity)) {
             if (!is_string($integrity)) {
@@ -560,7 +560,7 @@ final class AssetRegistrar
                 );
             }
 
-            $this->imports->addIntegrity($url, $integrity);
+            $this->importmap->addIntegrity($url, $integrity);
         }
 
         if ($scopes) {
@@ -595,7 +595,7 @@ final class AssetRegistrar
                     }
                 }
 
-                $this->imports->addScope($scope, $key, $alternative);
+                $this->importmap->addScope($scope, $key, $alternative);
             }
         }
     }
