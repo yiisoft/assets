@@ -245,7 +245,7 @@ class AssetBundle
     /**
      * List of JavaScript modules that this bundle contains.
      *
-     * Each module can be specified an array with the following formats:
+     * Each module can be specified in one of the following formats:
      *
      * - an absolute URL representing an external asset. For example:
      * ```php
