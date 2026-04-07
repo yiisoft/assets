@@ -245,15 +245,26 @@ class AssetBundle
     /**
      * List of JavaScript modules that this bundle contains.
      *
-     * Each module can be specified in one of the following formats:
+     * Each module can be specified an array with the following formats:
      *
-     * - an absolute URL representing an external asset. For example,
-     *   `https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js` or
-     *   `//cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js`.
-     * - a relative path representing a local asset (e.g. `js/main.js`). The actual file path of a local asset can be
-     *   determined by prefixing {@see $basePath} to the relative path, and the actual URL of the asset can be
-     *   determined by prefixing {@see $baseUrl} to the relative path.
-     * - an array with the following format:
+     * - an absolute URL representing an external asset. For example:
+     * ```php
+     *  public array $imports = [
+     *     'vue' => 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js',
+     *  ];
+     * ```
+     *
+     * or
+     *
+     * public array $imports = [
+     *    'vue' => '//cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js',
+     * ];
+     *
+     *
+     * - a relative path representing a local asset
+     * The actual file path of a local asset can be
+     *    determined by prefixing {@see $basePath} to the relative path, and the actual URL of the asset can be
+     *    determined by prefixing {@see $baseUrl} to the relative path.
      *
      * ```php
      * public array $imports = [
@@ -261,12 +272,15 @@ class AssetBundle
      * ];
      * ```
      *
+     * or
+     *
      * ```php
      * public array $imports = [
      *     'module-name' => 'module-file.js',
      * ];
      * ```
      *
+     * - a relative or absolute path with integrity hash
      * ```php
      * public array $imports = [
      *     'module-name' => [
@@ -275,6 +289,7 @@ class AssetBundle
      * ];
      * ```
      *
+     * - a relative or absolute path with scopes
      * ```php
      * public array $imports = [
      *     'module-name' => [
