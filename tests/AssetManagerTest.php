@@ -15,6 +15,7 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
+use Yiisoft\Assets\Tests\stubs\CdnImportAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\OneAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\TwoAsset;
 use Yiisoft\Assets\Tests\stubs\ExportAsset;
@@ -1020,6 +1021,21 @@ final class AssetManagerTest extends TestCase
 
         $this->assertEquals(
             $expected,
+            $manager->getImportmap()->jsonSerialize(),
+        );
+    }
+
+    public function testCDNImportmap(): void
+    {
+        $manager = $this->createManager();
+        $manager->register(CdnImportAsset::class);
+
+        $this->assertEquals(
+            [
+                'imports' => [
+                    'vue' => 'https://cdn.jsdelivr.net/npm/vue@3.5.32/+esm',
+                ],
+            ],
             $manager->getImportmap()->jsonSerialize(),
         );
     }

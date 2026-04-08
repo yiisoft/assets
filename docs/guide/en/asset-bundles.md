@@ -28,14 +28,14 @@ as public properties:
 `$baseUrl`          | `string\|null` | `null` | The base URL for the relative asset files listed in `$js` and `$css`.
 `$cdn`              | `bool`         | `false` | Indicates if we are going to use CDN exclusively.
 `$css`              | `array`        | `[]`   | List of CSS files that this bundle contains.
-`$cssOptions`       | `array`        | `[]`   | The options that will be passed to `\Yiisoft\View\WebView::setCssFiles()`.
+`$cssOptions`       | `array`        | `[]`   | The options that will be passed to `\Yiisoft\View\WebView::registerCssFile()`.
 `$cssStrings`       | `array`        | `[]`   | List of CSS blocks.
 `$cssPosition`      | `int\|null`    | `null` | Specifies where the `<style>` tag should be inserted in a page.
 `$converterOptions` | `array`        | `[]`   | The command line options for converter.
 `$depends`          | `array`        | `[]`   | List of bundle class names that this bundle depends on.
 `$js`               | `array`        | `[]`   | List of JavaScript files that this bundle contains.
 `$jsStrings`        | `array`        | `[]`   | List of JavaScript blocks.
-`$jsOptions`        | `array`        | `[]`   | The options that will be passed to `\Yiisoft\View\WebView::setJsFiles()`.
+`$jsOptions`        | `array`        | `[]`   | The options that will be passed to `\Yiisoft\View\WebView::registerJsFile()`.
 `$jsPosition`       | `int\|null`    | `null` | Specifies where the `<style>` tag should be inserted in a page.
 `$jsVars`           | `array`        | `[]`   | JavaScript variables.
 `$publishOptions`   | `array`        | `[]`   | The options to be passed to `\Yiisoft\Assets\AssetPublisher::publish()` when the asset bundle is being published.
@@ -395,7 +395,7 @@ Somewhere at the top of the layout you should use the following:
 ```php
 $importmap = Script::tag()
     ->type('importmap')
-    ->content(json_encode($assetManager->getImportmap()))
+    ->content(json_encode($assetManager->getImportmap()));
 ```
 
 Now we can use JavaScript `import` module like this:

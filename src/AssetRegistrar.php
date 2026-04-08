@@ -519,7 +519,7 @@ final class AssetRegistrar
             match (true) {
                 is_string($module) => $integrity = $import[$module],
                 is_int($module) => $module = $import[$module],
-                default => throw new InvalidConfigException('Module should be a not empty array.'),
+                default => throw new InvalidConfigException('Module should be a non-empty string.'),
             };
 
         } else {
@@ -536,7 +536,7 @@ final class AssetRegistrar
         }
 
         if ($module === '') {
-            throw new InvalidConfigException('Module should be a not empty string.');
+            throw new InvalidConfigException('Module should be a non-empty string.');
         }
 
         if (is_int($key)) {
@@ -544,13 +544,13 @@ final class AssetRegistrar
         }
 
         if ($key === '') {
-            throw new InvalidConfigException('Module name should be a not empty string.');
+            throw new InvalidConfigException('Module name should be a non-empty string.');
         }
 
-        $url = $this->loader->getAssetUrl($bundle, $module);
+        $url = $bundle->cdn ? $module : $this->loader->getAssetUrl($bundle, $module);
         $this->importmap->addImport($key, $url);
 
-        if (!empty($integrity)) {
+        if ($integrity !== null) {
             if (!is_string($integrity)) {
                 throw new InvalidConfigException(
                     sprintf(
@@ -563,7 +563,7 @@ final class AssetRegistrar
             $this->importmap->addIntegrity($url, $integrity);
         }
 
-        if ($scopes) {
+        if ($scopes !== null) {
             if (!is_array($scopes)) {
                 throw new InvalidConfigException(
                     sprintf(
