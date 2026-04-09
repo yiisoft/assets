@@ -836,12 +836,12 @@ final class AssetManagerTest extends TestCase
 
             [
                 ImportEmptyArrayAsset::class,
-                'Module should be a not empty array.',
+                'Module should be a non-empty string.',
             ],
 
             [
                 ImportEmptyStringAsset::class,
-                'Module should be a not empty string.',
+                'Module should be a non-empty string.',
             ],
 
             [
@@ -876,7 +876,7 @@ final class AssetManagerTest extends TestCase
 
             [
                 ImportEmptyKeyAsset::class,
-                'Module name should be a not empty string.',
+                'Module name should be a non-empty string.',
             ],
         ];
     }
