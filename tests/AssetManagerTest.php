@@ -1053,7 +1053,7 @@ final class AssetManagerTest extends TestCase
     {
         $manager = $this->createManager([
             '@root' => dirname(__DIR__, 2),
-            '@assetUrl' => '/test'
+            '@assetUrl' => '/test',
         ]);
         $manager->register(DirectoryImportAsset::class);
         $bundle = $manager->getBundle(DirectoryImportAsset::class);

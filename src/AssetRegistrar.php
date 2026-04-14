@@ -548,10 +548,10 @@ final class AssetRegistrar
             throw new InvalidConfigException('Module name should be a non-empty string.');
         }
 
-        $url = match(true) {
+        $url = match (true) {
             $bundle->cdn => $module,
-            str_ends_with($key, '/') => $bundle->baseUrl . '/' .$module,
-            default => $this->loader->getAssetUrl($bundle, $module)
+            str_ends_with($key, '/') => $bundle->baseUrl . '/' . $module,
+            default => $this->loader->getAssetUrl($bundle, $module),
         };
 
         $this->importmap->addImport($key, $url);
