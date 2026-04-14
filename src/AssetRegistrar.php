@@ -543,14 +543,14 @@ final class AssetRegistrar
         if (is_int($key)) {
             $key = $module;
         }
-        /** @var string $key */
+
         if ($key === '') {
             throw new InvalidConfigException('Module name should be a non-empty string.');
         }
 
         $url = match (true) {
             $bundle->cdn => $module,
-            str_ends_with($key, '/') => $bundle->baseUrl . '/' . $module,
+            str_ends_with($key, '/') => ($bundle->baseUrl ?? '') . '/' . $module,
             default => $this->loader->getAssetUrl($bundle, $module),
         };
 
