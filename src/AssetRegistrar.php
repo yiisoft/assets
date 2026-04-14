@@ -16,6 +16,7 @@ use function is_int;
 use function is_string;
 use function is_subclass_of;
 use function sprintf;
+use function str_ends_with;
 
 /**
  * `AssetRegistrar` registers asset files, code blocks and variables from a bundle considering dependencies.
@@ -547,7 +548,12 @@ final class AssetRegistrar
             throw new InvalidConfigException('Module name should be a non-empty string.');
         }
 
-        $url = $bundle->cdn ? $module : $this->loader->getAssetUrl($bundle, $module);
+        $url = match(true) {
+            $bundle->cdn => $module,
+            str_ends_with($key, '/') => $bundle->baseUrl . '/' .$module,
+            default => $this->loader->getAssetUrl($bundle, $module)
+        };
+
         $this->importmap->addImport($key, $url);
 
         if ($integrity !== null) {

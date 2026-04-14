@@ -18,6 +18,7 @@ use Yiisoft\Assets\Tests\stubs\CdnAsset;
 use Yiisoft\Assets\Tests\stubs\CdnImportAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\OneAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\TwoAsset;
+use Yiisoft\Assets\Tests\stubs\DirectoryImportAsset;
 use Yiisoft\Assets\Tests\stubs\ExportAsset;
 use Yiisoft\Assets\Tests\stubs\ImportmapAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithEmptyUrlAsset;
@@ -1046,6 +1047,25 @@ final class AssetManagerTest extends TestCase
         $manager->register(CdnAsset::class);
 
         $this->assertEmpty($manager->getImportmap()->jsonSerialize());
+    }
+
+    public function testImportDirectory(): void
+    {
+        $manager = $this->createManager([
+            '@root' => dirname(__DIR__, 2),
+            '@assetUrl' => '/test'
+        ]);
+        $manager->register(DirectoryImportAsset::class);
+        $bundle = $manager->getBundle(DirectoryImportAsset::class);
+
+        $this->assertEquals(
+            [
+                'imports' => [
+                    'base/' => $bundle->baseUrl . '/js/',
+                ],
+            ],
+            $manager->getImportmap()->jsonSerialize(),
+        );
     }
 
     private function createManager(array $aliases = []): AssetManager
