@@ -1040,6 +1040,14 @@ final class AssetManagerTest extends TestCase
         );
     }
 
+    public function testEmptyImports(): void
+    {
+        $manager = $this->createManager();
+        $manager->register(CdnAsset::class);
+
+        $this->assertEmpty($manager->getImportmap()->jsonSerialize());
+    }
+
     private function createManager(array $aliases = []): AssetManager
     {
         $aliases = new Aliases($aliases);
