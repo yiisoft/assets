@@ -1026,7 +1026,7 @@ final class AssetManagerTest extends TestCase
         );
     }
 
-    public function testCDNImportmap(): void
+    public function testCdnImportmap(): void
     {
         $manager = $this->createManager();
         $manager->register(CdnImportAsset::class);
