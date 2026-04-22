@@ -601,7 +601,11 @@ final class AssetRegistrar
                     }
                 }
 
-                $this->importmap->addScope($scope, $key, $alternative);
+                if ($bundle->cdn) {
+                    $this->importmap->addScope($scope, $key, $alternative);
+                } else {
+                    $this->importmap->addScope($scope, $key, $this->loader->getAssetUrl($bundle, $alternative));
+                }
             }
         }
     }

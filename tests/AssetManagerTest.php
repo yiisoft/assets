@@ -955,7 +955,7 @@ final class AssetManagerTest extends TestCase
                 [
                     'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
                     'scopes' => [
-                        'test' => 'value.js',
+                        'test' => 'scopes/alternative-1.js',
                     ],
                 ],
                 [
@@ -967,7 +967,7 @@ final class AssetManagerTest extends TestCase
                     ],
                     'scopes' => [
                         'test' => [
-                            '@root' => 'value.js',
+                            '@root' => '/scopes/alternative-1.js',
                         ],
                     ],
                 ],
@@ -978,7 +978,7 @@ final class AssetManagerTest extends TestCase
                 [
                     'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
                     'scopes' => [
-                        JqueryAsset::class => 'value.js',
+                        JqueryAsset::class => 'scopes/alternative-1.js',
                     ],
                 ],
                 [
@@ -990,7 +990,7 @@ final class AssetManagerTest extends TestCase
                     ],
                     'scopes' => [
                         '/js' => [
-                            '@root' => 'value.js',
+                            '@root' => '/scopes/alternative-1.js',
                         ],
                     ],
                 ],
