@@ -22,9 +22,12 @@ on:
 
 name: static analysis
 
+permissions:
+  contents: read
+
 jobs:
   phpstan:
-    uses: yiisoft/actions/.github/workflows/phpstan.yml@master
+    uses: yiisoft/actions/.github/workflows/phpstan.yml@ab62d6b3b0e0cff6c9724ec5a395bedb41c639a2
     with:
       os: >-
         ['ubuntu-latest']
