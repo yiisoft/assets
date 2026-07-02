@@ -22,6 +22,9 @@ on:
 
 name: static analysis
 
+permissions:
+  contents: read
+
 jobs:
   phpstan:
     uses: yiisoft/actions/.github/workflows/phpstan.yml@master
