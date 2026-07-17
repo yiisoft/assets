@@ -188,6 +188,14 @@ final class AssetManager
     }
 
     /**
+     * @return Importmap Current import map.
+     */
+    public function getImportmap(): Importmap
+    {
+        return $this->registrar->getImportmap();
+    }
+
+    /**
      * Returns a new instance with the specified converter.
      */
     public function withConverter(AssetConverterInterface $converter): self

@@ -105,7 +105,7 @@ class AssetBundle
     public array $cssStrings = [];
 
     /**
-     * The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
+     * The options that will be passed to {@see WebView::registerCssFile()}
      * when registering the CSS files in this bundle.
      */
     public array $cssOptions = [];
@@ -202,7 +202,7 @@ class AssetBundle
     public array $jsStrings = [];
 
     /**
-     * The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
+     * The options that will be passed to {@see WebView::registerJsFile()}
      * when registering the JS files in this bundle.
      */
     public array $jsOptions = [];
@@ -241,6 +241,72 @@ class AssetBundle
      * ```
      */
     public array $jsVars = [];
+
+    /**
+     * List of JavaScript modules that this bundle contains.
+     *
+     * Each module can be specified in one of the following formats:
+     *
+     * - an absolute URL representing an external asset. For example:
+     * ```php
+     *  public array $imports = [
+     *     'vue' => 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js',
+     *  ];
+     * ```
+     *
+     * or
+     *
+     * public array $imports = [
+     *    'vue' => '//cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js',
+     * ];
+     *
+     *
+     * - a relative path representing a local asset
+     * The actual file path of a local asset can be
+     *    determined by prefixing {@see $basePath} to the relative path, and the actual URL of the asset can be
+     *    determined by prefixing {@see $baseUrl} to the relative path.
+     *
+     * ```php
+     * public array $imports = [
+     *      'some-esm-module.js',
+     * ];
+     * ```
+     *
+     * or
+     *
+     * ```php
+     * public array $imports = [
+     *     'module-name' => 'module-file.js',
+     * ];
+     * ```
+     *
+     * - a relative or absolute path with integrity hash
+     * ```php
+     * public array $imports = [
+     *     'module-name' => [
+     *          'module-file.js' => 'integrity-hash',
+     *     ],
+     * ];
+     * ```
+     *
+     * - a relative or absolute path with scopes
+     * ```php
+     * public array $imports = [
+     *     'module-name' => [
+     *          'module-file.js',
+     *          'scopes' => [
+     *              'path-or-url' => 'alternative-file-1.js',
+     *              OtherBundleAsset::class => 'alternative-file-2.js',
+     *           ],
+     *     ],
+     * ];
+     * ```
+     *
+     * Note that only a forward slash "/" should be used as directory separator.
+     *
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap
+     */
+    public array $imports = [];
 
     /**
      * The options to be passed to {@see AssetPublisherInterface::publish()} when the asset bundle
