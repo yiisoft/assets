@@ -7,6 +7,7 @@ namespace Yiisoft\Assets;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Files\FileHelper;
+use Yiisoft\View\WebView;
 
 use function array_merge;
 use function is_file;
@@ -18,7 +19,7 @@ use function is_file;
 final class AssetLoader implements AssetLoaderInterface
 {
     /**
-     * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerCssFile()}
+     * @var array The options that will be passed to {@see WebView::registerCssFile()}
      * when registering the CSS files all assets bundle.
      */
     private array $cssDefaultOptions = [];
@@ -26,7 +27,7 @@ final class AssetLoader implements AssetLoaderInterface
     private ?int $cssDefaultPosition = null;
 
     /**
-     * @var array The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
+     * @var array The options that will be passed to {@see WebView::registerJsFile()}
      * when registering the JS files all assets bundle.
      */
     private array $jsDefaultOptions = [];
@@ -187,7 +188,7 @@ final class AssetLoader implements AssetLoaderInterface
      * Returns a new instance with the specified global `$css` default options for all assets bundle.
      *
      * @param array $cssDefaultOptions The options that will be passed to
-     * {@see \Yiisoft\View\WebView::registerCssFile()} when registering the CSS files all assets bundle.
+     * {@see WebView::registerCssFile()} when registering the CSS files all assets bundle.
      */
     public function withCssDefaultOptions(array $cssDefaultOptions): self
     {
@@ -211,7 +212,7 @@ final class AssetLoader implements AssetLoaderInterface
     /**
      * Returns a new instance with the specified global `$js` default options for all assets bundle.
      *
-     * @param array $jsDefaultOptions The options that will be passed to {@see \Yiisoft\View\WebView::registerJsFile()}
+     * @param array $jsDefaultOptions The options that will be passed to {@see WebView::registerJsFile()}
      * when registering the JS files all assets bundle.
      */
     public function withJsDefaultOptions(array $jsDefaultOptions): self
