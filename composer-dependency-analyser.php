@@ -11,4 +11,9 @@ return (new Configuration())
     ->addPathToScan(__DIR__ . '/config', isDev: false)
     ->addPathToScan(__DIR__ . '/src', isDev: false)
     ->addPathToScan(__DIR__ . '/tests', isDev: true)
-    ->ignoreErrorsOnPackage('yiisoft/yii-debug', [ErrorType::DEV_DEPENDENCY_IN_PROD]);
+    ->ignoreErrorsOnPackage('yiisoft/yii-debug', [ErrorType::DEV_DEPENDENCY_IN_PROD])
+    ->ignoreErrorsOnPackagesAndPaths(
+        ['psr/container', 'yiisoft/definitions'],
+        [__DIR__ . '/config'],
+        [ErrorType::SHADOW_DEPENDENCY],
+    );
