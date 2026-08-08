@@ -30,18 +30,21 @@
     "require": {
         "php": "8.1 - 8.5",
         "ext-mbstring": "*",
+        "psr/container": "^2.0",
         "psr/log": "^1.1 || ^2.0 || ^3.0",
         "yiisoft/aliases": "^1.1 || ^2.0 || ^3.0",
+        "yiisoft/definitions": "^3.4",
         "yiisoft/files": "^2.0",
         "yiisoft/json": "^1.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.92.5",
         "bamarni/composer-bin-plugin": "^1.8.2",
+        "friendsofphp/php-cs-fixer": "^3.92.5",
         "infection/infection": "^0.29.8",
         "phpstan/phpstan": "^2.1.22",
         "phpunit/phpunit": "^10.5.52",
         "rector/rector": "^2.1.4",
+        "shipmonk/composer-dependency-analyser": "^1.8",
         "spatie/phpunit-watcher": "^1.24",
         "vimeo/psalm": "^6.13.1",
         "yiisoft/di": "^1.4",
@@ -86,6 +89,7 @@
         "test-watch": "phpunit-watcher watch",
         "infection": "vendor/bin/infection --only-covered",
         "phpstan": "vendor/bin/phpstan analyse",
-        "phpstan-clear-cache": "vendor/bin/phpstan clear-result-cache"
+        "phpstan-clear-cache": "vendor/bin/phpstan clear-result-cache",
+        "dependency-analyser": "composer-dependency-analyser"
     }
 }
