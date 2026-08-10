@@ -28,6 +28,7 @@ Abaixo, estamos usando o pacote bootstrap do guia "[Pacotes de ativos](asset-bun
 namespace App\Assets;
 
 use Yiisoft\Assets\AssetBundle;
+use Yiisoft\Files\PathMatcher\PathMatcher;
 
 /**
  * Asset bundle for the Twitter bootstrap css files.
@@ -44,18 +45,20 @@ final class BootstrapAsset extends AssetBundle
         'bootstrap.scss',
     ];
 
-    public array $publishOptions = [
-        'only' => [
-            'bootstrap.scss',
-        ],
-    ];
-
     public array $converterOptions = [
         'scss' => [
             'command' => '-I {path} --style compressed',
             'path' => '@root/tests/public/sourcepath/sass',
         ]
     ];
+
+    public function __construct()
+    {
+        $pathMatcher = new PathMatcher();
+        $this->publishOptions = [
+            'filter' => $pathMatcher->only('bootstrap.scss'),
+        ];
+    }
 }
 ```
 

@@ -107,6 +107,8 @@ namespace App\Assets;
 
 use Yiisoft\Assets\AssetBundle;
 
+use Yiisoft\Files\PathMatcher\PathMatcher;
+
 /**
  * Asset bundle for the Twitter bootstrap css/js files.
  *
@@ -135,12 +137,13 @@ class BootstrapAsset extends AssetBundle
         \App\Assets\PopperAsset::class,
     ];
 
-    public array $publishOptions = [
-        'only' => [
-            'css/bootstrap.css',
-            'js/bootstrap.js',
-        ]
-    ];
+    public function __construct()
+    {
+        $pathMatcher = new PathMatcher();
+        $this->publishOptions = [
+            'filter' => $pathMatcher->only('css/bootstrap.css', 'js/bootstrap.js'),
+        ];
+    }
 }
 ```
 
@@ -150,6 +153,8 @@ class BootstrapAsset extends AssetBundle
 namespace App\Assets;
 
 use Yiisoft\Assets\AssetBundle;
+
+use Yiisoft\Files\PathMatcher\PathMatcher;
 
 /**
  * Asset bundle for the Twitter bootstrap.
@@ -170,11 +175,13 @@ class JqueryAsset extends AssetBundle
         'dist/jquery.js',
     ];
 
-    public array $publishOptions = [
-        'only' => [
-            'dist/jquery.js',
-        ]
-    ];
+    public function __construct()
+    {
+        $pathMatcher = new PathMatcher();
+        $this->publishOptions = [
+            'filter' => $pathMatcher->only('dist/jquery.js'),
+        ];
+    }
 }
 ```
 
@@ -184,6 +191,8 @@ class JqueryAsset extends AssetBundle
 namespace App\Assets;
 
 use Yiisoft\Assets\AssetBundle;
+
+use Yiisoft\Files\PathMatcher\PathMatcher;
 
 /**
  * Asset bundle for the Twitter bootstrap.
@@ -204,11 +213,13 @@ class PopperAsset extends AssetBundle
         'umd/popper.js',
     ];
 
-    public array $publishOptions = [
-        'only' => [
-            'umd/popper.js',
-        ],
-    ];
+    public function __construct()
+    {
+        $pathMatcher = new PathMatcher();
+        $this->publishOptions = [
+            'filter' => $pathMatcher->only('umd/popper.js'),
+        ];
+    }
 }
 ```
 
