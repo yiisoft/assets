@@ -8,11 +8,15 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\Exception\InvalidConfigException;
 
 use function array_key_exists;
+use function array_key_first;
 use function array_values;
+use function get_debug_type;
 use function is_array;
 use function is_int;
 use function is_string;
+use function is_subclass_of;
 use function sprintf;
+use function str_ends_with;
 
 /**
  * `AssetRegistrar` registers asset files, code blocks and variables from a bundle considering dependencies.
@@ -25,6 +29,7 @@ use function sprintf;
  * @psalm-import-type JsString from AssetManager
  * @psalm-import-type JsVar from AssetManager
  * @psalm-import-type ConverterOptions from AssetConverterInterface
+ * @psalm-type Import = array{int: string, scopes?: array<string, string>}|array{string: string, scopes?: array<string, string>}
  */
 final class AssetRegistrar
 {
@@ -55,10 +60,19 @@ final class AssetRegistrar
      */
     private array $jsVars = [];
 
+    private Importmap $importmap;
+
     public function __construct(
         private Aliases $aliases,
         private AssetLoaderInterface $loader,
-    ) {}
+    ) {
+        $this->importmap = new Importmap();
+    }
+
+    public function __clone()
+    {
+        $this->importmap = clone $this->importmap;
+    }
 
     /**
      * @return array Config array of CSS files.
@@ -108,6 +122,14 @@ final class AssetRegistrar
     public function getJsVars(): array
     {
         return array_values($this->jsVars);
+    }
+
+    /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap
+     */
+    public function getImportmap(): Importmap
+    {
+        return $this->importmap;
     }
 
     /**
@@ -183,6 +205,11 @@ final class AssetRegistrar
                 is_string($key) ? $key : null,
                 $cssString,
             );
+        }
+
+        /** @var Import|string $import */
+        foreach ($bundle->imports as $key => $import) {
+            $this->registerImport($bundle, $import, $key);
         }
     }
 
@@ -471,6 +498,116 @@ final class AssetRegistrar
         }
 
         $this->registerJsVar($name, $value, $position);
+    }
+
+    /**
+     * Register a Javascript module.
+     *
+     * @throws InvalidConfigException
+     */
+    private function registerImport(AssetBundle $bundle, array|string $import, string|int $key): void
+    {
+        $integrity = $scopes = null;
+
+        if (is_array($import)) {
+            if (array_key_exists('scopes', $import)) {
+                $scopes = $import['scopes'];
+                unset($import['scopes']);
+            }
+
+            $module = array_key_first($import);
+
+            match (true) {
+                is_string($module) => $integrity = $import[$module],
+                is_int($module) => $module = $import[$module],
+                default => throw new InvalidConfigException('Module should be a non-empty string.'),
+            };
+
+        } else {
+            $module = $import;
+        }
+
+        if (!is_string($module)) {
+            throw new InvalidConfigException(
+                sprintf(
+                    'Module should be string. Got %s.',
+                    get_debug_type($module),
+                ),
+            );
+        }
+
+        if ($module === '') {
+            throw new InvalidConfigException('Module should be a non-empty string.');
+        }
+
+        if (is_int($key)) {
+            $key = $module;
+        }
+
+        if ($key === '') {
+            throw new InvalidConfigException('Module name should be a non-empty string.');
+        }
+
+        $url = match (true) {
+            $bundle->cdn => $module,
+            str_ends_with($key, '/') => ($bundle->baseUrl ?? '') . '/' . $module,
+            default => $this->loader->getAssetUrl($bundle, $module),
+        };
+
+        $this->importmap->addImport($key, $url);
+
+        if ($integrity !== null) {
+            if (!is_string($integrity)) {
+                throw new InvalidConfigException(
+                    sprintf(
+                        'Integrity should be string. Got %s.',
+                        get_debug_type($integrity),
+                    ),
+                );
+            }
+
+            $this->importmap->addIntegrity($url, $integrity);
+        }
+
+        if ($scopes !== null) {
+            if (!is_array($scopes)) {
+                throw new InvalidConfigException(
+                    sprintf(
+                        'Scopes should be array. Got %s.',
+                        get_debug_type($scopes),
+                    ),
+                );
+            }
+
+            foreach ($scopes as $scope => $alternative) {
+                if (is_int($scope)) {
+                    throw new InvalidConfigException('Scopes should be a string. Got int.');
+                }
+
+                if (!is_string($alternative)) {
+                    throw new InvalidConfigException(
+                        sprintf(
+                            'Alternative should be a string. Got %s.',
+                            get_debug_type($alternative),
+                        ),
+                    );
+                }
+
+                if (is_subclass_of($scope, AssetBundle::class)) {
+                    $scope = $this->loader->loadBundle($scope)->baseUrl;
+
+                    if (empty($scope)) {
+                        throw new InvalidConfigException('Scope bundle should have not empty `$baseUrl` property.');
+                    }
+                }
+
+                if ($bundle->cdn) {
+                    $this->importmap->addScope($scope, $key, $alternative);
+                } else {
+                    $this->importmap->addScope($scope, $key, $this->loader->getAssetUrl($bundle, $alternative));
+                }
+            }
+        }
     }
 
     /**

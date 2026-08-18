@@ -22,25 +22,26 @@ Combinations of these types could be used as well.
 In order to define your own asset, create a class that extends from `Asset` and define any of the options below
 as public properties:
 
-  Name              | Type       | Default | Description
-------------------- |-------------|---------|------------
-`$basePath`         |`string\|null`| `null`  | The web public directory that contains the asset files in this bundle.
-`$baseUrl`          |`string\|null`| `null`  | The base URL for the relative asset files listed in `$js` and `$css`.
-`$cdn`              |`bool`       | `false` | Indicates if we are going to use CDN exclusively.
-`$css`              |`array`      | `[]`    | List of CSS files that this bundle contains.
-`$cssOptions`       |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setCssFiles()`.
-`$cssStrings`       |`array`      | `[]`    | List of CSS blocks.
-`$cssPosition`      |`int\|null`   | `null`  | Specifies where the `<style>` tag should be inserted in a page.
-`$converterOptions` |`array`      | `[]`    | The command line options for converter.
-`$depends`          |`array`      | `[]`    | List of bundle class names that this bundle depends on.
-`$js`               |`array`      | `[]`    | List of JavaScript files that this bundle contains.
-`$jsStrings`        |`array`      | `[]`    | List of JavaScript blocks.
-`$jsOptions`        |`array`      | `[]`    | The options that will be passed to `\Yiisoft\View\WebView::setJsFiles()`.
-`$jsPosition`       |`int\|null`   | `null`  | Specifies where the `<style>` tag should be inserted in a page.
-`$jsVars`           |`array`      | `[]`    | JavaScript variables.
-`$publishOptions`   |`array`      | `[]`    | The options to be passed to `\Yiisoft\Assets\AssetPublisher::publish()` when the asset bundle is being published.
-`$export`           |`array`      | `[]`    | List of file paths to export into a format readable by third party tools such as [Webpack](https://webpack.js.org/). If the array is empty, the file paths from the `$css` and `$js` will be exported.
-`$sourcePath`       |`string\|null`| `null`  | The directory that contains the source asset files for this asset bundle.
+  Name              | Type           | Default | Description
+------------------- |----------------|--------|------------
+`$basePath`         | `string\|null` | `null` | The web public directory that contains the asset files in this bundle.
+`$baseUrl`          | `string\|null` | `null` | The base URL for the relative asset files listed in `$js` and `$css`.
+`$cdn`              | `bool`         | `false` | Indicates if we are going to use CDN exclusively.
+`$css`              | `array`        | `[]`   | List of CSS files that this bundle contains.
+`$cssOptions`       | `array`        | `[]`   | The options that will be passed to `\Yiisoft\View\WebView::registerCssFile()`.
+`$cssStrings`       | `array`        | `[]`   | List of CSS blocks.
+`$cssPosition`      | `int\|null`    | `null` | Specifies where the `<style>` tag should be inserted in a page.
+`$converterOptions` | `array`        | `[]`   | The command line options for converter.
+`$depends`          | `array`        | `[]`   | List of bundle class names that this bundle depends on.
+`$js`               | `array`        | `[]`   | List of JavaScript files that this bundle contains.
+`$jsStrings`        | `array`        | `[]`   | List of JavaScript blocks.
+`$jsOptions`        | `array`        | `[]`   | The options that will be passed to `\Yiisoft\View\WebView::registerJsFile()`.
+`$jsPosition`       | `int\|null`    | `null` | Specifies where the `<style>` tag should be inserted in a page.
+`$jsVars`           | `array`        | `[]`   | JavaScript variables.
+`$publishOptions`   | `array`        | `[]`   | The options to be passed to `\Yiisoft\Assets\AssetPublisher::publish()` when the asset bundle is being published.
+`$export`           | `array`        | `[]`   | List of file paths to export into a format readable by third party tools such as [Webpack](https://webpack.js.org/). If the array is empty, the file paths from the `$css` and `$js` will be exported.
+`$sourcePath`       | `string\|null` | `null` | The directory that contains the source asset files for this asset bundle.
+`$imports`       | `array`        | `[]`   | List of ESM modules that this bundle contains.
 
 ### JS/CSS positions for [`yiisoft/view`](https://github.com/yiisoft/view)
 
@@ -301,3 +302,107 @@ class AppAsset extends AssetBundle
 
 In this example, the paths to the `img/image.png` and `js/script.js` files will be exported,
 but the path to the `css/style.css` file will not be exported.
+
+### Register bundle with importmap
+
+`VueEsmAsset.php`:
+
+```php
+namespace App\Assets;
+
+use Yiisoft\Assets\AssetBundle;
+
+final class VueEsmAsset extends AssetBundle
+{
+    public bool $cdn = true;
+
+    public array $imports = [
+        'vue' => [
+            'https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js' => 'sha512-wwPCC5DrJ1qE35cUTcaRjYVYNaNhowKwfw5niTqSCD2d36g0NgozjdRWAQ2r3K8cd4ORPMqUh1S3AvKM7UigAQ=='
+        ]
+    ];
+
+    // Optional module preload.
+    public array $css = [
+        [
+            'https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js',
+            'rel' => 'modulepreload',
+            'as' => 'script',
+            'integrity' => 'sha512-wwPCC5DrJ1qE35cUTcaRjYVYNaNhowKwfw5niTqSCD2d36g0NgozjdRWAQ2r3K8cd4ORPMqUh1S3AvKM7UigAQ=='
+        ]
+    ];
+}
+```
+
+`PopperEsmAsset.php`:
+
+```php
+namespace App\Assets;
+
+use Yiisoft\Assets\AssetBundle;
+
+final class PopperEsmAsset extends AssetBundle
+{
+    public bool $cdn = true;
+
+    public array $imports = [
+        '@popperjs/core' => [
+            'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/esm/popper.min.js' => 'sha512-aSCUnIf5arudGto225/QqbEgN6cN22eXky/XUnXgkxsuLfdxzr/zirkr25psrCK24Q8UItMSwAhxTQpTHO24hQ=='
+        ]
+    ];
+}
+```
+
+`BootstrapEsmAsset.php`:
+
+```php
+namespace App\Assets;
+
+use Yiisoft\Assets\AssetBundle;
+
+final class BootstrapEsmAsset extends AssetBundle
+{
+    public bool $cdn = true;
+
+    public array $imports = [
+        'bootstrap' => [
+            'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.esm.min.js' => 'sha512-2OlrVWMEtWpu6gdWyl7zE7dxCREirSpMlmPQ16qn86VmlCJGQOkPyGakw9RPGolJa538sKHX4nW0UDACO3WKrg=='
+        ]
+    ];
+
+    public array $css = [
+        [
+            'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css',
+            'integrity' => 'sha512-2bBQCjcnw658Lho4nlXJcc6WkV/UxpE/sAokbXPxQNGqmNdQrWqtw26Ns9kFF/yG792pKR1Sx8/Y1Lf1XN4GKA==',
+        ],
+        // Optional preload module.
+        [
+            'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.esm.min.js',
+            'rel' => 'modulepreload',
+            'as' => 'script',
+            'integrity' => 'sha512-2OlrVWMEtWpu6gdWyl7zE7dxCREirSpMlmPQ16qn86VmlCJGQOkPyGakw9RPGolJa538sKHX4nW0UDACO3WKrg=='
+        ]
+    ];
+    
+    public array $depends = [
+        PopperEsmAsset::class
+    ];
+}
+```
+
+Somewhere at the top of the layout you should use the following:
+
+```php
+$importmap = Script::tag()
+    ->type('importmap')
+    ->content(json_encode($assetManager->getImportmap()));
+```
+
+Now we can use JavaScript `import` module like this:
+
+```js
+import { createApp, defineComponent } from "vue";
+import { Popover, Tooltip } from "bootstrap";
+
+//Some code here
+```

@@ -15,12 +15,25 @@ use Yiisoft\Assets\Exception\InvalidConfigException;
 use Yiisoft\Assets\Exporter\JsonAssetExporter;
 use Yiisoft\Assets\Tests\stubs\BaseAsset;
 use Yiisoft\Assets\Tests\stubs\CdnAsset;
+use Yiisoft\Assets\Tests\stubs\CdnImportAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\OneAsset;
 use Yiisoft\Assets\Tests\stubs\CssPositionDependencyConflict\TwoAsset;
+use Yiisoft\Assets\Tests\stubs\DirectoryImportAsset;
 use Yiisoft\Assets\Tests\stubs\ExportAsset;
+use Yiisoft\Assets\Tests\stubs\ImportmapAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithEmptyUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithIntegerUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\CssAsArrayWithoutUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportArrayAlternativeAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportDoubleKeyAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyArrayAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyKeyAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportEmptyStringAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNotStringIntegrityAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportNullBaseUrlAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportScopeNotArrayAsset;
+use Yiisoft\Assets\Tests\stubs\InvalidConfig\ImportScopeNotStringKeyAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithEmptyUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithIntegerUrlAsset;
 use Yiisoft\Assets\Tests\stubs\InvalidConfig\JsAsArrayWithoutUrlAsset;
@@ -812,6 +825,247 @@ final class AssetManagerTest extends TestCase
         $this->expectExceptionMessage('The "yii\bootstrap\BootstrapAsset" asset bundle class does not exist.');
 
         $manager->registerMany(['yii\bootstrap\BootstrapAsset']);
+    }
+
+    public static function invalidImportsDataProvider(): array
+    {
+        return [
+            [
+                ImportNotStringAsset::class,
+                'Module should be string. Got array.',
+            ],
+
+            [
+                ImportEmptyArrayAsset::class,
+                'Module should be a non-empty string.',
+            ],
+
+            [
+                ImportEmptyStringAsset::class,
+                'Module should be a non-empty string.',
+            ],
+
+            [
+                ImportDoubleKeyAsset::class,
+                'Module name should be unique.',
+            ],
+
+            [
+                ImportNotStringIntegrityAsset::class,
+                'Integrity should be string. Got bool.',
+            ],
+
+            [
+                ImportScopeNotArrayAsset::class,
+                'Scopes should be array. Got bool.',
+            ],
+
+            [
+                ImportScopeNotStringKeyAsset::class,
+                'Scopes should be a string. Got int.',
+            ],
+
+            [
+                ImportArrayAlternativeAsset::class,
+                'Alternative should be a string. Got array.',
+            ],
+
+            [
+                ImportNullBaseUrlAsset::class,
+                'Scope bundle should have not empty `$baseUrl` property.',
+            ],
+
+            [
+                ImportEmptyKeyAsset::class,
+                'Module name should be a non-empty string.',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidImportsDataProvider
+     *
+     * @param string $bundle
+     * @param string $expectMessage
+     * @return void
+     * @throws InvalidConfigException
+     */
+    public function testInvalidImports(string $bundle, string $expectMessage): void
+    {
+        $manager = $this->createManager();
+
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage($expectMessage);
+
+        $manager->register($bundle);
+    }
+
+    public static function importmapDataProvider(): array
+    {
+        return [
+            [
+                'root.js',
+                [
+                    'imports' => [
+                        'root.js' => '/root.js',
+                    ],
+                ],
+            ],
+
+            [
+                'root.js',
+                [
+                    'imports' => [
+                        '@root' => '/root.js',
+                    ],
+                ],
+                '@root',
+            ],
+
+            [
+                [
+                    'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                ],
+                [
+                    'imports' => [
+                        'root.js' => '/root.js',
+                    ],
+                    'integrity' => [
+                        '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    ],
+                ],
+            ],
+
+            [
+                [
+                    'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                ],
+                [
+                    'imports' => [
+                        '@root' => '/root.js',
+                    ],
+                    'integrity' => [
+                        '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    ],
+                ],
+                '@root',
+            ],
+
+            [
+                [
+                    'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    'scopes' => [
+                        'test' => 'scopes/alternative-1.js',
+                    ],
+                ],
+                [
+                    'imports' => [
+                        '@root' => '/root.js',
+                    ],
+                    'integrity' => [
+                        '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    ],
+                    'scopes' => [
+                        'test' => [
+                            '@root' => '/scopes/alternative-1.js',
+                        ],
+                    ],
+                ],
+                '@root',
+            ],
+
+            [
+                [
+                    'root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    'scopes' => [
+                        JqueryAsset::class => 'scopes/alternative-1.js',
+                    ],
+                ],
+                [
+                    'imports' => [
+                        '@root' => '/root.js',
+                    ],
+                    'integrity' => [
+                        '/root.js' => 'sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=',
+                    ],
+                    'scopes' => [
+                        '/js' => [
+                            '@root' => '/scopes/alternative-1.js',
+                        ],
+                    ],
+                ],
+                '@root',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider importmapDataProvider
+     *
+     * @param array|string $import
+     * @param array $expected
+     * @param string|int $key
+     * @return void
+     */
+    public function testImportmap(array|string $import, array $expected, string|int $key = 0): void
+    {
+        $manager = $this->createManager(['@root' => dirname(__DIR__, 2)]);
+
+        $manager->registerCustomized(
+            ImportmapAsset::class,
+            [
+                'imports' => [
+                    $key => $import,
+                ],
+            ],
+        );
+
+        $this->assertEquals(
+            $expected,
+            $manager->getImportmap()->jsonSerialize(),
+        );
+    }
+
+    public function testCdnImportmap(): void
+    {
+        $manager = $this->createManager();
+        $manager->register(CdnImportAsset::class);
+
+        $this->assertEquals(
+            [
+                'imports' => [
+                    'vue' => 'https://cdn.jsdelivr.net/npm/vue@3.5.32/+esm',
+                ],
+            ],
+            $manager->getImportmap()->jsonSerialize(),
+        );
+    }
+
+    public function testEmptyImports(): void
+    {
+        $manager = $this->createManager();
+        $manager->register(CdnAsset::class);
+
+        $this->assertEmpty($manager->getImportmap()->jsonSerialize());
+    }
+
+    public function testImportDirectory(): void
+    {
+        $manager = $this->createManager([
+            '@root' => dirname(__DIR__, 2),
+            '@assetUrl' => '/test',
+        ]);
+        $manager->register(DirectoryImportAsset::class);
+        $bundle = $manager->getBundle(DirectoryImportAsset::class);
+
+        $this->assertEquals(
+            [
+                'imports' => [
+                    'base/' => $bundle->baseUrl . '/js/',
+                ],
+            ],
+            $manager->getImportmap()->jsonSerialize(),
+        );
     }
 
     private function createManager(array $aliases = []): AssetManager

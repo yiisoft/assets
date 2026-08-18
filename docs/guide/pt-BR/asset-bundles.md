@@ -41,6 +41,7 @@ como propriedades públicas:
 `$publishOptions`   |`array`        | `[]`      | As opções a serem passadas para `\Yiisoft\Assets\AssetPublisher::publish()` quando o pacote de ativos estiver sendo publicado.
 `$export`           |`array`        | `[]`      | Lista de caminhos de arquivos para exportar em um formato legível por ferramentas de terceiros, como [Webpack](https://webpack.js.org/). Se o array estiver vazio, os caminhos dos arquivos `$css` e `$js` serão exportados.
 `$sourcePath`       |`string\|null` | `null`    | O diretório que contém os arquivos de ativos de origem para esse pacote de ativos.
+`$imports`       | `array`        | `[]`   | Lista dos módulos ESM que este pacote contém.
 
 ### Posições JS/CSS para [`yiisoft/view`](https://github.com/yiisoft/view)
 
@@ -297,6 +298,111 @@ class AppAsset extends AssetBundle
         'js/script.js',
     ];
 }
+```
 
 Neste exemplo, os caminhos para os arquivos `img/image.png` e `js/script.js` serão exportados,
 mas o caminho para o arquivo `css/style.css` não será exportado.
+
+### Pacote de registro com importmap
+
+`VueEsmAsset.php`:
+
+```php
+namespace App\Assets;
+
+use Yiisoft\Assets\AssetBundle;
+
+final class VueEsmAsset extends AssetBundle
+{
+    public bool $cdn = true;
+
+    public array $imports = [
+        'vue' => [
+            'https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js' => 'sha512-wwPCC5DrJ1qE35cUTcaRjYVYNaNhowKwfw5niTqSCD2d36g0NgozjdRWAQ2r3K8cd4ORPMqUh1S3AvKM7UigAQ=='
+        ]
+    ];
+
+    // Optional preload module.
+    public array $css = [
+        [
+            'https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.22/vue.esm-browser.prod.min.js',
+            'rel' => 'modulepreload',
+            'as' => 'script',
+            'integrity' => 'sha512-wwPCC5DrJ1qE35cUTcaRjYVYNaNhowKwfw5niTqSCD2d36g0NgozjdRWAQ2r3K8cd4ORPMqUh1S3AvKM7UigAQ=='
+        ]
+    ];
+}
+```
+
+`PopperEsmAsset.php`:
+
+```php
+namespace App\Assets;
+
+use Yiisoft\Assets\AssetBundle;
+
+final class PopperEsmAsset extends AssetBundle
+{
+    public bool $cdn = true;
+
+    public array $imports = [
+        '@popperjs/core' => [
+            'https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/esm/popper.min.js' => 'sha512-aSCUnIf5arudGto225/QqbEgN6cN22eXky/XUnXgkxsuLfdxzr/zirkr25psrCK24Q8UItMSwAhxTQpTHO24hQ=='
+        ]
+    ];
+}
+```
+
+`BootstrapEsmAsset.php`:
+
+```php
+namespace App\Assets;
+
+use Yiisoft\Assets\AssetBundle;
+
+final class BootstrapEsmAsset extends AssetBundle
+{
+    public bool $cdn = true;
+
+    public array $imports = [
+        'bootstrap' => [
+            'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.esm.min.js' => 'sha512-2OlrVWMEtWpu6gdWyl7zE7dxCREirSpMlmPQ16qn86VmlCJGQOkPyGakw9RPGolJa538sKHX4nW0UDACO3WKrg=='
+        ]
+    ];
+    
+    public array $css = [
+        [
+            'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css',
+            'integrity' => 'sha512-2bBQCjcnw658Lho4nlXJcc6WkV/UxpE/sAokbXPxQNGqmNdQrWqtw26Ns9kFF/yG792pKR1Sx8/Y1Lf1XN4GKA==',
+        ],
+        // Optional preload module.
+        [
+            'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.esm.min.js',
+            'rel' => 'modulepreload',
+            'as' => 'script',
+            'integrity' => 'sha512-2OlrVWMEtWpu6gdWyl7zE7dxCREirSpMlmPQ16qn86VmlCJGQOkPyGakw9RPGolJa538sKHX4nW0UDACO3WKrg=='
+        ]
+    ];
+    
+    public array $depends = [
+        PopperEsmAsset::class
+    ];
+}
+```
+
+Em algum lugar no topo do layout você deve usar o seguinte:
+
+```php
+$importmap = Script::tag()
+    ->type('importmap')
+    ->content(json_encode($assetManager->getImportmap()))
+```
+
+Agora podemos usar o módulo JavaScript `import` assim:
+
+```js
+import { createApp, defineComponent } from "vue";
+import { Popover, Tooltip } from "bootstrap";
+
+//Some code here
+```
